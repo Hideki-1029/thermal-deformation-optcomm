@@ -70,7 +70,7 @@
   }
 
   // Paragraph settings
-  show par: set block(spacing: 0.65em)
+  set par(spacing: 0.65em)
 
   // Equation settings
   set math.equation(numbering: "(1)")
@@ -94,6 +94,19 @@
   v(10.5pt)
 
   v(1.2em)
+
+  if abstract != [] {
+    align(center)[
+      #block(width: 88%)[
+        #set text(size: 9pt)
+        #set par(justify: true, leading: 13pt - 9pt + 0.65pt, first-line-indent: 0em)
+        #align(center)[#text(weight: "bold")[Abstract]]
+        #align(left)[#abstract]
+      ]
+    ]
+
+    v(1.2em)
+  }
 
   // Main body.
   set text(size: 9.5pt)
