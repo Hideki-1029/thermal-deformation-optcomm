@@ -1,0 +1,36 @@
+{
+  "description": "Representative CAD nodes for converting Femap thermal deformation results into STT-LCT relative motion. Update node_id values here if the Femap model is renumbered.",
+  "excel_displacement_unit": "m",
+  "cad_position_unit": "m",
+  "coordinate_system": {
+    "name": "CAD/Femap global",
+    "unit": "m",
+    "axes": {
+      "+X": "model lateral direction",
+      "+Y": "model vertical direction",
+      "+Z": "toward STT / PZ side",
+      "-Z": "toward LCT / MZ side"
+    }
+  },
+  "component_location_note": {
+    "LCT": "located on -Z / MZ side",
+    "STT": "located on +Z / PZ side"
+  },
+  "nominal_relative_vector": {
+    "from": "STT",
+    "to": "LCT",
+    "direction": "-Z"
+  },
+  "relative_vector_from": "STT",
+  "relative_vector_to": "LCT",
+  "points": {
+    "LCT": {
+      "node_id": 15858,
+      "cad_position_m": [0.3, 0.3, 0.05]
+    },
+    "STT": {
+      "node_id": 19459,
+      "cad_position_m": [0.3, 0.3, 0.95]
+    }
+  }
+}
