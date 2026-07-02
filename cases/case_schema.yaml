@@ -29,10 +29,10 @@ columns:
       - test
     description: Role of this case in lightweight model development.
 
-  thermal_case:
-    required: true
+  spacecraft_model:
+    required: false
     unit: "-"
-    description: Thermal environment label such as uniform, linear_gradient, local_heat, or orbital.
+    description: Spacecraft structure model identifier, such as baseline_bus, defined under inputs/spacecraft_models/.
 
   orbit_case:
     required: false
@@ -119,6 +119,11 @@ columns:
     unit: W
     description: STT internal heat load.
 
+  prop_heat_w:
+    required: false
+    unit: W
+    description: Propulsion component internal heat load.
+
   pcdu_heat_w:
     required: false
     unit: W
@@ -133,6 +138,16 @@ columns:
     required: false
     unit: "-"
     description: LCT mounting location label.
+
+  prop_location:
+    required: false
+    unit: "-"
+    description: Propulsion component mounting location label.
+
+  pcdu_location:
+    required: false
+    unit: "-"
+    description: PCDU mounting location label.
 
   constraint_set:
     required: false

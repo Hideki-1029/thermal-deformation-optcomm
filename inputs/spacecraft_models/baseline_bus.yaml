@@ -1,0 +1,53 @@
+spacecraft_model: baseline_bus
+description: >
+  Baseline shell model for TD/Femap thermal deformation studies. Dimensions
+  and material settings were recorded from the current TD and Femap models.
+
+geometry:
+  coordinate_axes:
+    x: spacecraft X axis
+    y: spacecraft Y axis
+    z: spacecraft Z axis
+  shell_size:
+    x_m: 0.590
+    y_m: 0.600
+    z_m: 0.990
+    source: TD and Femap shell size
+
+panels:
+  default:
+    thickness_m: 0.010
+    material: A5052
+    note: Applies to spacecraft panels unless a panel-specific override is defined.
+
+materials:
+  A5052:
+    name: Aluminum 5052 Annealed Wrought
+    thermal_desktop:
+      property_name: A5052
+      conductivity:
+        kx_w_per_mm_c: 0.137
+        ky_w_per_mm_c: 0.001
+        kz_w_per_mm_c: 0.001
+        mode: isotropic
+        note: TD is set to isotropic; kx is the active conductivity value.
+      specific_heat_j_per_kg_c: 900
+      density_kg_per_mm3: 2.68e-06
+      effective_emissivity: 0
+      source: TD thermophysical property screenshot
+    femap:
+      material_title: Aluminum 5052 Annealed Wrought
+      elastic_modulus_pa: 7.0327e10
+      shear_modulus_pa: 0
+      poisson_ratio: 0.33
+      tensile_limit_pa: 89631880
+      compression_limit_pa: 0
+      shear_limit_pa: 0
+      thermal_expansion_1_per_c: 2.376e-05
+      thermal_conductivity_w_per_m_c: 137.86
+      specific_heat_j_per_kg_c: 921
+      heat_generation_density: 0
+      density_kg_per_m3: 2685.002
+      structural_damping_coefficient: 0
+      reference_temperature_c: 23.9
+      source: Femap material property screenshot
