@@ -65,6 +65,36 @@ columns:
     unit: "-"
     description: Sun direction in the spacecraft body frame, such as PX, MX, PY, MY, PZ, or MZ.
 
+  Opt_MX:
+    required: false
+    unit: "-"
+    description: Thermal optical property name for the -X panel surface, defined in cases/thermal_optical_properties.yaml.
+
+  Opt_MY:
+    required: false
+    unit: "-"
+    description: Thermal optical property name for the -Y panel surface, defined in cases/thermal_optical_properties.yaml.
+
+  Opt_MZ:
+    required: false
+    unit: "-"
+    description: Thermal optical property name for the -Z panel surface, defined in cases/thermal_optical_properties.yaml.
+
+  Opt_PX:
+    required: false
+    unit: "-"
+    description: Thermal optical property name for the +X panel surface, defined in cases/thermal_optical_properties.yaml.
+
+  Opt_PY:
+    required: false
+    unit: "-"
+    description: Thermal optical property name for the +Y panel surface, defined in cases/thermal_optical_properties.yaml.
+
+  Opt_PZ:
+    required: false
+    unit: "-"
+    description: Thermal optical property name for the +Z panel surface, defined in cases/thermal_optical_properties.yaml.
+
   duration_s:
     required: false
     unit: s

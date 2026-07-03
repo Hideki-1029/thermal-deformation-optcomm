@@ -672,17 +672,15 @@ def main():
     detail_output_dir = args.output_dir / stem
     detail_output_dir.mkdir(parents=True, exist_ok=True)
 
-    output_csv = detail_output_dir / f"{stem}_stt_lct_los_angles.csv"
-    output_overview_png = detail_output_dir / f"{stem}_stt_lct_motion_overview.png"
-    output_global_budget_png = detail_output_dir / f"{stem}_global_los_angle_budget.png"
+    output_csv = detail_output_dir / "los_angles.csv"
+    output_overview_png = detail_output_dir / "stt_lct_motion_overview.png"
+    output_global_budget_png = detail_output_dir / "global_los_angle_budget.png"
     output_far_field_budget_png = (
         args.output_dir / f"{stem}_far_field_los_angle_budget.png"
     )
-    output_stt_budget_png = detail_output_dir / (
-        f"{stem}_stt_relative_los_angle_budget.png"
-    )
-    output_comparison_png = detail_output_dir / f"{stem}_los_definition_comparison.png"
-    output_plane_png = detail_output_dir / f"{stem}_stt_lct_plane_sketch.png"
+    output_stt_budget_png = detail_output_dir / "stt_relative_los_angle_budget.png"
+    output_comparison_png = detail_output_dir / "los_definition_comparison.png"
+    output_plane_png = detail_output_dir / "stt_lct_plane_sketch.png"
 
     result.to_csv(output_csv, index=False)
     plot_relative_motion(result, metadata, output_overview_png, show=args.show)

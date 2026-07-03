@@ -17,6 +17,7 @@ TD解析で定義した熱環境・軌道・コンポーネント条件を、Fem
 
 - `case_matrix.xlsx`: 人が編集・比較するケース一覧。ケース間の差分を横並びで確認するためのマスター表。
 - `case_schema.yaml`: `case_matrix` の列名、単位、必須/任意、許容値を定義する。
+- `thermal_optical_properties.yaml`: `case_matrix.xlsx` の `Opt_MX`、`Opt_MY`、`Opt_MZ`、`Opt_PX`、`Opt_PY`、`Opt_PZ` で参照する熱光学特性名と、太陽吸収率・赤外放射率の対応表。
 - `orbit_catalog.xlsx`: TDで使う軌道条件の一覧。既存衛星プロジェクトの軌道表を英語列名で管理する。
 - `../inputs/spacecraft_models/`: 衛星寸法、パネル厚み、材料物性などの構造モデル定義。
 
@@ -31,6 +32,8 @@ Pythonスクリプトや自動処理も、原則としてこの2つのExcelフ�
 CSVが必要な場合は、確認用・共有用の派生物として必要なタイミングで書き出す。解析運用の必須手順にはしない。
 
 衛星寸法やパネル素材のようにケース間で共有する構造モデル情報は、`case_matrix.xlsx` に直接展開せず、`inputs/spacecraft_models/` 以下のモデル定義に集約する。ケース表では `spacecraft_model` 列で参照する。
+
+各パネル面の熱光学特性は、`case_matrix.xlsx` では `Opt_MX`、`Opt_MY`、`Opt_MZ`、`Opt_PX`、`Opt_PY`、`Opt_PZ` に特性名だけを書く。各特性名に対応する太陽吸収率、赤外放射率、a/e は `thermal_optical_properties.yaml` に集約する。`0p5` は感度解析用の仮想特性で、太陽吸収率と赤外放射率をどちらも0.5にしたものとする。
 
 TDとFemapは、TD側で作ったケースセット名を基準にした1ファイル運用を正とする。TDの温度出力、Femapモデル・解析結果、Python解析後のCSV・図は、同じTDケースセット名または同名フォルダ配下に置き、対応するパスを `case_matrix.xlsx` に記録する。
 
@@ -137,10 +140,10 @@ data/
   processed/{td_case_set_name}/
 
 results/
-  {td_case_set_name}/
+  femap_deformation/{td_case_set_name}_far_field_los_angle_budget.png
+  femap_deformation/{td_case_set_name}/
     los_angles.csv
-    summary.json
-    plots/
+    stt_lct_plane_sketch.png
 ```
 
 ケース表では、上記の実体パスを `td_temperature_path`、`femap_model_path`、`femap_result_path`、`python_result_path` に記録する。

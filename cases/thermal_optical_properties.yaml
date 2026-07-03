@@ -1,0 +1,26 @@
+description: >
+  Thermal optical property catalog referenced by the Opt_MX, Opt_MY, Opt_MZ,
+  Opt_PX, Opt_PY, and Opt_PZ columns in cases/case_matrix.xlsx.
+  Values are dimensionless.
+
+properties:
+  alodine1000:
+    solar_absorptivity: 0.150
+    infrared_emissivity: 0.038
+    absorptivity_emissivity_ratio: 3.947
+    source: TD optical property database entry CHIEF_Alogine1000.
+    notes: Alodine 1000 optical property used for panel surfaces.
+
+  Black:
+    solar_absorptivity: 0.974
+    infrared_emissivity: 0.920
+    absorptivity_emissivity_ratio: 1.059
+    source: TD optical property database entry Black.
+    notes: Black coating optical property used for panel surfaces.
+
+  0p5:
+    solar_absorptivity: 0.500
+    infrared_emissivity: 0.500
+    absorptivity_emissivity_ratio: 1.000
+    source: Synthetic property for sensitivity cases.
+    notes: Virtual thermal optical property with both alpha and epsilon set to 0.5.
