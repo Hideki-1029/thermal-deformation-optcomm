@@ -190,15 +190,15 @@ columns:
     unit: "-"
     description: Path to Thermal Desktop temperature or mapper output, stored under the TD case set name when available.
 
-  femap_model_path:
+  femap_result_stt_lct_path:
     required: false
     unit: "-"
-    description: Path to the Femap analysis file used for this TD case set, if saved separately.
+    description: Path to the exported Femap STT/LCT displacement and rotation result Excel used by Python LOS analysis.
 
-  femap_result_path:
+  femap_result_other_path:
     required: false
     unit: "-"
-    description: Path to the exported Femap deformation result stored for this TD case set.
+    description: Path to other Femap-side outputs for this TD case set, such as the case model folder or mapper_from_TD directory.
 
   femap_loadset_start:
     required: false

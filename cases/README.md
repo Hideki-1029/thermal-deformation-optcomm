@@ -18,6 +18,7 @@ TD解析で定義した熱環境・軌道・コンポーネント条件を、Fem
 - `case_matrix.xlsx`: 人が編集・比較するケース一覧。ケース間の差分を横並びで確認するためのマスター表。
 - `case_schema.yaml`: `case_matrix` の列名、単位、必須/任意、許容値を定義する。
 - `thermal_optical_properties.yaml`: `case_matrix.xlsx` の `Opt_MX`、`Opt_MY`、`Opt_MZ`、`Opt_PX`、`Opt_PY`、`Opt_PZ` で参照する熱光学特性名と、太陽吸収率・赤外放射率の対応表。
+- `temperature_probe_sets.yaml`: TD mapper出力から代表温度点を抽出するためのプローブセット定義。デフォルトでは各面の中央、4頂点、4辺中点を使う。
 - `orbit_catalog.xlsx`: TDで使う軌道条件の一覧。既存衛星プロジェクトの軌道表を英語列名で管理する。
 - `../inputs/spacecraft_models/`: 衛星寸法、パネル厚み、材料物性などの構造モデル定義。
 
@@ -34,6 +35,8 @@ CSVが必要な場合は、確認用・共有用の派生物として必要な�
 衛星寸法やパネル素材のようにケース間で共有する構造モデル情報は、`case_matrix.xlsx` に直接展開せず、`inputs/spacecraft_models/` 以下のモデル定義に集約する。ケース表では `spacecraft_model` 列で参照する。
 
 各パネル面の熱光学特性は、`case_matrix.xlsx` では `Opt_MX`、`Opt_MY`、`Opt_MZ`、`Opt_PX`、`Opt_PY`、`Opt_PZ` に特性名だけを書く。各特性名に対応する太陽吸収率、赤外放射率、a/e は `thermal_optical_properties.yaml` に集約する。`0p5` は感度解析用の仮想特性で、太陽吸収率と赤外放射率をどちらも0.5にしたものとする。
+
+軽量モデル用に抽出する代表温度点は、`temperature_probe_sets.yaml` にプローブセットとして定義する。デフォルトは `default_surface_9points` とし、各パネル面について中央、4頂点、4辺中点の計9点をFemap mapper座標で指定し、実際の温度は最も近いFemapノードから取得する。
 
 TDとFemapは、TD側で作ったケースセット名を基準にした1ファイル運用を正とする。TDの温度出力、Femapモデル・解析結果、Python解析後のCSV・図は、同じTDケースセット名または同名フォルダ配下に置き、対応するパスを `case_matrix.xlsx` に記録する。
 
@@ -127,7 +130,7 @@ case_matrix.xlsx
 
 TD mapper用の `output.dat` は、TDケースセット名のフォルダ配下に出力して管理する。軽量モデルの特徴量や温度場の確認に使う別出力の温度データも、`td_temperature_path` に記録する。
 
-Femap解析は、同じFemap解析ファイルを使い、解析ごとの出力先をTDケースセット名のフォルダに切り替える運用を基本とする。Femap側でケース別に保存した解析ファイルがある場合は `femap_model_path` に記録し、Femapの変形結果は `femap_result_path` に記録する。
+Femap解析は、同じFemap解析ファイルを使い、解析ごとの出力先をTDケースセット名のフォルダに切り替える運用を基本とする。STT/LCTノードの変位・回転をPython LOS解析に渡すExcelは `femap_result_stt_lct_path` に記録し、Femapケースフォルダや `mapper_from_TD` などの周辺出力は `femap_result_other_path` に記録する。
 
 ## Directory Convention
 
@@ -146,7 +149,7 @@ results/
     stt_lct_plane_sketch.png
 ```
 
-ケース表では、上記の実体パスを `td_temperature_path`、`femap_model_path`、`femap_result_path`、`python_result_path` に記録する。
+ケース表では、上記の実体パスを `td_temperature_path`、`femap_result_stt_lct_path`、`femap_result_other_path`、`python_result_path` に記録する。
 
 ## Main Output Target
 

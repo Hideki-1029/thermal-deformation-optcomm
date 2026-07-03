@@ -1,0 +1,91 @@
+description: >
+  Temperature probe set definitions for extracting representative Femap-node
+  temperatures from TD mapper output. Probe target coordinates are expressed
+  in the Femap mapper coordinate frame and are selected by nearest grid point
+  within the specified mapped panel.
+
+coordinate_frame:
+  name: femap_mapper_mm
+  unit: mm
+  source: outputMapSummaryGridPoints.txt from TD mapper output
+  bounds:
+    x_min_mm: 5.0
+    x_max_mm: 595.0
+    y_min_mm: 0.0
+    y_max_mm: 600.0
+    z_min_mm: 5.0
+    z_max_mm: 995.0
+  notes: >
+    Bounds correspond to the current TD/Femap shell model with panel surface
+    offsets included. They are intentionally recorded in mapper coordinates
+    rather than derived from the spacecraft shell_size in baseline_bus.yaml.
+
+probe_sets:
+  default_surface_9points:
+    description: >
+      Default lightweight-model temperature probes. For each spacecraft panel
+      face, extract the face center, four vertices, and four edge midpoints.
+    selection: nearest_xyz_within_panel
+    pattern:
+      points:
+        center:
+          fractions: [0.5, 0.5]
+        corner_min_min:
+          fractions: [0.0, 0.0]
+        corner_min_max:
+          fractions: [0.0, 1.0]
+        corner_max_min:
+          fractions: [1.0, 0.0]
+        corner_max_max:
+          fractions: [1.0, 1.0]
+        edge_min_mid:
+          fractions: [0.0, 0.5]
+        edge_max_mid:
+          fractions: [1.0, 0.5]
+        edge_mid_min:
+          fractions: [0.5, 0.0]
+        edge_mid_max:
+          fractions: [0.5, 1.0]
+    faces:
+      PANEL_MX:
+        fixed_axis: x
+        fixed_value_mm: 5.0
+        axes: [y, z]
+        ranges_mm:
+          y: [0.0, 600.0]
+          z: [5.0, 995.0]
+      PANEL_PX:
+        fixed_axis: x
+        fixed_value_mm: 595.0
+        axes: [y, z]
+        ranges_mm:
+          y: [0.0, 600.0]
+          z: [5.0, 995.0]
+      PANEL_MY:
+        fixed_axis: y
+        fixed_value_mm: 0.0
+        axes: [x, z]
+        ranges_mm:
+          x: [5.0, 595.0]
+          z: [5.0, 995.0]
+      PANEL_PY:
+        fixed_axis: y
+        fixed_value_mm: 600.0
+        axes: [x, z]
+        ranges_mm:
+          x: [5.0, 595.0]
+          z: [5.0, 995.0]
+      PANEL_MZ:
+        fixed_axis: z
+        fixed_value_mm: 5.0
+        axes: [x, y]
+        ranges_mm:
+          x: [5.0, 595.0]
+          y: [0.0, 600.0]
+      PANEL_PZ:
+        fixed_axis: z
+        fixed_value_mm: 995.0
+        axes: [x, y]
+        ranges_mm:
+          x: [5.0, 595.0]
+          y: [0.0, 600.0]
