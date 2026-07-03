@@ -1,4 +1,5 @@
 import argparse
+import csv
 import json
 import re
 from pathlib import Path
@@ -14,6 +15,9 @@ DEFAULT_INPUT_DIR = REPO_ROOT / "inputs" / "data_femap_deformation"
 DEFAULT_INPUT = DEFAULT_INPUT_DIR / "260629_1505_translation_rotation.xlsx"
 DEFAULT_CONFIG = DEFAULT_INPUT_DIR / "stt_lct_node_config.json"
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "results" / "femap_deformation"
+DEFAULT_FEMAP_MODEL_ROOT = Path("C:/Users/Hide/Femap/research_model")
+DEFAULT_TEMPERATURE_PROBE_SET_FILE = REPO_ROOT / "cases" / "temperature_probe_sets.yaml"
+DEFAULT_TEMPERATURE_PROBE_SET = "default_surface_9points"
 
 TRANSLATION_COMPONENTS = {
     "x": ("T1", "2"),
@@ -25,6 +29,13 @@ ROTATION_COMPONENTS = {
     "y": ("R2", "7"),
     "z": ("R3", "8"),
 }
+GRID_ROW_RE = re.compile(
+    r"^\s*(\d+)\s+"
+    r"([-+0-9.eE]+)\s*,\s*([-+0-9.eE]+)\s*,\s*([-+0-9.eE]+)\s+"
+    r"([-+0-9.eE]+)\s+"
+    r"(\S+)\s+"
+    r"([-+0-9.eE]+)\s*,\s*([-+0-9.eE]+)\s*,\s*([-+0-9.eE]+)"
+)
 
 
 def load_config(config_path):
@@ -632,6 +643,355 @@ def plot_plane_sketch(result, metadata, output_png, show=False, exaggeration=250
         plt.close(fig)
 
 
+def parse_probe_scalar(value):
+    value = value.strip()
+    if value.startswith("["):
+        parsed_values = []
+        for item in value.strip("[]").split(","):
+            item = item.strip()
+            try:
+                parsed_values.append(float(item))
+            except ValueError:
+                parsed_values.append(item.strip("\"'"))
+        return parsed_values
+    try:
+        return float(value)
+    except ValueError:
+        return value
+
+
+def load_temperature_probe_set(probe_set_path, probe_set_name):
+    probe_sets = {}
+    current_set = None
+    section = None
+    current_point = None
+    current_face = None
+
+    with open(probe_set_path, encoding="utf-8") as f:
+        for raw_line in f:
+            if not raw_line.strip() or raw_line.lstrip().startswith("#"):
+                continue
+
+            indent = len(raw_line) - len(raw_line.lstrip(" "))
+            stripped = raw_line.strip()
+
+            if indent == 0 and stripped.endswith(":"):
+                key = stripped[:-1]
+                if key != "probe_sets":
+                    current_set = None
+                    section = None
+                continue
+
+            if indent == 2 and stripped.endswith(":"):
+                current_set = stripped[:-1]
+                probe_sets[current_set] = {"points": {}, "faces": {}}
+                section = None
+                continue
+
+            if current_set is None:
+                continue
+
+            if indent == 6 and stripped == "points:":
+                section = "points"
+                continue
+            if indent == 4 and stripped == "faces:":
+                section = "faces"
+                continue
+
+            if section == "points":
+                if indent == 8 and stripped.endswith(":"):
+                    current_point = stripped[:-1]
+                    probe_sets[current_set]["points"][current_point] = {}
+                    continue
+                if indent == 10 and current_point and ":" in stripped:
+                    key, value = stripped.split(":", 1)
+                    probe_sets[current_set]["points"][current_point][key] = (
+                        parse_probe_scalar(value)
+                    )
+                    continue
+
+            if section == "faces":
+                if indent == 6 and stripped.endswith(":"):
+                    current_face = stripped[:-1]
+                    probe_sets[current_set]["faces"][current_face] = {}
+                    continue
+                if indent == 8 and current_face and ":" in stripped:
+                    key, value = stripped.split(":", 1)
+                    value = value.strip()
+                    if key == "ranges_mm":
+                        probe_sets[current_set]["faces"][current_face][key] = {}
+                    elif value:
+                        probe_sets[current_set]["faces"][current_face][key] = (
+                            parse_probe_scalar(value)
+                        )
+                    continue
+                if indent == 10 and current_face and ":" in stripped:
+                    key, value = stripped.split(":", 1)
+                    probe_sets[current_set]["faces"][current_face]["ranges_mm"][
+                        key
+                    ] = parse_probe_scalar(value)
+
+    if probe_set_name not in probe_sets:
+        raise ValueError(f"{probe_set_name!r} was not found in {probe_set_path}")
+    return probe_sets[probe_set_name]
+
+
+def expand_temperature_probe_set(probe_set):
+    probes = []
+    for panel_name, face in probe_set["faces"].items():
+        axes = face["axes"]
+        fixed_axis = face["fixed_axis"]
+        fixed_value = face["fixed_value_mm"]
+
+        for point_name, point_definition in probe_set["points"].items():
+            fractions = point_definition["fractions"]
+            target = {fixed_axis: fixed_value}
+            for axis, fraction in zip(axes, fractions):
+                range_min, range_max = face["ranges_mm"][axis]
+                target[axis] = range_min + fraction * (range_max - range_min)
+
+            probes.append(
+                {
+                    "name": f"{panel_name.lower()}_{point_name}",
+                    "panel": panel_name,
+                    "target_xyz": (target["x"], target["y"], target["z"]),
+                }
+            )
+    return probes
+
+
+def parse_mapper_grid_points(grid_path, panel_name):
+    points = []
+    with open(grid_path, encoding="utf-8") as f:
+        for line in f:
+            match = GRID_ROW_RE.match(line)
+            if not match:
+                continue
+
+            entity_name = match.group(6)
+            panel_match = re.search(r"PANEL_[A-Z]+", entity_name)
+            panel = panel_match.group(0) if panel_match else ""
+            if panel != panel_name:
+                continue
+
+            points.append(
+                {
+                    "femap_node_id": int(match.group(1)),
+                    "x_mm": float(match.group(2)),
+                    "y_mm": float(match.group(3)),
+                    "z_mm": float(match.group(4)),
+                    "mapped_tolerance": float(match.group(5)),
+                    "mapped_entity_name": entity_name,
+                    "u": float(match.group(7)),
+                    "v": float(match.group(8)),
+                    "w": float(match.group(9)),
+                }
+            )
+
+    if not points:
+        raise ValueError(f"No grid points found for {panel_name} in {grid_path}")
+    return points
+
+
+def choose_nearest_mapper_point(points, target_xyz):
+    def distance_squared(point):
+        return (
+            (point["x_mm"] - target_xyz[0]) ** 2
+            + (point["y_mm"] - target_xyz[1]) ** 2
+            + (point["z_mm"] - target_xyz[2]) ** 2
+        )
+
+    return min(points, key=distance_squared)
+
+
+def read_mapper_temperature_histories(transient_path, femap_node_ids):
+    requested_ids = list(dict.fromkeys(femap_node_ids))
+    with open(transient_path, encoding="utf-8") as f:
+        node_count = int(next(f).strip())
+        node_names = [next(f).strip() for _ in range(node_count)]
+
+        index_to_node_id = {}
+        for node_id in requested_ids:
+            target_name = f"NASTRAN.{node_id}"
+            try:
+                index_to_node_id[node_names.index(target_name)] = node_id
+            except ValueError as exc:
+                raise ValueError(f"{target_name} was not found in {transient_path}") from exc
+
+        times = []
+        histories = {node_id: [] for node_id in requested_ids}
+        while True:
+            time_line = f.readline()
+            if not time_line:
+                break
+
+            times.append(float(time_line.strip()))
+            block_values = {}
+            for index in range(node_count):
+                value_line = f.readline()
+                if not value_line:
+                    raise ValueError("Unexpected end of file inside a temperature block.")
+                if index in index_to_node_id:
+                    block_values[index_to_node_id[index]] = float(value_line.strip())
+
+            for node_id in requested_ids:
+                histories[node_id].append(block_values[node_id])
+
+    return times, histories
+
+
+def write_temperature_probe_outputs(output_dir, probe_set_name, times, probe_results):
+    temperatures_csv = output_dir / f"{probe_set_name}_temperatures.csv"
+    nodes_csv = output_dir / f"{probe_set_name}_nodes.csv"
+
+    with open(temperatures_csv, "w", encoding="utf-8", newline="") as f:
+        fieldnames = [
+            "time_s",
+            "probe_name",
+            "panel",
+            "temperature_c",
+            "femap_node_id",
+            "x_mm",
+            "y_mm",
+            "z_mm",
+            "mapped_entity_name",
+            "target_x_mm",
+            "target_y_mm",
+            "target_z_mm",
+        ]
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        for result in probe_results:
+            probe = result["probe"]
+            point = result["point"]
+            for time_s, temperature in zip(times, result["temperatures"]):
+                writer.writerow(
+                    {
+                        "time_s": time_s,
+                        "probe_name": probe["name"],
+                        "panel": probe["panel"],
+                        "temperature_c": temperature,
+                        "femap_node_id": point["femap_node_id"],
+                        "x_mm": point["x_mm"],
+                        "y_mm": point["y_mm"],
+                        "z_mm": point["z_mm"],
+                        "mapped_entity_name": point["mapped_entity_name"],
+                        "target_x_mm": probe["target_xyz"][0],
+                        "target_y_mm": probe["target_xyz"][1],
+                        "target_z_mm": probe["target_xyz"][2],
+                    }
+                )
+
+    with open(nodes_csv, "w", encoding="utf-8", newline="") as f:
+        fieldnames = [
+            "probe_name",
+            "panel",
+            "femap_node_id",
+            "x_mm",
+            "y_mm",
+            "z_mm",
+            "target_x_mm",
+            "target_y_mm",
+            "target_z_mm",
+            "mapped_entity_name",
+        ]
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        for result in probe_results:
+            probe = result["probe"]
+            point = result["point"]
+            writer.writerow(
+                {
+                    "probe_name": probe["name"],
+                    "panel": probe["panel"],
+                    "femap_node_id": point["femap_node_id"],
+                    "x_mm": point["x_mm"],
+                    "y_mm": point["y_mm"],
+                    "z_mm": point["z_mm"],
+                    "target_x_mm": probe["target_xyz"][0],
+                    "target_y_mm": probe["target_xyz"][1],
+                    "target_z_mm": probe["target_xyz"][2],
+                    "mapped_entity_name": point["mapped_entity_name"],
+                }
+            )
+
+    return temperatures_csv, nodes_csv
+
+
+def plot_temperature_probe_overview(output_png, times, probe_results, show=False):
+    panels = sorted({result["probe"]["panel"] for result in probe_results})
+    time_hours = np.asarray(times, dtype=float) / 3600.0
+    fig, axes = plt.subplots(len(panels), 1, figsize=(10, 2.4 * len(panels)), sharex=True)
+    if len(panels) == 1:
+        axes = [axes]
+
+    for ax, panel in zip(axes, panels):
+        panel_results = [
+            result for result in probe_results if result["probe"]["panel"] == panel
+        ]
+        for result in panel_results:
+            ax.plot(
+                time_hours,
+                result["temperatures"],
+                linewidth=1.1,
+                label=result["probe"]["name"].replace(f"{panel.lower()}_", ""),
+            )
+        ax.set_ylabel("temp [C]")
+        ax.set_title(panel)
+        ax.grid(True)
+        ax.legend(ncol=3, fontsize=7)
+
+    axes[-1].set_xlabel("time [h]")
+    fig.tight_layout()
+    fig.savefig(output_png, dpi=200)
+
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
+
+
+def extract_temperature_probe_set(
+    mapper_dir, probe_set_path, probe_set_name, output_dir, show=False
+):
+    grid_path = mapper_dir / "outputMapSummaryGridPoints.txt"
+    transient_path = mapper_dir / "outputTransient.txt"
+
+    probe_set = load_temperature_probe_set(probe_set_path, probe_set_name)
+    probes = expand_temperature_probe_set(probe_set)
+    points_by_panel = {
+        panel: parse_mapper_grid_points(grid_path, panel)
+        for panel in sorted({probe["panel"] for probe in probes})
+    }
+
+    probe_results = []
+    for probe in probes:
+        point = choose_nearest_mapper_point(
+            points_by_panel[probe["panel"]], probe["target_xyz"]
+        )
+        probe_results.append({"probe": probe, "point": point})
+
+    times, histories = read_mapper_temperature_histories(
+        transient_path, [result["point"]["femap_node_id"] for result in probe_results]
+    )
+    for result in probe_results:
+        result["temperatures"] = histories[result["point"]["femap_node_id"]]
+
+    temperatures_csv, nodes_csv = write_temperature_probe_outputs(
+        output_dir, probe_set_name, times, probe_results
+    )
+    overview_png = output_dir / f"{probe_set_name}_temperature_overview.png"
+    plot_temperature_probe_overview(overview_png, times, probe_results, show=show)
+
+    return {
+        "probe_count": len(probe_results),
+        "time_count": len(times),
+        "temperatures_csv": temperatures_csv,
+        "nodes_csv": nodes_csv,
+        "overview_png": overview_png,
+    }
+
+
 def parse_sheet_name(value):
     try:
         return int(value)
@@ -650,6 +1010,29 @@ def parse_args():
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
     parser.add_argument("--sheet", type=parse_sheet_name, default=0)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
+    parser.add_argument(
+        "--mapper-dir",
+        type=Path,
+        help=(
+            "Directory containing TD mapper output. Defaults to "
+            "C:/Users/Hide/Femap/research_model/{input_stem}/mapper_from_TD."
+        ),
+    )
+    parser.add_argument(
+        "--temperature-probe-set-file",
+        type=Path,
+        default=DEFAULT_TEMPERATURE_PROBE_SET_FILE,
+    )
+    parser.add_argument(
+        "--temperature-probe-set",
+        default=DEFAULT_TEMPERATURE_PROBE_SET,
+        help="Probe set name defined in cases/temperature_probe_sets.yaml.",
+    )
+    parser.add_argument(
+        "--skip-temperature-probes",
+        action="store_true",
+        help="Skip mapper temperature probe extraction.",
+    )
     parser.add_argument("--show", action="store_true")
     parser.add_argument(
         "--plane-exaggeration",
@@ -720,6 +1103,20 @@ def main():
         exaggeration=args.plane_exaggeration,
     )
 
+    temperature_outputs = None
+    if not args.skip_temperature_probes and args.temperature_probe_set:
+        mapper_dir = args.mapper_dir or DEFAULT_FEMAP_MODEL_ROOT / stem / "mapper_from_TD"
+        if mapper_dir.exists():
+            temperature_outputs = extract_temperature_probe_set(
+                mapper_dir=mapper_dir,
+                probe_set_path=args.temperature_probe_set_file,
+                probe_set_name=args.temperature_probe_set,
+                output_dir=detail_output_dir,
+                show=args.show,
+            )
+        else:
+            print(f"Temperature probes skipped: mapper dir not found: {mapper_dir}")
+
     print(f"Input Excel          : {args.input}")
     print(f"Config               : {args.config}")
     print(
@@ -735,6 +1132,12 @@ def main():
     print(f"STT bookkeeping PNG  : {output_stt_budget_png}")
     print(f"Comparison PNG       : {output_comparison_png}")
     print(f"Plane sketch PNG     : {output_plane_png}")
+    if temperature_outputs is not None:
+        print(f"Temperature probes   : {temperature_outputs['probe_count']}")
+        print(f"Temperature steps    : {temperature_outputs['time_count']}")
+        print(f"Temperature CSV      : {temperature_outputs['temperatures_csv']}")
+        print(f"Temperature nodes CSV: {temperature_outputs['nodes_csv']}")
+        print(f"Temperature PNG      : {temperature_outputs['overview_png']}")
     print()
     summary_columns = [
         "centerline_angle_magnitude_urad",

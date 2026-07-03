@@ -4,6 +4,30 @@ description: >
   in the Femap mapper coordinate frame and are selected by nearest grid point
   within the specified mapped panel.
 
+# このファイルは、TD mapper出力から「どの位置の温度を抜き出すか」を定義する。
+# Python側ではこのファイルを読み、指定された面と座標に最も近いFemapノードを選んで、
+# outputTransient.txt からそのノードの温度時系列を抽出する。
+#
+# 新しい温度取得パターンを作るときは、下の probe_sets: に新しいセット名を追加する。
+# 例:
+#   probe_sets:
+#     surface_centers_only:
+#       ...
+#
+# points:
+#   面内のどこを取るかを、0.0〜1.0の相対位置で指定する。
+#   [0.5, 0.5] は面の中央、[0.0, 0.0] は片側の頂点、
+#   [1.0, 0.5] は片側辺の中央を意味する。
+#
+# faces:
+#   どの面を対象にするかを指定する。
+#   fixed_axis / fixed_value_mm は、その面で固定される座標。
+#   axes / ranges_mm は、面内の2方向とその座標範囲。
+#
+# 実際のFemapノードIDはここには直接書かない。
+# メッシュ変更でノードIDが変わっても同じ物理位置を取れるように、
+# 「面 + 目標座標」から最近傍ノードを選ぶ。
+
 coordinate_frame:
   name: femap_mapper_mm
   unit: mm
