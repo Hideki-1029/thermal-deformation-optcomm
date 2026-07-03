@@ -1,12 +1,13 @@
 description: >
   Column schema for cases/case_matrix.xlsx. The Excel file is the
   human-edited master table and the default input for Python scripts.
+  TD, Femap, and Python output paths are managed by the TD case set name.
 
 columns:
   case_id:
     required: true
     unit: "-"
-    description: Unique case identifier propagated from TD to Femap and Python.
+    description: Unique TD case set identifier propagated from TD to Femap and Python.
 
   case_group:
     required: true
@@ -154,20 +155,20 @@ columns:
     unit: "-"
     description: Femap boundary condition or 3-2-1 constraint label.
 
-  td_output_path:
+  td_temperature_path:
     required: false
     unit: "-"
-    description: Path to Thermal Desktop output used by Femap.
+    description: Path to Thermal Desktop temperature or mapper output, stored under the TD case set name when available.
 
   femap_model_path:
     required: false
     unit: "-"
-    description: Path to Femap model file used for the case.
+    description: Path to the Femap analysis file used for this TD case set, if saved separately.
 
   femap_result_path:
     required: false
     unit: "-"
-    description: Path to exported Femap deformation result.
+    description: Path to the exported Femap deformation result stored for this TD case set.
 
   femap_loadset_start:
     required: false
@@ -182,7 +183,7 @@ columns:
   python_result_path:
     required: false
     unit: "-"
-    description: Path to processed STT-LCT LOS angle CSV.
+    description: Path to processed STT-LCT LOS angle CSV or result directory for this TD case set.
 
   notes:
     required: false

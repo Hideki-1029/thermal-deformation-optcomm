@@ -32,6 +32,17 @@ CSVが必要な場合は、確認用・共有用の派生物として必要な�
 
 衛星寸法やパネル素材のようにケース間で共有する構造モデル情報は、`case_matrix.xlsx` に直接展開せず、`inputs/spacecraft_models/` 以下のモデル定義に集約する。ケース表では `spacecraft_model` 列で参照する。
 
+TDとFemapは、TD側で作ったケースセット名を基準にした1ファイル運用を正とする。TDの温度出力、Femapモデル・解析結果、Python解析後のCSV・図は、同じTDケースセット名または同名フォルダ配下に置き、対応するパスを `case_matrix.xlsx` に記録する。
+
+これにより、ファイル名やフォルダ名を個別に推測せず、`case_matrix.xlsx` の1行から次を追跡できる状態にする。
+
+- TDの出力ファイル
+- Femapに読み込む解析ファイル
+- Femapの変形解析結果
+- Pythonで後処理したLOS角度結果
+
+Excelが作成する `~$*.xlsx` は一時ロックファイルなので、ケース管理の対象外とする。
+
 ## Case Group and Model Use
 
 `case_group` は、その解析ケースを研究上どの目的で作ったかを表す。
@@ -104,31 +115,35 @@ TD003_lct_heat_acquisition
 
 ```text
 case_matrix.xlsx
-  -> TD temperature output
+  -> TD temperature output / mapper output.dat
   -> Femap thermal deformation result
   -> Python STT-LCT LOS angle CSV
   -> lightweight model dataset
   -> PAT simulation
 ```
 
+TD mapper用の `output.dat` は、TDケースセット名のフォルダ配下に出力して管理する。軽量モデルの特徴量や温度場の確認に使う別出力の温度データも、`td_temperature_path` に記録する。
+
+Femap解析は、同じFemap解析ファイルを使い、解析ごとの出力先をTDケースセット名のフォルダに切り替える運用を基本とする。Femap側でケース別に保存した解析ファイルがある場合は `femap_model_path` に記録し、Femapの変形結果は `femap_result_path` に記録する。
+
 ## Directory Convention
 
-今後、解析データが増えてきたら以下のように分ける。
+解析データはTDケースセット名で束ねる。既存実行分の `case set 03-06` はこの方針に合わせて格納済みとし、以後の新規ケースも同じ規則に従う。
 
 ```text
 data/
-  td_raw/{case_id}/
-  femap_raw/{case_id}/
-  processed/{case_id}/
+  td_raw/{td_case_set_name}/
+  femap_raw/{td_case_set_name}/
+  processed/{td_case_set_name}/
 
 results/
-  {case_id}/
+  {td_case_set_name}/
     los_angles.csv
     summary.json
     plots/
 ```
 
-現時点で既存の解析ファイルをすぐ移動する必要はない。まずは新しいケースからこの規則に寄せる。
+ケース表では、上記の実体パスを `td_temperature_path`、`femap_model_path`、`femap_result_path`、`python_result_path` に記録する。
 
 ## Main Output Target
 
