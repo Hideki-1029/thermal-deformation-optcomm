@@ -187,9 +187,9 @@ def apply_case_matrix_time_axis(result, metadata, input_path, case_matrix_path, 
         0.0,
     ) * float(sample_interval_s)
     result.insert(1, "time_s", time_s)
-    result.insert(2, "time_h", time_s / 3600.0)
-    metadata["case_label"] = "time [h]"
-    metadata["x_axis_column"] = "time_h"
+    result.insert(2, "time_min", time_s / 60.0)
+    metadata["case_label"] = "time [min]"
+    metadata["x_axis_column"] = "time_min"
     metadata["case_matrix_id"] = case_row.get("case_id", Path(input_path).stem)
     metadata["sample_interval_s"] = float(sample_interval_s)
     metadata["initial_zero_case_count"] = int(first_time_case_index)
@@ -1007,7 +1007,7 @@ def write_temperature_probe_outputs(output_dir, probe_set_name, times, probe_res
 
 def plot_temperature_probe_overview(output_png, times, probe_results, show=False):
     panels = sorted({result["probe"]["panel"] for result in probe_results})
-    time_hours = np.asarray(times, dtype=float) / 3600.0
+    time_minutes = np.asarray(times, dtype=float) / 60.0
     fig, axes = plt.subplots(len(panels), 1, figsize=(10, 2.4 * len(panels)), sharex=True)
     if len(panels) == 1:
         axes = [axes]
@@ -1018,7 +1018,7 @@ def plot_temperature_probe_overview(output_png, times, probe_results, show=False
         ]
         for result in panel_results:
             ax.plot(
-                time_hours,
+                time_minutes,
                 result["temperatures"],
                 linewidth=1.1,
                 label=result["probe"]["name"].replace(f"{panel.lower()}_", ""),
@@ -1028,7 +1028,7 @@ def plot_temperature_probe_overview(output_png, times, probe_results, show=False
         ax.grid(True)
         ax.legend(ncol=3, fontsize=7)
 
-    axes[-1].set_xlabel("time [h]")
+    axes[-1].set_xlabel("time [min]")
     fig.tight_layout()
     fig.savefig(output_png, dpi=200)
 

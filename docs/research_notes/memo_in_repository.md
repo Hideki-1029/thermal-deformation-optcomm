@@ -226,3 +226,30 @@ TDおよびFemapのshellモデル寸法:
   - 比熱: `921 J/kg/C`
   - 密度: `2685.002 kg/m^3`
   - 基準温度: `23.9 C`
+
+
+
+
+# 2026/7/4 memo
+
+## 軽量モデル実装までの方針
+TD→Femap→python解析の体制が整ったところで、Case 03~06を用いてPATシミュレータへの接続、軽量モデルの簡易的な構築を試す。以下を手順とする。
+
+1. Femap結果をPAT入力に接続 los_angles.csv の stt_relative_los_angle_x/y_urad を、熱LOSバイアス真値としてPATシミュレータの scan center 誤差に入れる。まずは補正なし/熱補正ありを比較できる状態にする。
+→完了。
+stt_relative_los_angle_x/y_uradではなく、STT/LCTの回転成分のみに注目したLOS誤差角算出に切り替え（far fieldみたいなやつ）
+スキャンはスパイラルスキャン。アクチュエータのモデル化はまだしていない。
+ここで、ノートPCのcursorの操作に切り替え。（次の作業のためのプロンプト出力させて引き継ぎ）
+
+2. 熱以外の誤差を足す 軌道予測誤差、姿勢決定/制御誤差、アライメント残差などを簡易モデルで足す。ここは最初から高忠実度にせず、RMSやバイアス、低周波ドリフトで十分だと思います。目的は「熱ひずみが全誤差の中でどれくらい効くか」を見ること。
+
+
+3. 捕捉時間・scan areaを見る no correction、static thermal correction、truth thermal correction くらいで比較する。ここで「熱補正がPAT性能指標に意味を持つか」が最初に確認できます。
+
+4. 軽量モデル用データセットを作る case_matrix.xlsx、orbit_catalog.xlsx、inputs/data_symbols_TD/LOGIC_SUN、代表温度CSV、LOS角CSVを結合して、学習/検証/テスト用の表にする。
+
+5. 軽量モデル実装 最初は static bias と Fourier、次に代表温度差や日照/蝕・太陽方向を使う簡易physical model。NNは最後でよいです。今はケース数が少ないので、NNより「説明できる低次モデル」の方が研究として扱いやすいです。
+
+6. 軽量モデル出力をPATへ接続 truth thermal correction の代わりに、軽量モデル予測値を scan center 補正へ入れる。ここで「Femap真値を使った理想補正」と「軽量モデル補正」の差を見る。
+
+7. adaptiveを足す 最後に、捕捉後の残差で補正するモデルを追加する。これは研究の見せ場になり得ますが、最初に入れると評価軸が混ざるので後回しがよいです。

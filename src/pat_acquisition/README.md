@@ -10,6 +10,18 @@
 python "src/pat_acquisition/run_pat_with_femap_los.py"
 ```
 
+重要パラメータは、次のYAMLにまとめている。
+
+```text
+src/pat_acquisition/pat_femap_los_config.yaml
+```
+
+通常はこのYAMLを書き換えてから、上のコマンドを実行する。別の設定ファイルを使いたい場合は、次のように指定する。
+
+```powershell
+python "src/pat_acquisition/run_pat_with_femap_los.py" --config "path/to/config.yaml"
+```
+
 このスクリプトは、以下の入力を自動で読む。
 
 ```text
@@ -27,6 +39,17 @@ results/femap_deformation/*/los_angles.csv
 
 - `no_correction`: 熱LOSを補正せず、そのままscan center誤差に入れる。
 - `thermal_truth_correction`: Femap由来の熱LOS真値をscan center補正に入れる。
+- `thermal_plus_nonthermal_no_correction`: 熱LOSと非熱誤差を足した状態で、scan center補正を入れない。
+- `thermal_truth_correction_with_nonthermal`: Femap由来の熱LOS真値を補正し、残った非熱誤差だけをscan center誤差として評価する。
+
+非熱誤差は、現時点では簡易モデルとして以下を足し合わせる。
+
+- 軌道予測誤差: ケースごとの固定バイアス。
+- 姿勢決定/制御誤差: 各時刻で独立なランダム誤差。
+- アライメント残差: ケースごとの固定バイアス。
+- 低周波ドリフト: 正弦波状のゆっくりしたドリフト。
+
+いずれもPAT入力面での角度誤差 `[urad]` として扱う。熱LOS真値には必ず `far_field_los_angle_x_urad` と `far_field_los_angle_y_urad` を使う。`stt_relative_los_angle_*` はcenterline tiltを含む診断用の角度なので、主評価には使わない。
 
 出力先は以下。
 
@@ -37,22 +60,43 @@ results/pat_acquisition/femap_los_truth/
 主な出力は以下。
 
 - `summary.csv`: 各ケース・補正モデルの捕捉成功率、平均捕捉時間、95%捕捉時間など。
-- `{case_id}/pat_acquisition_results.csv`: 各時刻の捕捉結果。
-- `{case_id}/pat_acquisition_comparison.png`: 熱LOS、捕捉時間、scan-center誤差の確認図。
+- `{case_id}/pat_acquisition_results.csv`: 各時刻の捕捉結果。熱LOS、非熱誤差、熱+非熱の合成pointing error、各補正モデルのscan-center誤差を含む。
+- `{case_id}/pat_acquisition_comparison.png`: 熱LOS、非熱誤差、捕捉時間、scan-center誤差の確認図。
 
 ## よく変えるパラメータ
 
-例:
+通常は `pat_femap_los_config.yaml` の次の項目を変える。
+
+- `scan.max_range_urad`: 粗捕捉スキャンの最大探索範囲。
+- `scan.step_urad`: スキャン点の間隔。
+- `scan.detect_radius_urad`: 捕捉成功とみなす半径。
+- `scan.dwell_time_s`: 1スキャン点あたりの滞在時間。
+- `nonthermal_error.orbit_prediction_bias_1sigma_urad`: 軌道予測誤差の固定バイアス強度。
+- `nonthermal_error.attitude_random_1sigma_urad`: 姿勢決定/制御のランダム誤差強度。
+- `nonthermal_error.alignment_bias_1sigma_urad`: アライメント残差の固定バイアス強度。
+- `nonthermal_error.drift_amplitude_urad`: 低周波ドリフトの振幅。
+- `nonthermal_error.drift_period_s`: 低周波ドリフトの周期。
+- `nonthermal_error.seed`: 非熱誤差の乱数シード。
+
+既定の非熱誤差は、粗捕捉前の標準ケースとしてやや保守的に置いている。特に軌道予測誤差は、TLE更新頻度、相手機、リンク距離に強く依存するため、今後の誤差バジェット整理で優先して見直す。
+
+コマンドライン引数で一時的に上書きすることもできる。例:
 
 ```powershell
 python "src/pat_acquisition/run_pat_with_femap_los.py" `
   --max-range-urad 1600 `
   --step-urad 40 `
   --detect-radius-urad 25 `
-  --dwell-time-s 0.1
+  --dwell-time-s 0.1 `
+  --orbit-prediction-bias-1sigma-urad 150 `
+  --attitude-random-1sigma-urad 50 `
+  --alignment-bias-1sigma-urad 50 `
+  --drift-amplitude-urad 30 `
+  --drift-period-s 900 `
+  --nonthermal-seed 42
 ```
 
-`--los-prefix` を変えると、別のLOS定義も評価できる。既定値は `far_field_los`。
+`--los-prefix` を変えると、別のLOS定義も評価できる。既定値は `far_field_los`。ただし、PAT主評価では `far_field_los` を使う。
 
 ```powershell
 python "src/pat_acquisition/run_pat_with_femap_los.py" --los-prefix stt_relative_los
