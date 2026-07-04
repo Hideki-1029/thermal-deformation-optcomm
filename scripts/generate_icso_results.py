@@ -13,7 +13,7 @@ FEMAP_LOS_CSV = (
     / "femap_deformation"
     / "260629_1505_translation_rotation_stt_lct_los_angles.csv"
 )
-PAT_SCRIPT = REPO_ROOT / "src" / "optical_comm" / "test_thermo_PAT_system_1.py"
+PAT_SCRIPT = REPO_ROOT / "src" / "pat_acquisition" / "test_thermo_PAT_system_1.py"
 OUTPUT_DIR = REPO_ROOT / "results" / "icso"
 FIGURE_DIR = REPO_ROOT / "papers" / "ICSO" / "figure"
 
