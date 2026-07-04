@@ -108,27 +108,27 @@ columns:
   orbit_period_s:
     required: false
     unit: s
-    description: Orbital period used to derive orbital phase and repeated eclipse events.
+    description: Orbital period metadata used to derive orbital phase. For sunlit/eclipse histories, read LOGIC_SUN in inputs/data_symbols_TD/{case_id}.xlsx.
 
   eclipse_entry_time_s:
     required: false
     unit: s
-    description: Elapsed time from case start to eclipse entry for the reference orbit cycle.
+    description: Optional fallback metadata only. Current TD/Femap cases use LOGIC_SUN in inputs/data_symbols_TD/{case_id}.xlsx as the authoritative sunlit/eclipse history.
 
   eclipse_exit_time_s:
     required: false
     unit: s
-    description: Elapsed time from case start to eclipse exit for the reference orbit cycle.
+    description: Optional fallback metadata only. Current TD/Femap cases use LOGIC_SUN in inputs/data_symbols_TD/{case_id}.xlsx as the authoritative sunlit/eclipse history.
 
   eclipse_duration_s:
     required: false
     unit: s
-    description: Duration of one eclipse interval in the reference orbit cycle.
+    description: Optional fallback metadata only. LOGIC_SUN is 0 during eclipse and 1 during sunlit periods.
 
   sunlit_duration_s:
     required: false
     unit: s
-    description: Duration of the sunlit interval in the reference orbit cycle.
+    description: Optional fallback metadata only. LOGIC_SUN is 0 during eclipse and 1 during sunlit periods.
 
   power_mode:
     required: false
@@ -184,11 +184,6 @@ columns:
     required: false
     unit: "-"
     description: Femap boundary condition or 3-2-1 constraint label.
-
-  td_temperature_path:
-    required: false
-    unit: "-"
-    description: Path to Thermal Desktop temperature or mapper output, stored under the TD case set name when available.
 
   femap_result_stt_lct_path:
     required: false

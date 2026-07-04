@@ -20,6 +20,7 @@ TD解析で定義した熱環境・軌道・コンポーネント条件を、Fem
 - `thermal_optical_properties.yaml`: `case_matrix.xlsx` の `Opt_MX`、`Opt_MY`、`Opt_MZ`、`Opt_PX`、`Opt_PY`、`Opt_PZ` で参照する熱光学特性名と、太陽吸収率・赤外放射率の対応表。
 - `temperature_probe_sets.yaml`: TD mapper出力から代表温度点を抽出するためのプローブセット定義。デフォルトでは各面の中央、4頂点、4辺中点を使う。
 - `orbit_catalog.xlsx`: TDで使う軌道条件の一覧。既存衛星プロジェクトの軌道表を英語列名で管理する。
+- `../inputs/data_symbols_TD/`: TDからExcel出力したシンボル時系列。日照/蝕の履歴は各ケースの `LOGIC_SUN` 列を正本とする。
 - `../inputs/spacecraft_models/`: 衛星寸法、パネル厚み、材料物性などの構造モデル定義。
 
 ## Basic Policy
@@ -91,15 +92,14 @@ case_group=sensitivity, use_for_model=exclude
 
 `beta_angle_deg` は、独立に入力する熱条件というより、軌道面と太陽方向から決まる派生メタデータとして扱う。TDから直接出せない場合は空欄でもよく、後でPython側で計算または手入力する。
 
-軽量モデルで日照/蝕遷移を扱うため、軌道イベントは秒単位で残す。
+軽量モデルで日照/蝕遷移を扱うときは、`orbit_catalog.xlsx` に代表時刻を手入力せず、TDからExcel出力したシンボル時系列を使う。各ケースの履歴は `inputs/data_symbols_TD/{case_id}.xlsx` に置き、`LOGIC_SUN` 列を読む。
 
-- `orbit_period_s`: 軌道周期。軌道位相や複数周回のイベント展開に使う。
-- `eclipse_entry_time_s`: ケース開始から見た代表周回の蝕入り時刻。
-- `eclipse_exit_time_s`: ケース開始から見た代表周回の蝕明け時刻。
-- `eclipse_duration_s`: 代表周回の蝕継続時間。
-- `sunlit_duration_s`: 代表周回の日照継続時間。
+```text
+LOGIC_SUN = 0: 蝕
+LOGIC_SUN = 1: 日照
+```
 
-Femapのケース番号は `sample_interval_s` と `femap_loadset_start` から時刻に戻せるため、蝕入り/蝕明けはケース番号ではなく時刻で管理する。
+`orbit_period_s` は軌道周期や軌道位相を扱うためのメタデータとして残すが、蝕入り/蝕明けのタイミングは `LOGIC_SUN` の時系列を正本とする。
 
 軌道条件の詳細は `orbit_catalog.xlsx` に集約し、`case_matrix.xlsx` からは `td_orbit_name` などで参照する。軌道カタログ側は列名・値を英語に寄せ、スクリプトで扱いやすいようにする。
 
@@ -122,13 +122,16 @@ TD003_lct_heat_acquisition
 ```text
 case_matrix.xlsx
   -> TD temperature output / mapper output.dat
+  -> TD symbol history Excel in inputs/data_symbols_TD/
   -> Femap thermal deformation result
   -> Python STT-LCT LOS angle CSV
   -> lightweight model dataset
   -> PAT simulation
 ```
 
-TD mapper用の `output.dat` は、TDケースセット名のフォルダ配下に出力して管理する。軽量モデルの特徴量や温度場の確認に使う別出力の温度データも、`td_temperature_path` に記録する。
+TD mapper用の `output.dat` は、Femap側のケースフォルダ配下にあるTD mapper出力を使う。代表温度点のCSVや温度確認図は、Python後処理で `results/` 配下に生成される派生成果物として扱う。
+
+TDのシンボル出力は `inputs/data_symbols_TD/` に保存する。ここにあるExcelの `LOGIC_SUN` 列が、軌道中の各時刻が日照か蝕かを示す履歴である。
 
 Femap解析は、同じFemap解析ファイルを使い、解析ごとの出力先をTDケースセット名のフォルダに切り替える運用を基本とする。STT/LCTノードの変位・回転をPython LOS解析に渡すExcelは `femap_result_stt_lct_path` に記録し、Femapケースフォルダや `mapper_from_TD` などの周辺出力は `femap_result_other_path` に記録する。
 
@@ -142,6 +145,9 @@ data/
   femap_raw/{td_case_set_name}/
   processed/{td_case_set_name}/
 
+inputs/
+  data_symbols_TD/{td_case_set_name}.xlsx
+
 results/
   femap_deformation/{td_case_set_name}_far_field_los_angle_budget.png
   femap_deformation/{td_case_set_name}/
@@ -149,7 +155,7 @@ results/
     stt_lct_plane_sketch.png
 ```
 
-ケース表では、上記の実体パスを `td_temperature_path`、`femap_result_stt_lct_path`、`femap_result_other_path`、`python_result_path` に記録する。
+ケース表では、Femap変形入力や解析結果への対応を `femap_result_stt_lct_path`、`femap_result_other_path`、`python_result_path` に記録する。TD symbol Excelは `inputs/data_symbols_TD/{case_id}.xlsx` の命名規則で管理する。
 
 ## Main Output Target
 

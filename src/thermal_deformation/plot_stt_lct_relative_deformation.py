@@ -16,6 +16,7 @@ DEFAULT_INPUT = DEFAULT_INPUT_DIR / "260629_1505_translation_rotation.xlsx"
 DEFAULT_CONFIG = DEFAULT_INPUT_DIR / "stt_lct_node_config.json"
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "results" / "femap_deformation"
 DEFAULT_FEMAP_MODEL_ROOT = Path("C:/Users/Hide/Femap/research_model")
+DEFAULT_CASE_MATRIX = REPO_ROOT / "cases" / "case_matrix.xlsx"
 DEFAULT_TEMPERATURE_PROBE_SET_FILE = REPO_ROOT / "cases" / "temperature_probe_sets.yaml"
 DEFAULT_TEMPERATURE_PROBE_SET = "default_surface_9points"
 
@@ -112,6 +113,92 @@ def extract_case_index(df):
             return case_numbers.astype(float).to_numpy(), "Femap case index [-]"
 
     return np.arange(1, len(df) + 1, dtype=float), "sample index [-]"
+
+
+def path_matches_case_value(value, input_path):
+    if pd.isna(value):
+        return False
+
+    value_path = Path(str(value))
+    input_path = Path(input_path)
+    return (
+        value_path == input_path
+        or value_path.name == input_path.name
+        or value_path.stem == input_path.stem
+        or input_path.stem in value_path.parts
+        or input_path.stem in str(value)
+    )
+
+
+def find_case_matrix_row(case_matrix_path, sheet_name, input_path):
+    if not case_matrix_path or not case_matrix_path.exists():
+        return None
+
+    case_matrix = pd.read_excel(case_matrix_path, sheet_name=sheet_name)
+    input_stem = Path(input_path).stem
+
+    if "case_id" in case_matrix.columns:
+        matches = case_matrix[case_matrix["case_id"].astype(str) == input_stem]
+        if len(matches) == 1:
+            return matches.iloc[0]
+
+    path_columns = [
+        column
+        for column in (
+            "femap_result_stt_lct_path",
+            "femap_result_other_path",
+            "python_result_path",
+            "td_temperature_path",
+        )
+        if column in case_matrix.columns
+    ]
+    for column in path_columns:
+        matches = case_matrix[
+            case_matrix[column].apply(lambda value: path_matches_case_value(value, input_path))
+        ]
+        if len(matches) == 1:
+            return matches.iloc[0]
+
+    return None
+
+
+def has_duplicate_initial_case(result):
+    if len(result) < 2:
+        return False
+
+    value_columns = [column for column in result.columns if column != "case_index"]
+    first = result.loc[result.index[0], value_columns].to_numpy(dtype=float)
+    second = result.loc[result.index[1], value_columns].to_numpy(dtype=float)
+    return np.allclose(first, second, rtol=0.0, atol=1e-12)
+
+
+def apply_case_matrix_time_axis(result, metadata, input_path, case_matrix_path, sheet_name):
+    case_row = find_case_matrix_row(case_matrix_path, sheet_name, input_path)
+    if case_row is None:
+        return None
+
+    sample_interval_s = case_row.get("sample_interval_s")
+    if pd.isna(sample_interval_s):
+        return None
+
+    first_time_case_index = 2.0 if has_duplicate_initial_case(result) else 1.0
+    time_s = np.maximum(
+        result["case_index"].to_numpy(dtype=float) - first_time_case_index,
+        0.0,
+    ) * float(sample_interval_s)
+    result.insert(1, "time_s", time_s)
+    result.insert(2, "time_h", time_s / 3600.0)
+    metadata["case_label"] = "time [h]"
+    metadata["x_axis_column"] = "time_h"
+    metadata["case_matrix_id"] = case_row.get("case_id", Path(input_path).stem)
+    metadata["sample_interval_s"] = float(sample_interval_s)
+    metadata["initial_zero_case_count"] = int(first_time_case_index)
+    return case_row
+
+
+def get_plot_x(result, metadata):
+    x_column = metadata.get("x_axis_column", "case_index")
+    return result[x_column].to_numpy()
 
 
 def unit_vector(vector):
@@ -325,7 +412,7 @@ def compute_relative_motion(df, config):
 
 
 def plot_relative_motion(result, metadata, output_png, show=False):
-    x = result["case_index"].to_numpy()
+    x = get_plot_x(result, metadata)
     title_prefix = (
         f"{metadata['from_label']} node {metadata['from_node']} -> "
         f"{metadata['to_label']} node {metadata['to_node']}"
@@ -383,7 +470,7 @@ def plot_relative_motion(result, metadata, output_png, show=False):
 
 
 def plot_far_field_los_budget(result, metadata, output_png, show=False):
-    x = result["case_index"].to_numpy()
+    x = get_plot_x(result, metadata)
     fig, axes = plt.subplots(2, 1, figsize=(11, 8), sharex=True)
 
     for axis_name, ax in zip(("x", "y"), axes):
@@ -427,7 +514,7 @@ def plot_far_field_los_budget(result, metadata, output_png, show=False):
 
 
 def plot_angle_budget(result, metadata, output_png, los_prefix, los_label, show=False):
-    x = result["case_index"].to_numpy()
+    x = get_plot_x(result, metadata)
     fig, axes = plt.subplots(2, 1, figsize=(11, 8), sharex=True)
 
     for axis_name, ax in zip(("x", "y"), axes):
@@ -481,7 +568,7 @@ def plot_angle_budget(result, metadata, output_png, los_prefix, los_label, show=
 
 
 def plot_los_definition_comparison(result, metadata, output_png, show=False):
-    x = result["case_index"].to_numpy()
+    x = get_plot_x(result, metadata)
     fig, axes = plt.subplots(3, 1, figsize=(11, 10), sharex=True)
 
     axes[0].plot(
@@ -1011,6 +1098,17 @@ def parse_args():
     parser.add_argument("--sheet", type=parse_sheet_name, default=0)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     parser.add_argument(
+        "--case-matrix",
+        type=Path,
+        default=DEFAULT_CASE_MATRIX,
+        help="Case matrix workbook used to map Femap case index to elapsed time.",
+    )
+    parser.add_argument(
+        "--case-matrix-sheet",
+        default="case_matrix",
+        help="Sheet name in the case matrix workbook.",
+    )
+    parser.add_argument(
         "--mapper-dir",
         type=Path,
         help=(
@@ -1049,6 +1147,13 @@ def main():
     df = pd.read_excel(args.input, sheet_name=args.sheet)
 
     result, metadata = compute_relative_motion(df, config)
+    case_matrix_row = apply_case_matrix_time_axis(
+        result,
+        metadata,
+        input_path=args.input,
+        case_matrix_path=args.case_matrix,
+        sheet_name=args.case_matrix_sheet,
+    )
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
     stem = args.input.stem
@@ -1125,6 +1230,12 @@ def main():
     )
     print(f"Baseline             : {metadata['baseline_m']:.6f} m")
     print(f"Rotation columns     : {'yes' if metadata['has_rotation'] else 'no'}")
+    if case_matrix_row is not None:
+        print(f"Case matrix          : {args.case_matrix}")
+        print(f"Case ID              : {metadata['case_matrix_id']}")
+        print(f"Sample interval      : {metadata['sample_interval_s']:.6g} s")
+        print(f"Initial zero cases   : {metadata['initial_zero_case_count']}")
+        print(f"Plot x axis          : {metadata['case_label']}")
     print(f"Output CSV           : {output_csv}")
     print(f"Overview PNG         : {output_overview_png}")
     print(f"Far-field budget PNG : {output_far_field_budget_png}")
