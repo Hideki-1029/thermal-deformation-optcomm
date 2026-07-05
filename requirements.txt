@@ -1,0 +1,7 @@
+numpy
+matplotlib
+pandas
+openpyxl
+pyyaml
+sgp4
+pyarrow

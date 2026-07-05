@@ -125,3 +125,15 @@ pat_acquisition_simulator.py
 ```
 
 今後、軌道予測誤差や姿勢誤差などの非熱誤差を足す場合は、まず `run_pat_with_femap_los.py` 側で `nonthermal_error_urad` を作り、`pat_acquisition_simulator.py` の `evaluate_coarse_acquisition()` に渡す。
+
+Sentinel-1 POD を真値とした TLE 誤差を使う場合:
+
+```powershell
+# 1. Generate TLE-only forward orbit error (~300 urad baseline)
+python src/orbit/run_orbit_prediction_error.py
+
+# 2. Run PAT with Sentinel-1 derived orbit error
+python src/pat_acquisition/run_pat_with_femap_los.py
+```
+
+または `pat_femap_los_config.yaml` で `orbit_error.source: sentinel1_tle_vs_pod` を確認する。

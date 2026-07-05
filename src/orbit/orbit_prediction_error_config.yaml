@@ -1,0 +1,30 @@
+# Sentinel-1 TLE-only orbit prediction error analysis
+#
+# Baseline policy:
+# - Truth: AUX_POEORB
+# - Prediction: latest GP/TLE with epoch <= evaluation time, forward SGP4
+# See docs/research_notes/memo_in_repository.md
+
+satellite:
+  norad_cat_id: 39634
+
+  # Space-Track-style GP history parquet (preferred).
+  # Default: data/orbit/tle/tle_2026.parquet if present.
+  gp_history_parquet: data/orbit/tle/tle_2026.parquet
+
+  # Optional plain-text TLE history (.tle) from CelesTrak archive request.
+  tle_history_path: null
+
+pod:
+  local_poeorb_path: null
+
+  # POEORB validity start aligned with GP history coverage.
+  validity_start_utc: "2026-06-13T22:59:42Z"
+  extra_validity_starts_utc: []
+
+analysis:
+  isl_range_km: 800.0
+  sample_interval_s: 60.0
+
+output:
+  output_dir: results/orbit/sentinel1_tle_vs_pod

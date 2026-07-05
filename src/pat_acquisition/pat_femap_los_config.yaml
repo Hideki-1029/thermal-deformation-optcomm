@@ -2,63 +2,29 @@
 # 単位がある値は、キー名の末尾に単位を書いている。
 
 input:
-  # Femap後処理済みLOS角CSVの場所。
-  # リポジトリルートからの相対パスで書く。
   input_glob: results/femap_deformation/*/los_angles.csv
-
-  # 出力先フォルダ。
-  # summary.csv、各ケースのCSV、比較PNGがここに出る。
   output_dir: results/pat_acquisition/femap_los_truth
-
-  # PAT主評価で使うLOS定義。
-  # far_field_los は、STT姿勢基準に対するLCT外向き光軸の相対回転。
-  # centerline tiltを含む stt_relative_los は主評価には使わない。
   los_prefix: far_field_los
 
 scan:
-  # 矩形スパイラルスキャンの最大探索範囲。
   max_range_urad: 1600.0
-
-  # スキャン点の間隔。
   step_urad: 40.0
-
-  # この半径内に真の目標方向が入れば捕捉成功とみなす。
   detect_radius_urad: 25.0
-
-  # 1つのスキャン点に滞在する時間。
   dwell_time_s: 0.1
 
+orbit_error:
+  # synthetic: legacy fixed Gaussian placeholder
+  # sentinel1_tle_vs_pod: TLE-only forward propagation vs Sentinel-1 POEORB
+  source: sentinel1_tle_vs_pod
+  timeseries_csv: results/orbit/sentinel1_tle_vs_pod/orbit_prediction_error_timeseries.csv
+  # Map Femap simulation time_s onto the orbit-error window cyclically.
+  resample_mode: cyclic
+
 nonthermal_error:
-  # 乱数シード。
-  # 同じ値なら毎回同じ非熱誤差時系列になる。
   seed: 42
-
-  # 軌道予測誤差。
-  # ケースごとに固定される2軸バイアスの1 sigma。
-  # TBIRDの例では、直前TLEでも位置誤差が10-300 m、平均約125 m程度。
-  # 距離500-1000 kmで見ると、ざっくり100-300 urad級になり得る。
-  # ただし軌道予測誤差はミッション・相手機・更新頻度に強く依存する。
-  # 五十里先生とも議論あり。熱ひずみと同程度に重要な誤差源として扱い、今後きちんと詰める。
+  # Used only when orbit_error.source = synthetic
   orbit_prediction_bias_1sigma_urad: 150.0
-
-  # 姿勢決定/制御誤差。
-  # 各時刻で独立に入るランダム誤差の1 sigma。
-  # TBIRDの捕捉後trackingは20-35 urad RMS/axis程度だが、
-  # 粗捕捉前のopen-loop body pointingでは100 urad級の例もある。
-  # ここでは捕捉前の不確定性として、15 uradより大きい標準値にする。
   attitude_random_1sigma_urad: 50.0
-
-  # アライメント残差。
-  # ケースごとに固定される2軸バイアスの1 sigma。
-  # 十分に較正されたTx/Rx alignment安定性は20 urad級の例がある。
-  # 一方、打上げ後boresight shiftや取付け残差まで含むと大きくなり得る。
-  # ここでは較正後だが完全ではない標準ケースとして50 uradに置く。
   alignment_bias_1sigma_urad: 50.0
-
-  # 低周波ドリフトの振幅。
-  # 未モデル化のゆっくりした姿勢バイアス変動やセンサ/取付け系の変化を代表する。
-  # 直接の根拠はまだ薄いので、まずは感度を見るための仮値。
   drift_amplitude_urad: 30.0
-
-  # 低周波ドリフトの周期。
   drift_period_s: 900.0

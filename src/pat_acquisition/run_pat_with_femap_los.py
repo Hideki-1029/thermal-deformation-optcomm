@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import csv
 import hashlib
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -22,6 +23,15 @@ from pat_acquisition_simulator import (
     CoarseAcquisitionConfig,
     evaluate_coarse_acquisition,
     summarize_acquisition,
+)
+
+SRC_ROOT = Path(__file__).resolve().parents[1]
+if str(SRC_ROOT) not in sys.path:
+    sys.path.insert(0, str(SRC_ROOT))
+
+from orbit.pat_orbit_error import (
+    load_orbit_error_timeseries_csv,
+    resample_orbit_error_to_times,
 )
 
 
@@ -45,6 +55,13 @@ RESULT_COLUMNS = [
 
 
 @dataclass(frozen=True)
+class OrbitErrorConfig:
+    source: str = "sentinel1_tle_vs_pod"
+    timeseries_csv: Path | None = None
+    resample_mode: str = "cyclic"
+
+
+@dataclass(frozen=True)
 class NonthermalErrorConfig:
     seed: int = 42
     orbit_prediction_bias_1sigma_urad: float = 150.0
@@ -52,6 +69,7 @@ class NonthermalErrorConfig:
     alignment_bias_1sigma_urad: float = 50.0
     drift_amplitude_urad: float = 30.0
     drift_period_s: float = 900.0
+    orbit_error: OrbitErrorConfig = OrbitErrorConfig()
 
 
 def read_femap_los_csv(path: Path, los_prefix: str) -> tuple[np.ndarray, np.ndarray]:
@@ -126,6 +144,84 @@ def _seed_for_case(base_seed: int, case_id: str) -> int:
     return (base_seed + case_offset) % (2**32)
 
 
+def _build_orbit_error_config(
+    yaml_config: dict[str, Any],
+    args: argparse.Namespace,
+) -> OrbitErrorConfig:
+    section = yaml_config.get("orbit_error", {})
+    if section is None:
+        section = {}
+    if not isinstance(section, dict):
+        raise ValueError("YAML section 'orbit_error' must be a mapping")
+
+    source = config_value(
+        yaml_config,
+        "orbit_error",
+        "source",
+        args.orbit_error_source,
+        "sentinel1_tle_vs_pod",
+    )
+    default_csv = REPO_ROOT / "results/orbit/sentinel1_tle_vs_pod/orbit_prediction_error_timeseries.csv"
+    csv_path = config_path_value(
+        yaml_config,
+        "orbit_error",
+        "timeseries_csv",
+        args.orbit_error_csv,
+        default_csv,
+    )
+    resample_mode = str(
+        config_value(
+            yaml_config,
+            "orbit_error",
+            "resample_mode",
+            args.orbit_error_resample_mode,
+            "cyclic",
+        )
+    )
+    return OrbitErrorConfig(
+        source=str(source),
+        timeseries_csv=csv_path,
+        resample_mode=resample_mode,
+    )
+
+
+def generate_orbit_prediction_error(
+    times_s: np.ndarray,
+    case_id: str,
+    config: NonthermalErrorConfig,
+) -> np.ndarray:
+    times_s = np.asarray(times_s, dtype=float)
+    orbit_config = config.orbit_error
+
+    if orbit_config.source == "sentinel1_tle_vs_pod":
+        if orbit_config.timeseries_csv is None:
+            raise ValueError(
+                "orbit_error.timeseries_csv is required when source=sentinel1_tle_vs_pod"
+            )
+        if not orbit_config.timeseries_csv.exists():
+            raise FileNotFoundError(
+                "Orbit error timeseries not found: "
+                f"{orbit_config.timeseries_csv}. "
+                "Run src/orbit/run_orbit_prediction_error.py first."
+            )
+        orbit_times_s, orbit_error_urad, _ = load_orbit_error_timeseries_csv(
+            orbit_config.timeseries_csv
+        )
+        return resample_orbit_error_to_times(
+            orbit_times_s,
+            orbit_error_urad,
+            times_s,
+            mode=orbit_config.resample_mode,
+        )
+
+    rng = np.random.default_rng(_seed_for_case(config.seed, case_id))
+    return np.repeat(
+        rng.normal(0.0, config.orbit_prediction_bias_1sigma_urad, size=(1, 2)),
+        len(times_s),
+        axis=0,
+    )
+
+
 def generate_nonthermal_error(
     times_s: np.ndarray,
     case_id: str,
@@ -134,7 +230,7 @@ def generate_nonthermal_error(
     """
     Generate a simple non-thermal pointing error time series.
 
-    Components represent orbit prediction bias, attitude random error,
+    Components represent orbit prediction error, attitude random error,
     alignment residual, and low-frequency drift in the PAT frame.
     """
     times_s = np.asarray(times_s, dtype=float)
@@ -142,11 +238,7 @@ def generate_nonthermal_error(
         raise ValueError("drift_period_s must be positive")
 
     rng = np.random.default_rng(_seed_for_case(config.seed, case_id))
-    orbit_prediction_bias = rng.normal(
-        0.0,
-        config.orbit_prediction_bias_1sigma_urad,
-        size=2,
-    )
+    orbit_prediction_error = generate_orbit_prediction_error(times_s, case_id, config)
     alignment_bias = rng.normal(
         0.0,
         config.alignment_bias_1sigma_urad,
@@ -165,7 +257,7 @@ def generate_nonthermal_error(
     )
 
     return (
-        orbit_prediction_bias[None, :]
+        orbit_prediction_error
         + alignment_bias[None, :]
         + attitude_random
         + low_frequency_drift
@@ -411,6 +503,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--alignment-bias-1sigma-urad", type=float, default=None)
     parser.add_argument("--drift-amplitude-urad", type=float, default=None)
     parser.add_argument("--drift-period-s", type=float, default=None)
+    parser.add_argument("--orbit-error-source", default=None)
+    parser.add_argument("--orbit-error-csv", type=Path, default=None)
+    parser.add_argument("--orbit-error-resample-mode", default=None)
     return parser.parse_args()
 
 
@@ -483,6 +578,7 @@ def main() -> None:
             args.drift_period_s,
             900.0,
         ),
+        orbit_error=_build_orbit_error_config(yaml_config, args),
     )
 
     summary_rows = []

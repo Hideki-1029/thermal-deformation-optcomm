@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+.venv/
+venv/
+env/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.cursor/
+
+# Large external orbit data (local download — see README.md, data/orbit/README.md)
+data/orbit/tle/
+data/orbit/sentinel1/
+data/sentinel1_orbits/
