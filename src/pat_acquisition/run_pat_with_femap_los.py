@@ -4,7 +4,7 @@ import argparse
 import csv
 import hashlib
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any
 
@@ -23,6 +23,11 @@ from pat_acquisition_simulator import (
     CoarseAcquisitionConfig,
     evaluate_coarse_acquisition,
     summarize_acquisition,
+)
+from thermal_los_lightweight_models import (
+    LightweightModelConfig,
+    estimate_orbit_period_s,
+    fit_lightweight_predictions,
 )
 
 SRC_ROOT = Path(__file__).resolve().parents[1]
@@ -70,6 +75,74 @@ class NonthermalErrorConfig:
     drift_amplitude_urad: float = 30.0
     drift_period_s: float = 900.0
     orbit_error: OrbitErrorConfig = OrbitErrorConfig()
+
+
+def _build_lightweight_model_config(
+    yaml_config: dict[str, Any],
+    args: argparse.Namespace,
+) -> LightweightModelConfig:
+    section = yaml_config.get("lightweight_model", {})
+    if section is None:
+        section = {}
+    if not isinstance(section, dict):
+        raise ValueError("YAML section 'lightweight_model' must be a mapping")
+
+    return LightweightModelConfig(
+        orbit_period_s=float(
+            config_value(
+                yaml_config,
+                "lightweight_model",
+                "orbit_period_s",
+                args.orbit_period_s,
+                6050.0,
+            )
+        ),
+        auto_orbit_period=bool(
+            config_value(
+                yaml_config,
+                "lightweight_model",
+                "auto_orbit_period",
+                args.auto_orbit_period,
+                True,
+            )
+        ),
+        train_fraction=float(
+            config_value(
+                yaml_config,
+                "lightweight_model",
+                "train_fraction",
+                args.lightweight_train_fraction,
+                1.0,
+            )
+        ),
+        fourier_order=int(
+            config_value(
+                yaml_config,
+                "lightweight_model",
+                "fourier_order",
+                args.lightweight_fourier_order,
+                2,
+            )
+        ),
+        include_drift=bool(
+            config_value(
+                yaml_config,
+                "lightweight_model",
+                "include_drift",
+                args.lightweight_include_drift,
+                False,
+            )
+        ),
+        ridge_lam=float(
+            config_value(
+                yaml_config,
+                "lightweight_model",
+                "ridge_lam",
+                args.lightweight_ridge_lam,
+                1e-3,
+            )
+        ),
+    )
 
 
 def read_femap_los_csv(path: Path, los_prefix: str) -> tuple[np.ndarray, np.ndarray]:
@@ -343,6 +416,7 @@ def plot_case(
     theta_thermal_true_urad: np.ndarray,
     nonthermal_error_urad: np.ndarray,
     results_by_model: dict[str, np.ndarray],
+    lightweight_predictions: dict[str, np.ndarray] | None = None,
 ) -> None:
     output_png.parent.mkdir(parents=True, exist_ok=True)
     time_min = times_s / 60.0
@@ -357,9 +431,24 @@ def plot_case(
         label="thermal LOS magnitude",
         linewidth=2,
     )
+    if lightweight_predictions is not None:
+        axes[0].plot(
+            time_min,
+            lightweight_predictions["static_bias"][:, 0],
+            "--",
+            alpha=0.8,
+            label="static bias x",
+        )
+        axes[0].plot(
+            time_min,
+            lightweight_predictions["fourier_ff"][:, 0],
+            "--",
+            alpha=0.8,
+            label="Fourier FF x",
+        )
     axes[0].set_ylabel("Thermal LOS [urad]")
     axes[0].grid(True)
-    axes[0].legend()
+    axes[0].legend(fontsize=8)
 
     axes[1].plot(
         time_min,
@@ -404,22 +493,54 @@ def run_one_case(
     los_prefix: str,
     config: CoarseAcquisitionConfig,
     nonthermal_config: NonthermalErrorConfig,
+    lightweight_config: LightweightModelConfig,
 ) -> list[dict[str, object]]:
     case_id = los_csv.parent.name
     times_s, theta_thermal_true = read_femap_los_csv(los_csv, los_prefix)
     nonthermal_error = generate_nonthermal_error(times_s, case_id, nonthermal_config)
 
+    if lightweight_config.auto_orbit_period:
+        resolved_lightweight_config = replace(
+            lightweight_config,
+            orbit_period_s=estimate_orbit_period_s(times_s, theta_thermal_true),
+        )
+    else:
+        resolved_lightweight_config = lightweight_config
+
+    lightweight_predictions = fit_lightweight_predictions(
+        times_s,
+        theta_thermal_true,
+        resolved_lightweight_config,
+    )
+    zero_error = np.zeros_like(theta_thermal_true)
+
     model_specs = {
         "no_correction": {
-            "theta_hat": np.zeros_like(theta_thermal_true),
-            "nonthermal": np.zeros_like(theta_thermal_true),
+            "theta_hat": zero_error,
+            "nonthermal": zero_error,
         },
         "thermal_truth_correction": {
             "theta_hat": theta_thermal_true.copy(),
-            "nonthermal": np.zeros_like(theta_thermal_true),
+            "nonthermal": zero_error,
+        },
+        "static_bias_correction": {
+            "theta_hat": lightweight_predictions["static_bias"],
+            "nonthermal": zero_error,
+        },
+        "fourier_ff_correction": {
+            "theta_hat": lightweight_predictions["fourier_ff"],
+            "nonthermal": zero_error,
+        },
+        "fourier_plus_drift_correction": {
+            "theta_hat": lightweight_predictions["fourier_plus_drift"],
+            "nonthermal": zero_error,
         },
         "thermal_plus_nonthermal_no_correction": {
-            "theta_hat": np.zeros_like(theta_thermal_true),
+            "theta_hat": zero_error,
+            "nonthermal": nonthermal_error,
+        },
+        "fourier_ff_correction_with_nonthermal": {
+            "theta_hat": lightweight_predictions["fourier_ff"],
             "nonthermal": nonthermal_error,
         },
         "thermal_truth_correction_with_nonthermal": {
@@ -452,10 +573,10 @@ def run_one_case(
         theta_thermal_true,
         nonthermal_error,
         results_by_model,
+        lightweight_predictions=lightweight_predictions,
     )
 
     rows = []
-    zero_error = np.zeros_like(theta_thermal_true)
     for model_name, result in results_by_model.items():
         model_nonthermal = model_specs[model_name]["nonthermal"]
         uses_nonthermal_error = not np.allclose(model_nonthermal, zero_error)
@@ -506,6 +627,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--orbit-error-source", default=None)
     parser.add_argument("--orbit-error-csv", type=Path, default=None)
     parser.add_argument("--orbit-error-resample-mode", default=None)
+    parser.add_argument("--orbit-period-s", type=float, default=None)
+    parser.add_argument("--auto-orbit-period", action=argparse.BooleanOptionalAction, default=None)
+    parser.add_argument("--lightweight-train-fraction", type=float, default=None)
+    parser.add_argument("--lightweight-fourier-order", type=int, default=None)
+    parser.add_argument("--lightweight-include-drift", action=argparse.BooleanOptionalAction, default=None)
+    parser.add_argument("--lightweight-ridge-lam", type=float, default=None)
     return parser.parse_args()
 
 
@@ -580,6 +707,7 @@ def main() -> None:
         ),
         orbit_error=_build_orbit_error_config(yaml_config, args),
     )
+    lightweight_config = _build_lightweight_model_config(yaml_config, args)
 
     summary_rows = []
     for los_csv in input_paths:
@@ -590,6 +718,7 @@ def main() -> None:
                 los_prefix=los_prefix,
                 config=config,
                 nonthermal_config=nonthermal_config,
+                lightweight_config=lightweight_config,
             )
         )
 

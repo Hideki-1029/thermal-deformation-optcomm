@@ -28,3 +28,12 @@ nonthermal_error:
   alignment_bias_1sigma_urad: 50.0
   drift_amplitude_urad: 30.0
   drift_period_s: 900.0
+
+lightweight_model:
+  # 1.0 = train on the first orbit only, then predict for all opportunities.
+  train_fraction: 1.0
+  fourier_order: 2
+  include_drift: false
+  ridge_lam: 0.001
+  auto_orbit_period: true
+  orbit_period_s: 6050.0
