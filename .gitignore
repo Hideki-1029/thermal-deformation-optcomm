@@ -18,6 +18,7 @@ Thumbs.db
 .cursor/
 
 # Large external orbit data (local download — see README.md, data/orbit/README.md)
+*.parquet
 data/orbit/tle/
 data/orbit/sentinel1/
 data/sentinel1_orbits/

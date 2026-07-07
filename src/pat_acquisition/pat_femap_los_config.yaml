@@ -35,5 +35,12 @@ lightweight_model:
   fourier_order: 2
   include_drift: false
   ridge_lam: 0.001
-  auto_orbit_period: true
+  # Prefer orbit_period_s from Excel (case_metadata). Keep true only for ad-hoc debugging.
+  auto_orbit_period: false
   orbit_period_s: 6050.0
+
+case_metadata:
+  case_matrix_xlsx: cases/case_matrix.xlsx
+  case_matrix_sheet: case_matrix
+  orbit_catalog_xlsx: cases/orbit_catalog.xlsx
+  orbit_catalog_sheet: orbit_catalog

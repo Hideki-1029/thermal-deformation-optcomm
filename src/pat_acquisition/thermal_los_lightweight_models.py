@@ -8,7 +8,7 @@ import numpy as np
 @dataclass(frozen=True)
 class LightweightModelConfig:
     orbit_period_s: float = 6050.0
-    auto_orbit_period: bool = True
+    auto_orbit_period: bool = False
     train_fraction: float = 1.0
     fourier_order: int = 2
     include_drift: bool = False

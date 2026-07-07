@@ -34,6 +34,7 @@ SRC_ROOT = Path(__file__).resolve().parents[1]
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
+from case_metadata import CaseMetadataPaths, resolve_orbit_period_s
 from orbit.pat_orbit_error import (
     load_orbit_error_timeseries_csv,
     resample_orbit_error_to_times,
@@ -44,6 +45,8 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_INPUT_GLOB = "results/femap_deformation/*/los_angles.csv"
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "results" / "pat_acquisition" / "femap_los_truth"
 DEFAULT_CONFIG_PATH = Path(__file__).with_name("pat_femap_los_config.yaml")
+DEFAULT_CASE_MATRIX_XLSX = REPO_ROOT / "cases" / "case_matrix.xlsx"
+DEFAULT_ORBIT_CATALOG_XLSX = REPO_ROOT / "cases" / "orbit_catalog.xlsx"
 
 RESULT_COLUMNS = [
     "success",
@@ -103,7 +106,7 @@ def _build_lightweight_model_config(
                 "lightweight_model",
                 "auto_orbit_period",
                 args.auto_orbit_period,
-                True,
+                False,
             )
         ),
         train_fraction=float(
@@ -140,6 +143,55 @@ def _build_lightweight_model_config(
                 "ridge_lam",
                 args.lightweight_ridge_lam,
                 1e-3,
+            )
+        ),
+    )
+
+
+def _build_case_metadata_paths(
+    yaml_config: dict[str, Any],
+    args: argparse.Namespace,
+) -> CaseMetadataPaths:
+    section = yaml_config.get("case_metadata", {})
+    if section is None:
+        section = {}
+    if not isinstance(section, dict):
+        raise ValueError("YAML section 'case_metadata' must be a mapping")
+
+    case_matrix_xlsx = config_path_value(
+        yaml_config,
+        "case_metadata",
+        "case_matrix_xlsx",
+        getattr(args, "case_matrix_xlsx", None),
+        DEFAULT_CASE_MATRIX_XLSX,
+    )
+    orbit_catalog_xlsx = config_path_value(
+        yaml_config,
+        "case_metadata",
+        "orbit_catalog_xlsx",
+        getattr(args, "orbit_catalog_xlsx", None),
+        DEFAULT_ORBIT_CATALOG_XLSX,
+    )
+
+    return CaseMetadataPaths(
+        case_matrix_xlsx=case_matrix_xlsx,
+        case_matrix_sheet=str(
+            config_value(
+                yaml_config,
+                "case_metadata",
+                "case_matrix_sheet",
+                getattr(args, "case_matrix_sheet", None),
+                "case_matrix",
+            )
+        ),
+        orbit_catalog_xlsx=orbit_catalog_xlsx,
+        orbit_catalog_sheet=str(
+            config_value(
+                yaml_config,
+                "case_metadata",
+                "orbit_catalog_sheet",
+                getattr(args, "orbit_catalog_sheet", None),
+                "orbit_catalog",
             )
         ),
     )
@@ -441,10 +493,24 @@ def plot_case(
         )
         axes[0].plot(
             time_min,
+            lightweight_predictions["static_bias"][:, 1],
+            ":",
+            alpha=0.8,
+            label="static bias y",
+        )
+        axes[0].plot(
+            time_min,
             lightweight_predictions["fourier_ff"][:, 0],
             "--",
             alpha=0.8,
             label="Fourier FF x",
+        )
+        axes[0].plot(
+            time_min,
+            lightweight_predictions["fourier_ff"][:, 1],
+            ":",
+            alpha=0.8,
+            label="Fourier FF y",
         )
     axes[0].set_ylabel("Thermal LOS [urad]")
     axes[0].grid(True)
@@ -494,18 +560,25 @@ def run_one_case(
     config: CoarseAcquisitionConfig,
     nonthermal_config: NonthermalErrorConfig,
     lightweight_config: LightweightModelConfig,
+    case_metadata_paths: CaseMetadataPaths,
 ) -> list[dict[str, object]]:
     case_id = los_csv.parent.name
     times_s, theta_thermal_true = read_femap_los_csv(los_csv, los_prefix)
     nonthermal_error = generate_nonthermal_error(times_s, case_id, nonthermal_config)
 
     if lightweight_config.auto_orbit_period:
-        resolved_lightweight_config = replace(
-            lightweight_config,
-            orbit_period_s=estimate_orbit_period_s(times_s, theta_thermal_true),
-        )
+        orbit_period_s = estimate_orbit_period_s(times_s, theta_thermal_true)
     else:
-        resolved_lightweight_config = lightweight_config
+        orbit_period_s = resolve_orbit_period_s(
+            case_id,
+            case_metadata_paths,
+            default_period_s=lightweight_config.orbit_period_s,
+        )
+
+    resolved_lightweight_config = replace(
+        lightweight_config,
+        orbit_period_s=orbit_period_s,
+    )
 
     lightweight_predictions = fit_lightweight_predictions(
         times_s,
@@ -708,6 +781,7 @@ def main() -> None:
         orbit_error=_build_orbit_error_config(yaml_config, args),
     )
     lightweight_config = _build_lightweight_model_config(yaml_config, args)
+    case_metadata_paths = _build_case_metadata_paths(yaml_config, args)
 
     summary_rows = []
     for los_csv in input_paths:
@@ -719,6 +793,7 @@ def main() -> None:
                 config=config,
                 nonthermal_config=nonthermal_config,
                 lightweight_config=lightweight_config,
+                case_metadata_paths=case_metadata_paths,
             )
         )
 
