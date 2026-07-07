@@ -49,6 +49,50 @@ curl -L -o data\orbit\tle\tle_2026.parquet "https://huggingface.co/datasets/juli
 
 軌道データの詳細（POEORB の S3 取得、設定ファイル、解析コマンド）は `data/orbit/README.md` を参照。
 
+### 解析結果の再現性
+
+メインの解析（case 03–06 の LOS → 軌道誤差 → PAT）は、下表のデータが揃えば再現できる。`results/` の一部は git 管理しているため、上流を再実行しなくても下流だけ回せる場合がある。
+
+| 出力 | スクリプト | 再現に必要なもの |
+|------|-----------|-----------------|
+| `results/femap_deformation/*/los_angles.csv` | `src/thermal_deformation/plot_stt_lct_relative_deformation.py` | `inputs/data_femap_deformation/*.xlsx`（git 管理） |
+| `results/orbit/sentinel1_tle_vs_pod/*` | `src/orbit/run_orbit_prediction_error.py` | `data/orbit/tle/tle_2026.parquet` ＋ `data/orbit/sentinel1/*.EOF`（実行時に自動取得） |
+| `results/pat_acquisition/femap_los_truth/*` | `src/pat_acquisition/run_pat_with_femap_los.py` | 上の2つ、または git 上の既存 CSV |
+| 温度プローブ図（`panel_*_temperature_probe.csv` 等） | 同上（オプション） | Femap 側 `mapper_from_TD`（リポジトリ外、下記） |
+
+依存関係は次の通り。
+
+```text
+inputs/data_femap_deformation/*.xlsx  ──→  results/femap_deformation/*/los_angles.csv
+                                                    │
+data/orbit/tle/tle_2026.parquet        ──→  results/orbit/sentinel1_tle_vs_pod/*
+data/orbit/sentinel1/*.EOF (自動DL)    ──→         │
+                                                    ↓
+                                          results/pat_acquisition/femap_los_truth/*
+```
+
+補足：
+
+- Sentinel-1 の `.EOF` は `data/orbit/sentinel1/` にキャッシュされるが git 未収録。`run_orbit_prediction_error.py` 実行時に AWS から自動取得される（ネット接続が必要）。
+- 軌道誤差の時系列 CSV（`results/orbit/sentinel1_tle_vs_pod/orbit_prediction_error_timeseries.csv`）は git 管理している。`.EOF` がなくても、PAT 解析だけ再実行する場合はこの CSV で足りる。
+- 温度プローブ関連は Femap ローカル出力に依存する。既定パスは `C:/Users/Hide/Femap/research_model/{case}/mapper_from_TD`（リポジトリ外）。別 PC では Femap 環境が必要。
+- Femap 本体の熱解析そのものは再現対象外。git には Femap から書き出した Excel（`inputs/`）がある。
+
+ゼロから回す最小コマンド（リポジトリルートで実行）：
+
+```powershell
+# 1. Femap LOS（case ごとに --input を変える）
+python src/thermal_deformation/plot_stt_lct_relative_deformation.py --input inputs/data_femap_deformation/04_LTAN06_800km_1213COLD_MY_ALL_HEAT_MY_0p5.xlsx
+
+# 2. 軌道誤差（.EOF はこのとき初めて DL される）
+python src/orbit/run_orbit_prediction_error.py
+
+# 3. PAT 粗捕捉評価
+python src/pat_acquisition/run_pat_with_femap_los.py
+```
+
+PAT の詳細は `src/pat_acquisition/README.md` を参照。
+
 
 ### cursorの特徴
 テキストの読み込みはPDFでもmdでもできる。（がmdの方がディレクトリ構造は明確に把握できる）

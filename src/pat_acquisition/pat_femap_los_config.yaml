@@ -32,7 +32,7 @@ nonthermal_error:
 lightweight_model:
   # 1.0 = train on the first orbit only, then predict for all opportunities.
   train_fraction: 1.0
-  fourier_order: 2
+  fourier_order: 4
   include_drift: false
   ridge_lam: 0.001
   # Prefer orbit_period_s from Excel (case_metadata). Keep true only for ad-hoc debugging.
