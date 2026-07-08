@@ -13,7 +13,7 @@ python "src/pat_acquisition/run_pat_with_femap_los.py"
 重要パラメータは、次のYAMLにまとめている。
 
 ```text
-src/pat_acquisition/pat_femap_los_config.yaml
+src/pat_acquisition/configs/pat_femap_los_config.yaml
 ```
 
 通常はこのYAMLを書き換えてから、上のコマンドを実行する。別の設定ファイルを使いたい場合は、次のように指定する。
@@ -65,7 +65,7 @@ results/pat_acquisition/femap_los_truth/
 
 ## よく変えるパラメータ
 
-通常は `pat_femap_los_config.yaml` の次の項目を変える。
+通常は `configs/pat_femap_los_config.yaml` の次の項目を変える。
 
 - `scan.max_range_urad`: 粗捕捉スキャンの最大探索範囲。
 - `scan.step_urad`: スキャン点の間隔。
@@ -112,6 +112,9 @@ python "src/pat_acquisition/run_pat_with_femap_los.py" --los-prefix stt_relative
 
 - `pat_acquisition_simulator.py`: PAT粗捕捉シミュレータの部品ライブラリ。矩形スパイラルscan点の生成、捕捉判定、各時刻での評価、結果サマリを担当する。入力データの出所や出力ファイル名はここでは扱わない。
 - `run_pat_with_femap_los.py`: Femap後処理済み `los_angles.csv` をPAT入力に接続する実行スクリプト。`far_field_los_angle_x/y_urad` を熱LOS真値として読み、`pat_acquisition_simulator.py` の評価関数へ渡し、CSVと図を `results/pat_acquisition/femap_los_truth/` に保存する。
+- `configs/pat_femap_los_config.yaml`: PAT評価の既定設定。
+- `docs/lightweight_los_model.md`: 現在の軽量モデル仕様ドキュメント。
+- `tools/plot_case04_slide_figure.py`: 発表スライド向けの簡易図生成スクリプト。
 - `test_thermo_PAT_system_1.py`: 以前の試作スクリプト。合成熱LOSや軽量モデル検討用のメモ的実装。
 
 責務分担は次の通り。
@@ -136,4 +139,4 @@ python src/orbit/run_orbit_prediction_error.py
 python src/pat_acquisition/run_pat_with_femap_los.py
 ```
 
-または `pat_femap_los_config.yaml` で `orbit_error.source: sentinel1_tle_vs_pod` を確認する。
+または `configs/pat_femap_los_config.yaml` で `orbit_error.source: sentinel1_tle_vs_pod` を確認する。

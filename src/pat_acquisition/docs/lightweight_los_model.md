@@ -3,7 +3,7 @@
 このドキュメントは、`run_pat_with_femap_los.py` が PAT 粗捕捉の scan center 補正に使う **軽量熱 LOS 予測モデル** の現行仕様をまとめる。
 
 実装: `src/pat_acquisition/thermal_los_lightweight_models.py`  
-設定: `src/pat_acquisition/pat_femap_los_config.yaml`  
+設定: `src/pat_acquisition/configs/pat_femap_los_config.yaml`  
 軌道周期の解決: `src/case_metadata.py`
 
 評価結果の出力先: `results/pat_acquisition/femap_los_truth/`
@@ -143,7 +143,7 @@ x と y は **同じ時間基底** \(\boldsymbol{\Phi}(t)\) を共有し、係�
 
 ## 現行パラメータ（2026-07 時点）
 
-`src/pat_acquisition/pat_femap_los_config.yaml` より:
+`src/pat_acquisition/configs/pat_femap_los_config.yaml` より:
 
 | パラメータ | 値 | 説明 |
 |-----------|-----|------|
@@ -225,7 +225,7 @@ Fourier 次数を 2 → 4 に上げると Case 04 の FF 残差は改善する�
 | `src/pat_acquisition/run_pat_with_femap_los.py` | Femap CSV 読込・モデル比較・結果出力 |
 | `src/pat_acquisition/pat_acquisition_simulator.py` | 粗捕捉シミュレーション本体 |
 | `src/case_metadata.py` | Excel からの `orbit_period_s` 解決 |
-| `src/pat_acquisition/pat_femap_los_config.yaml` | 実行パラメータ |
+| `src/pat_acquisition/configs/pat_femap_los_config.yaml` | 実行パラメータ |
 | `cases/case_matrix.xlsx` | ケース定義・`orbit_case` 参照 |
 | `cases/orbit_catalog.xlsx` | 軌道条件・`orbit_period_s` / 高度 |
 

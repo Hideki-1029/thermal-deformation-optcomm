@@ -44,7 +44,7 @@ from orbit.pat_orbit_error import (
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_INPUT_GLOB = "results/femap_deformation/*/los_angles.csv"
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "results" / "pat_acquisition" / "femap_los_truth"
-DEFAULT_CONFIG_PATH = Path(__file__).with_name("pat_femap_los_config.yaml")
+DEFAULT_CONFIG_PATH = Path(__file__).parent / "configs" / "pat_femap_los_config.yaml"
 DEFAULT_CASE_MATRIX_XLSX = REPO_ROOT / "cases" / "case_matrix.xlsx"
 DEFAULT_ORBIT_CATALOG_XLSX = REPO_ROOT / "cases" / "orbit_catalog.xlsx"
 
