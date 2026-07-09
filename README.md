@@ -57,7 +57,7 @@ curl -L -o data\orbit\tle\tle_2026.parquet "https://huggingface.co/datasets/juli
 |------|-----------|-----------------|
 | `results/femap_deformation/*/los_angles.csv` | `src/thermal_deformation/plot_stt_lct_relative_deformation.py` | `inputs/data_femap_deformation/*.xlsx`（git 管理） |
 | `results/orbit/sentinel1_tle_vs_pod/*` | `src/orbit/run_orbit_prediction_error.py` | `data/orbit/tle/tle_2026.parquet` ＋ `data/orbit/sentinel1/*.EOF`（実行時に自動取得） |
-| `results/pat_acquisition/femap_los_truth/*` | `src/pat_acquisition/run_pat_with_femap_los.py` | 上の2つ、または git 上の既存 CSV |
+| `results/pat_acquisition/femap_los_truth/*` と `fourier_los_model/*` | `src/pat_acquisition/runners/run_femap_los_truth.py` と `models/fourier_los/run_pat.py` | 上の2つ、または git 上の既存 CSV |
 | 温度プローブ図（`panel_*_temperature_probe.csv` 等） | 同上（オプション） | Femap 側 `mapper_from_TD`（リポジトリ外、下記） |
 
 依存関係は次の通り。
@@ -69,6 +69,7 @@ data/orbit/tle/tle_2026.parquet        ──→  results/orbit/sentinel1_tle_vs
 data/orbit/sentinel1/*.EOF (自動DL)    ──→         │
                                                     ↓
                                           results/pat_acquisition/femap_los_truth/*
+                                          results/pat_acquisition/fourier_los_model/*
 ```
 
 補足：
@@ -88,7 +89,8 @@ python src/thermal_deformation/plot_stt_lct_relative_deformation.py --input inpu
 python src/orbit/run_orbit_prediction_error.py
 
 # 3. PAT 粗捕捉評価
-python src/pat_acquisition/run_pat_with_femap_los.py
+python src/pat_acquisition/runners/run_femap_los_truth.py
+python src/pat_acquisition/models/fourier_los/run_pat.py
 ```
 
 PAT の詳細は `src/pat_acquisition/README.md` を参照。

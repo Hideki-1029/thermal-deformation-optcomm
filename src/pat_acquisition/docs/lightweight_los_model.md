@@ -2,11 +2,13 @@
 
 このドキュメントは、`run_pat_with_femap_los.py` が PAT 粗捕捉の scan center 補正に使う **軽量熱 LOS 予測モデル** の現行仕様をまとめる。
 
-実装: `src/pat_acquisition/thermal_los_lightweight_models.py`  
+実装: `src/pat_acquisition/models/fourier_los/`  
 設定: `src/pat_acquisition/configs/pat_femap_los_config.yaml`  
 軌道周期の解決: `src/case_metadata.py`
+実行: `python src/pat_acquisition/models/fourier_los/run_pat.py`
 
-評価結果の出力先: `results/pat_acquisition/femap_los_truth/`
+評価結果の出力先: `results/pat_acquisition/fourier_los_model/`  
+（真値ベースラインは同列の `results/pat_acquisition/femap_los_truth/`）
 
 ---
 
@@ -52,7 +54,7 @@ Femap / TD から得た STT 基準の遠方 LOS 熱バイアス
 
 ## モデル一覧
 
-`fit_lightweight_predictions()` は 1 ケースにつき次の 3 出力を返す。
+`fit_fourier_predictions()` は 1 ケースにつき次の 3 出力を返す。
 
 ### 1. Static bias
 
@@ -164,17 +166,22 @@ x と y は **同じ時間基底** \(\boldsymbol{\Phi}(t)\) を共有し、係�
 los_angles.csv (Femap 熱 LOS 真値)
   + case_matrix.xlsx / orbit_catalog.xlsx (軌道周期 T)
         |
+        +---> evaluate_coarse_acquisition()  (truth / no_correction)
+        |           |
+        |           v
+        |     results/pat_acquisition/femap_los_truth/{case_id}/
+        |
         v
-  fit_lightweight_predictions()
+  fit_fourier_predictions()
     - static_bias
     - fourier_ff          <-- PAT 主評価の軽量補正
     - fourier_plus_drift
         |
         v
-  evaluate_coarse_acquisition()  (各補正ケース)
+  evaluate_coarse_acquisition()  (Fourier / static-bias)
         |
         v
-  results/pat_acquisition/femap_los_truth/{case_id}/
+  results/pat_acquisition/fourier_los_model/{case_id}/
 ```
 
 各 `los_angles.csv`（= 各 `case_id`）ごとに **係数は独立に再フィット** される。Case 04 で学習した係数を Case 05 にそのまま持ち込む運用は想定していない。
@@ -221,8 +228,10 @@ Fourier 次数を 2 → 4 に上げると Case 04 の FF 残差は改善する�
 
 | ファイル | 内容 |
 |---------|------|
-| `src/pat_acquisition/thermal_los_lightweight_models.py` | 特徴量生成・Ridge フィット・予測 |
-| `src/pat_acquisition/run_pat_with_femap_los.py` | Femap CSV 読込・モデル比較・結果出力 |
+| `src/pat_acquisition/models/fourier_los/model.py` | 特徴量生成・Ridge フィット・予測 |
+| `src/pat_acquisition/models/fourier_los/run_pat.py` | Fourier モデルの PAT 評価エントリ |
+| `src/pat_acquisition/runners/run_femap_los_truth.py` | 真値ベースラインの PAT 評価 |
+| `src/pat_acquisition/runners/pat_common.py` | 共有 I/O・非熱誤差 |
 | `src/pat_acquisition/pat_acquisition_simulator.py` | 粗捕捉シミュレーション本体 |
 | `src/case_metadata.py` | Excel からの `orbit_period_s` 解決 |
 | `src/pat_acquisition/configs/pat_femap_los_config.yaml` | 実行パラメータ |
@@ -235,13 +244,13 @@ Fourier 次数を 2 → 4 に上げると Case 04 の FF 残差は改善する�
 
 ```powershell
 # Fourier 次数を変更（YAML を編集するか CLI で上書き）
-python src/pat_acquisition/run_pat_with_femap_los.py --lightweight-fourier-order 6
+python src/pat_acquisition/models/fourier_los/run_pat.py --lightweight-fourier-order 6
 
 # 先頭 1 軌道分だけ学習し、残りを予測評価
-python src/pat_acquisition/run_pat_with_femap_los.py --lightweight-train-fraction 1.0
+python src/pat_acquisition/models/fourier_los/run_pat.py --lightweight-train-fraction 1.0
 
 # デバッグ用: 熱 LOS から周期推定（本番評価では非推奨）
-python src/pat_acquisition/run_pat_with_femap_los.py --auto-orbit-period
+python src/pat_acquisition/models/fourier_los/run_pat.py --auto-orbit-period
 ```
 
-変更後は `results/pat_acquisition/femap_los_truth/summary.csv` と各ケースの `pat_acquisition_comparison.png` で効果を確認する。
+変更後は `results/pat_acquisition/fourier_los_model/summary.csv` と各ケースの `pat_acquisition_comparison.png` で効果を確認する。真値ベースラインは `results/pat_acquisition/femap_los_truth/` を参照する。
