@@ -1,0 +1,21 @@
+﻿OK feAppMessage <class 'int'> -1
+OK Info_Version <class 'float'> 2025.01
+OK feSet <class 'win32com.gen_py.08F336B3-E668-11D4-9441-001083FFF11Cx0x25x10.ISet'> <win32com.gen_py.Simcenter繝ｻFemap繝ｻv2412.0 Type Library.ISet instance at 0x2320800850544>
+OK feLoadSet <class 'win32com.gen_py.08F336B3-E668-11D4-9441-001083FFF11Cx0x25x10.ILoadSet'> <win32com.gen_py.Simcenter繝ｻFemap繝ｻv2412.0 Type Library.ILoadSet instance at 0x2320800851216>
+OK feAnalysisMgr <class 'win32com.gen_py.08F336B3-E668-11D4-9441-001083FFF11Cx0x25x10.IAnalysisMgr'> <win32com.gen_py.Simcenter繝ｻFemap繝ｻv2412.0 Type Library.IAnalysisMgr instance at 0x2320800850544>
+OK feDataTable <class 'win32com.gen_py.08F336B3-E668-11D4-9441-001083FFF11Cx0x25x10.IDataTable'> <win32com.gen_py.Simcenter繝ｻFemap繝ｻv2412.0 Type Library.IDataTable instance at 0x2320800851216>
+OK feResults <class 'win32com.gen_py.08F336B3-E668-11D4-9441-001083FFF11Cx0x25x10.IResults'> <win32com.gen_py.Simcenter繝ｻFemap繝ｻv2412.0 Type Library.IResults instance at 0x2320800850544>
+OK feFileReadNastran <class 'method'> callable-ish
+OK feDelete <class 'method'> callable-ish
+OK feDeleteOutputV2 <class 'method'> callable-ish
+AddAll fail LOAD '<win32com.gen_py.Simcenter繝ｻFemap繝ｻv2412.0 Type Library.ISet instance at 0x2320802515856>' object has no attribute 'Clear'
+AddAll fail LOAD_DIR '<win32com.gen_py.Simcenter繝ｻFemap繝ｻv2412.0 Type Library.ISet instance at 0x2320802515856>' object has no attribute 'Clear'
+AddAll fail OUT_CASE '<win32com.gen_py.Simcenter繝ｻFemap繝ｻv2412.0 Type Library.ISet instance at 0x2320802515856>' object has no attribute 'Clear'
+AddAll fail OUT '<win32com.gen_py.Simcenter繝ｻFemap繝ｻv2412.0 Type Library.ISet instance at 0x2320802515856>' object has no attribute 'Clear'
+AddAll fail AMGR '<win32com.gen_py.Simcenter繝ｻFemap繝ｻv2412.0 Type Library.ISet instance at 0x2320802515856>' object has no attribute 'Clear'
+Info_ModelName ERR '<win32com.gen_py.Simcenter繝ｻFemap繝ｻv2412.0 Type Library.Imodel instance at 0x2320800850208>' object has no attribute 'Info_ModelName'
+Info_Title ERR '<win32com.gen_py.Simcenter繝ｻFemap繝ｻv2412.0 Type Library.Imodel instance at 0x2320800850208>' object has no attribute 'Info_Title'
+FullName ERR '<win32com.gen_py.Simcenter繝ｻFemap繝ｻv2412.0 Type Library.Imodel instance at 0x2320800850208>' object has no attribute 'FullName'
+ModelName C:\Users\Hide\Femap\research_model\research_model.modfem
+Info_WorkDir ERR '<win32com.gen_py.Simcenter繝ｻFemap繝ｻv2412.0 Type Library.Imodel instance at 0x2320800850208>' object has no attribute 'Info_WorkDir'
+Pref_WorkDir ERR '<win32com.gen_py.Simcenter繝ｻFemap繝ｻv2412.0 Type Library.Imodel instance at 0x2320800850208>' object has no attribute 'Pref_WorkDir'

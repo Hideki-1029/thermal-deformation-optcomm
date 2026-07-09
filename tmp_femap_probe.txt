@@ -1,0 +1,6 @@
+﻿probing...
+GetActiveObject femap.model
+Info_Version 2025.01
+Info_Title None
+message ok
+METHOD_COUNT 0

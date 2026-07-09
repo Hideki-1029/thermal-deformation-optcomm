@@ -5,3 +5,4 @@ openpyxl
 pyyaml
 sgp4
 pyarrow
+pywin32

@@ -1,0 +1,38 @@
+﻿python : Generating to C:\Users\Hide\AppData\Local\Temp\gen_py\3.13\08F336B3-E668-11D4-9441-001083FFF11Cx0x25x10.py
+発生場所 C:\Users\Hide\AppData\Local\Temp\ps-script-55166eff-e42e-4d8b-b2fd-f9a183c805d7.ps1:110 文字:1
++ python -c @"
++ ~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Generating to C...F11Cx0x25x10.py:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Building definitions from type library...
+Generating...
+Importing module
+Traceback (most recent call last):
+  File "<string>", line 15, in <module>
+    mod = win32com.client.gencache.EnsureModule('{08F336B3-3CFF-4BCA-A747-E7DCD99416F1}', 0, 1, 0)
+  File "C:\Users\Hide\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packag
+es\Python313\site-packages\win32com\client\gencache.py", line 620, in EnsureModule
+    module = MakeModuleForTypelib(
+        typelibCLSID,
+    ...<5 lines>...
+        bBuildHidden=bBuildHidden,
+    )
+  File "C:\Users\Hide\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packag
+es\Python313\site-packages\win32com\client\gencache.py", line 338, in MakeModuleForTypelib
+    makepy.GenerateFromTypeLibSpec(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        (typelibCLSID, lcid, major, minor),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        bBuildHidden=bBuildHidden,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Hide\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packag
+es\Python313\site-packages\win32com\client\makepy.py", line 257, in GenerateFromTypeLibSpec
+    tlb = pythoncom.LoadRegTypeLib(typelibCLSID, major, minor, lcid)
+pywintypes.com_error: (-2147319779, 'ライブラリは登録されていません。', None, None)
+running makepy on C:\Program Files\Siemens\Femap 2412 Student\femap.tlb
+makepy done
+<class 'win32com.gen_py.08F336B3-E668-11D4-9441-001083FFF11Cx0x25x10.model'>

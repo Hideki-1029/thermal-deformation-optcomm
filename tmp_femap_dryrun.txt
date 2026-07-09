@@ -1,0 +1,5 @@
+﻿Femap model: C:\Users\Hide\Femap\research_model\research_model.modfem
+=== case 07_LTAN06_800km_1213COLD_MZ_ALL_HEAT_MZ_0p5_delta_t_60s ===
+  case dir : C:\Users\Hide\Femap\research_model\07_LTAN06_800km_1213COLD_MZ_ALL_HEAT_MZ_0p5_delta_t_60s
+  mapper   : C:\Users\Hide\Femap\research_model\07_LTAN06_800km_1213COLD_MZ_ALL_HEAT_MZ_0p5_delta_t_60s\mapper_from_TD\output.dat
+  cleaning previous loads/results in Femap model...
