@@ -1,3 +1,0 @@
-﻿mods ['C:\\Users\\Hide\\AppData\\Local\\Temp\\gen_py\\3.13\\08F336B3-E668-11D4-9441-001083FFF11Cx0x25x10.py']
-type <class 'win32com.gen_py.08F336B3-E668-11D4-9441-001083FFF11Cx0x25x10.model'>
-attr count 4
