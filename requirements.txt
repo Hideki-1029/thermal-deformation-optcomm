@@ -6,3 +6,4 @@ pyyaml
 sgp4
 pyarrow
 pywin32
+pythonnet
