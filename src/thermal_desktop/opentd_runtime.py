@@ -6,9 +6,8 @@ import os
 import re
 import subprocess
 import sys
-from collections.abc import Callable
 from pathlib import Path
-from typing import Any, TypeVar
+from typing import Any
 
 
 DEFAULT_DWG = Path(
@@ -18,11 +17,7 @@ DEFAULT_DWG = Path(
 
 _GAC_MSIL = Path(r"C:\Windows\Microsoft.NET\assembly\GAC_MSIL")
 _ANSYS_CRTECH = Path(r"C:\Program Files\ANSYS Inc")
-
-# TD 2025+ uses unversioned OpenTD; older installs use OpenTDv241, OpenTDv232, ...
 _VERSIONED_NAME_RE = re.compile(r"^OpenTDv(\d+)$", re.IGNORECASE)
-
-T = TypeVar("T")
 
 
 def _assembly_sort_key(stem: str) -> tuple[int, int]:
@@ -76,8 +71,7 @@ def find_opentd_dll(explicit: str | Path | None = None) -> Path:
     if not candidates:
         raise FileNotFoundError(
             "OpenTD DLL not found. Install Thermal Desktop / OpenTD, or set "
-            "OPENTD_DLL to the full path of OpenTD.dll or OpenTDv241.dll "
-            r"(often under C:\Windows\Microsoft.NET\assembly\GAC_MSIL\OpenTDv241\...)."
+            "OPENTD_DLL to the full path of OpenTD.dll or OpenTDv241.dll."
         )
 
     candidates.sort(key=lambda p: _assembly_sort_key(p.stem), reverse=True)
@@ -85,12 +79,7 @@ def find_opentd_dll(explicit: str | Path | None = None) -> Path:
 
 
 def load_opentd(dll_path: str | Path | None = None) -> Any:
-    """
-    Import the OpenTD .NET assembly and return its Python module.
-
-    Returns the versioned module (e.g. ``OpenTDv241``) or unversioned ``OpenTD``.
-    Callers should treat the returned object as the OpenTD namespace root.
-    """
+    """Import the OpenTD .NET assembly and return its Python module."""
     try:
         import clr  # type: ignore  # pythonnet
     except ImportError as exc:
@@ -103,22 +92,17 @@ def load_opentd(dll_path: str | Path | None = None) -> Any:
     if dll_dir not in sys.path:
         sys.path.append(dll_dir)
 
-    assembly_name = dll.stem  # OpenTD or OpenTDv241
+    assembly_name = dll.stem
     try:
         clr.AddReference(assembly_name)
     except Exception:
         clr.AddReference(str(dll))
 
-    module = __import__(assembly_name)
-    return module
+    return __import__(assembly_name)
 
 
 def to_rooted_pathname(OpenTD: Any, path: str | Path) -> Any:
-    """
-    Wrap a filesystem path as OpenTD ``Utility.RootedPathname``.
-
-    OpenTDv241+ rejects plain Python ``str`` for DwgPathname / OutputFile / etc.
-    """
+    """Wrap a path as OpenTD ``Utility.RootedPathname`` when available."""
     text = str(Path(path).resolve())
     try:
         return OpenTD.Utility.RootedPathname(text)
@@ -127,7 +111,6 @@ def to_rooted_pathname(OpenTD: Any, path: str | Path) -> Any:
 
 
 def autocad_process_running() -> bool:
-    """Return True if an AutoCAD / acad process appears to be running."""
     try:
         out = subprocess.check_output(
             ["tasklist", "/FI", "IMAGENAME eq acad.exe", "/NH"],
@@ -137,23 +120,6 @@ def autocad_process_running() -> bool:
     except Exception:
         return False
     return "acad.exe" in out.casefold()
-
-
-def call_interruptible(
-    label: str,
-    fn: Callable[[], T],
-    *,
-    poll_s: float = 0.5,
-) -> T:
-    """
-    DEPRECATED for OpenTD API calls.
-
-    AutoCAD/OpenTD is not safe to drive from a worker thread. Calling
-    DataMapper.Update from a background thread has caused
-    ``eNotOpenForWrite`` and a dead OpenTD pipe. Prefer calling OpenTD on the
-    main thread. This helper remains only for non-OpenTD waits if needed.
-    """
-    return fn()
 
 
 def connect_thermal_desktop(
@@ -166,12 +132,9 @@ def connect_thermal_desktop(
     """
     Connect to Thermal Desktop and return ``(td, OpenTD_module)``.
 
-    Preferred workflow: open ``research_thermal_model.dwg`` in TD first, then
-    connect with attach (default when acad.exe is already running). Opening the
-    same DWG in a second AutoCAD instance often triggers
+    Preferred: open the DWG in TD first, then attach (default when acad.exe
+    is already running). Opening the same DWG twice often causes
     ``eNotOpenForWrite``.
-
-    All OpenTD calls run on the main thread (AutoCAD is not thread-safe here).
     """
     if attach_only and start_new:
         raise ValueError("Cannot combine attach_only and start_new")
@@ -194,7 +157,6 @@ def connect_thermal_desktop(
         td.ConnectConfig.Type = Types.START_NEW_TD
         mode = "START_NEW_TD"
     elif autocad_process_running():
-        # Avoid opening a second copy of the same DWG (common eNotOpenForWrite cause).
         td.ConnectConfig.Type = Types.ATTACH_TO_TD
         mode = "ATTACH_TO_TD (acad.exe detected)"
     else:

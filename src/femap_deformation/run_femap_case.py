@@ -4,7 +4,7 @@ Prerequisites
 -------------
 1. Open ``C:/Users/Hide/Femap/research_model/research_model.modfem`` in Femap.
 2. Prepare each case folder with ``mapper_from_TD/output.dat`` already present
-   (TD mapper step is still manual / OpenTD later).
+   (from ``python -m src.thermal_desktop.run_td_cases --cases ...``).
 
 What this script does per case
 ------------------------------
@@ -13,23 +13,15 @@ What this script does per case
 3. Point Nastran output to the case folder.
 4. Rebuild analysis cases (one per temperature load set) and run analysis.
 5. Export STT/LCT translation+rotation Excel into
-   ``inputs/data_femap_deformation/{case_id}.xlsx`` (same layout as previous
-   hand exports). Solver files stay under the Femap case folder.
+   ``inputs/data_femap_deformation/{case_id}.xlsx``.
 
 Example
 -------
-python -m src.femap_deformation.run_femap_case \\
-  --case-id 07_LTAN06_800km_1213COLD_MZ_ALL_HEAT_MZ_0p5_delta_t_60s
+# Same case-number syntax as TD:
+python -m src.femap_deformation.run_femap_case --cases 8,9
 
-Dry-run (connect + clean + import only, no analyze)::
-
-python -m src.femap_deformation.run_femap_case \\
-  --case-id 07_... --skip-analyze
-
-Export from results already loaded in Femap (no re-analyze)::
-
-python -m src.femap_deformation.run_femap_case \\
-  --case-id 07_... --export-only
+# Or full folder name:
+python -m src.femap_deformation.run_femap_case --case-id 08_LTAN06_...
 """
 
 from __future__ import annotations
@@ -39,6 +31,8 @@ import shutil
 import sys
 import time
 from pathlib import Path
+
+from src.thermal_desktop.case_selection import case_number_from_name, parse_case_spec
 
 from .export_stt_lct_excel import export_stt_lct_results
 from .femap_com import (
@@ -75,6 +69,57 @@ def resolve_case_dir(model_root: Path, case_id: str) -> Path:
     if not mapper.is_file():
         raise FileNotFoundError(f"Missing mapper file: {mapper}")
     return case_dir
+
+
+def list_numbered_case_folders(model_root: Path) -> list[tuple[int, str]]:
+    """Return ``(case_number, folder_name)`` for ``NN_*`` dirs under model_root."""
+    rows: list[tuple[int, str]] = []
+    if not model_root.is_dir():
+        return rows
+    for path in sorted(model_root.iterdir(), key=lambda p: p.name.casefold()):
+        if not path.is_dir() or path.name.startswith("_"):
+            continue
+        number = case_number_from_name(path.name)
+        if number is not None:
+            rows.append((number, path.name))
+    return rows
+
+
+def resolve_case_ids_from_numbers(model_root: Path, numbers: list[int]) -> list[str]:
+    """
+    Map case numbers (same syntax as TD ``--cases``) to Femap folder names.
+
+    Expects one ``NN_*`` folder per number under ``model_root``.
+    """
+    by_num: dict[int, list[str]] = {}
+    for number, name in list_numbered_case_folders(model_root):
+        by_num.setdefault(number, []).append(name)
+
+    case_ids: list[str] = []
+    missing: list[int] = []
+    ambiguous: list[str] = []
+    for number in numbers:
+        names = by_num.get(number, [])
+        if not names:
+            missing.append(number)
+            continue
+        if len(names) > 1:
+            ambiguous.append(f"{number} → {names}")
+            continue
+        case_ids.append(names[0])
+
+    if missing or ambiguous:
+        available = ", ".join(f"{n}:{name}" for n, name in list_numbered_case_folders(model_root))
+        parts: list[str] = []
+        if missing:
+            parts.append(f"not found: {missing}")
+        if ambiguous:
+            parts.append(f"ambiguous: {ambiguous}")
+        raise FileNotFoundError(
+            "Could not resolve --cases under "
+            f"{model_root} ({'; '.join(parts)}). Available: {available or '(none)'}"
+        )
+    return case_ids
 
 
 def clean_previous_loads_and_results(app) -> dict[str, int]:
@@ -436,15 +481,27 @@ def run_one_case(
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument(
+        "--cases",
+        help=(
+            "Case numbers under --model-root, same syntax as TD: "
+            "7,8,9 or 10-15 or 7,10-12,15. Resolves NN_* folder names."
+        ),
+    )
+    p.add_argument(
         "--case-id",
         action="append",
         dest="case_ids",
-        help="TD/Femap case folder name under --model-root. Repeatable.",
+        help="Full case folder name under --model-root. Repeatable.",
     )
     p.add_argument(
         "--case-dir",
         type=Path,
-        help="Absolute path to one case folder (alternative to --case-id).",
+        help="Absolute path to one case folder (alternative to --case-id / --cases).",
+    )
+    p.add_argument(
+        "--list-cases",
+        action="store_true",
+        help="List NN_* case folders under --model-root and exit.",
     )
     p.add_argument(
         "--model-root",
@@ -513,16 +570,46 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
+    model_root = Path(args.model_root)
     case_ids: list[str] = list(args.case_ids or [])
+
     if args.case_dir is not None:
         case_dir = Path(args.case_dir)
         case_ids.append(case_dir.name)
         model_root = case_dir.parent
-    else:
-        model_root = Path(args.model_root)
+
+    if args.list_cases:
+        rows = list_numbered_case_folders(model_root)
+        if not rows:
+            _log(f"No NN_* case folders under {model_root}")
+            return 0
+        _log(f"Cases under {model_root}:")
+        for number, name in rows:
+            mapper = model_root / name / "mapper_from_TD" / "output.dat"
+            flag = "mapper=OK" if mapper.is_file() else "mapper=MISSING"
+            _log(f"  {number:>3d}  {name}  ({flag})")
+        return 0
+
+    if args.cases:
+        try:
+            numbers = parse_case_spec(args.cases)
+            case_ids.extend(resolve_case_ids_from_numbers(model_root, numbers))
+        except (ValueError, FileNotFoundError) as exc:
+            _log(f"ERROR: {exc}")
+            return 1
+
+    seen: set[str] = set()
+    unique_ids: list[str] = []
+    for case_id in case_ids:
+        if case_id not in seen:
+            seen.add(case_id)
+            unique_ids.append(case_id)
+    case_ids = unique_ids
 
     if not case_ids:
-        raise SystemExit("Provide --case-id and/or --case-dir.")
+        raise SystemExit("Provide --cases and/or --case-id and/or --case-dir.")
+
+    _log("Resolved cases: " + ", ".join(case_ids))
 
     try:
         app, model_name = connect_femap(start_if_needed=args.start_femap)

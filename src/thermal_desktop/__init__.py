@@ -1,1 +1,1 @@
-"""Thermal Desktop (OpenTD) automation for case runs and mapper export."""
+"""Thermal Desktop (OpenTD) automation: case runs and mapper export via staging."""

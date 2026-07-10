@@ -20,9 +20,24 @@ Femap の熱変形解析結果から STT/LCT 相対変形・LOS 角度を出す�
 
 1. Femap で `C:/Users/Hide/Femap/research_model/research_model.modfem` を開く
 2. ケースフォルダに `mapper_from_TD/output.dat` があること  
-   例: `C:/Users/Hide/Femap/research_model/{case_id}/mapper_from_TD/output.dat`
+   （TD 側: `python -m src.thermal_desktop.run_td_cases --cases ...`）
 
 ## 1. Femap ケース実行
+
+TD と同じ **ケース番号** 指定（`NN_*` フォルダを自動解決）:
+
+```powershell
+# 一覧
+python -m src.femap_deformation.run_femap_case --list-cases
+
+# 複数ケース
+python -m src.femap_deformation.run_femap_case --cases 8,9
+
+# 範囲
+python -m src.femap_deformation.run_femap_case --cases 10-15
+```
+
+フルフォルダ名でも可:
 
 ```powershell
 python -m src.femap_deformation.run_femap_case `
@@ -32,26 +47,26 @@ python -m src.femap_deformation.run_femap_case `
 出力:
 
 - Excel: `inputs/data_femap_deformation/{case_id}.xlsx`（ケースフォルダにもコピー）
-- Nastran 出力 (`.dat` / `.op2` / `.f06` など): `C:/Users/Hide/Femap/research_model/{case_id}/`
+- Nastran 出力: `C:/Users/Hide/Femap/research_model/{case_id}/`
 
 よく使うオプション:
 
 ```powershell
 # 解析済み結果から Excel だけ再出力
-python -m src.femap_deformation.run_femap_case --case-id 07_... --export-only
+python -m src.femap_deformation.run_femap_case --cases 8,9 --export-only
 
 # 解析までやって Excel は出さない
-python -m src.femap_deformation.run_femap_case --case-id 07_... --skip-export
+python -m src.femap_deformation.run_femap_case --cases 8 --skip-export
 
 # 少数 load だけでスモークテスト
-python -m src.femap_deformation.run_femap_case --case-id 07_... --max-loads 3
+python -m src.femap_deformation.run_femap_case --cases 9 --max-loads 3
 ```
 
 ## 2. 相対変形・LOS 図
 
 ```powershell
 python -m src.femap_deformation.plot_stt_lct_relative_deformation `
-  --input inputs/data_femap_deformation/07_LTAN06_800km_1213COLD_MZ_ALL_HEAT_MZ_0p5_delta_t_60s.xlsx
+  --input inputs/data_femap_deformation/08_LTAN06_800km_1213COLD_PY_ALL_HEAT_PY_0p5.xlsx
 ```
 
 入力 Excel の stem（`case_id`）から自動で:
@@ -67,7 +82,7 @@ python -m src.femap_deformation.plot_stt_lct_relative_deformation `
 ## 典型フロー
 
 ```text
-TD mapper (output.dat)
-    → run_femap_case.py          # Femap 解析 + Excel
-    → plot_stt_lct_relative_deformation.py   # 図・CSV
+TD:  --cases 8,9  → mapper_from_TD/output.dat
+Femap: --cases 8,9  → Excel
+plot:  --input .../{case_id}.xlsx → 図
 ```
