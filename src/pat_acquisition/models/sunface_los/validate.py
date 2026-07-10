@@ -27,10 +27,11 @@ from pat_acquisition.models._common.static_bias import (  # noqa: E402
 )
 from pat_acquisition.models._common.targets import extract_targets  # noqa: E402
 from pat_acquisition.models.sunface_los.dataset import (  # noqa: E402
-    CASE_PRESETS,
     DEFAULT_DATASET,
     DEFAULT_OUTPUT_ROOT,
+    list_numbered_cases,
     load_case_frame,
+    resolve_sunface_case_ids,
     short_case_tag,
     within_case_split_mask,
 )
@@ -51,12 +52,25 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--dataset", type=Path, default=DEFAULT_DATASET)
     parser.add_argument(
-        "--case",
-        choices=sorted(CASE_PRESETS.keys()),
-        default=None,
-        help="Short case key (04/05). Alternative to --case-id.",
+        "--cases",
+        help="Case numbers, e.g. 4,5,6 or 4-6 (0-padding optional; same syntax as TD/Femap).",
     )
-    parser.add_argument("--case-id", default=None)
+    parser.add_argument(
+        "--case",
+        default=None,
+        help="Single case number (4 or 04). Alternative to --case-id.",
+    )
+    parser.add_argument(
+        "--case-id",
+        action="append",
+        default=None,
+        help="Full case id. Repeatable.",
+    )
+    parser.add_argument(
+        "--list-cases",
+        action="store_true",
+        help="List numbered cases in the dataset and exit.",
+    )
     parser.add_argument("--output-dir", type=Path, default=None)
     parser.add_argument("--orbit-period-s", type=float, default=DEFAULT_ORBIT_PERIOD_S)
     parser.add_argument(
@@ -72,12 +86,185 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def resolve_case_id(args: argparse.Namespace) -> str:
-    if args.case_id:
-        return str(args.case_id)
-    if args.case:
-        return CASE_PRESETS[args.case]
-    raise ValueError("Specify --case (04/05) or --case-id.")
+def validate_one_case(
+    *,
+    dataset_path: Path,
+    case_id: str,
+    output_dir: Path | None,
+    orbit_period_s: float,
+    train_orbits: float,
+    config: SunfaceFeatureConfig,
+) -> None:
+    case_tag = short_case_tag(case_id)
+    case_output_dir = output_dir or (DEFAULT_OUTPUT_ROOT / f"{case_tag}_within_case")
+
+    case_df = load_case_frame(dataset_path, case_id)
+    sun_direction = case_df["case_sun_direction_body"].iloc[0]
+    sun_face = normalize_sun_direction(sun_direction)
+
+    x_all, feature_names, features_df, dominant_axis = build_sunface_features(
+        case_df, sun_direction, config
+    )
+
+    y_all = extract_targets(case_df)
+    times_s = case_df["time_s"].to_numpy(dtype=float)
+    train_mask = within_case_split_mask(times_s, orbit_period_s, train_orbits)
+    test_mask = ~train_mask
+    if not np.any(train_mask) or not np.any(test_mask):
+        raise ValueError(
+            f"{case_id}: train/test split is empty. "
+            "Check --orbit-period-s and --train-orbits."
+        )
+
+    axis_idx = 0 if dominant_axis == "x" else 1
+    x_train = x_all[train_mask]
+    y_train = y_all[train_mask]
+    axis_model = train_sunface_axis_model(
+        x_train=x_train,
+        y_axis_train=y_train[:, axis_idx],
+        feature_names=feature_names,
+        config=config,
+    )
+    static_bias = np.mean(y_train, axis=0)
+
+    pred_sunface = predict_sunface_case(
+        x=x_all,
+        dominant_axis=dominant_axis,
+        axis_model=axis_model,
+        static_bias_xy=static_bias,
+    )
+    pred_no = predict_no_correction(len(case_df))
+    pred_static = predict_static_bias(y_train, len(case_df))
+    model_name = f"sunface_{sun_face.lower()}_correction"
+
+    metrics_rows: list[dict[str, float | str]] = []
+    for split_name, mask in (
+        ("train", train_mask),
+        ("test", test_mask),
+        ("all", np.ones(len(case_df), dtype=bool)),
+    ):
+        for name, pred in (
+            ("no_correction", pred_no),
+            ("static_bias_correction", pred_static),
+            (model_name, pred_sunface),
+        ):
+            m = compute_error_metrics(y_all[mask], pred[mask])
+            metrics_rows.append({"split": split_name, "model": name, **m})
+
+    predictions = pd.DataFrame(
+        {
+            "case_id": case_id,
+            "time_s": times_s,
+            "split": np.where(train_mask, "train", "test"),
+            "sun_direction": sun_face,
+            "dominant_axis": dominant_axis,
+            "t_sunface_c": features_df["t_sunface_c"].to_numpy(dtype=float),
+            "dtheta_x_true_urad": y_all[:, 0],
+            "dtheta_y_true_urad": y_all[:, 1],
+            "dtheta_x_pred_no_correction_urad": pred_no[:, 0],
+            "dtheta_y_pred_no_correction_urad": pred_no[:, 1],
+            "dtheta_x_pred_static_bias_urad": pred_static[:, 0],
+            "dtheta_y_pred_static_bias_urad": pred_static[:, 1],
+            "dtheta_x_pred_sunface_urad": pred_sunface[:, 0],
+            "dtheta_y_pred_sunface_urad": pred_sunface[:, 1],
+        }
+    )
+    for name in feature_names:
+        predictions[name] = features_df[name].to_numpy(dtype=float)
+
+    coef_df = pd.DataFrame(
+        {
+            "feature": ["intercept", *axis_model.feature_names],
+            "coef_dominant_axis_urad": axis_model.coef[:, 0],
+        }
+    )
+
+    case_output_dir.mkdir(parents=True, exist_ok=True)
+    predictions_path = case_output_dir / f"{case_tag}_sunface_predictions.csv"
+    metrics_path = case_output_dir / f"{case_tag}_sunface_metrics.csv"
+    coef_path = case_output_dir / f"{case_tag}_sunface_coefficients.csv"
+    plot_path = case_output_dir / f"{case_tag}_sunface_true_vs_pred.png"
+
+    predictions.to_csv(predictions_path, index=False, encoding="utf-8-sig")
+    pd.DataFrame(metrics_rows).to_csv(metrics_path, index=False, encoding="utf-8-sig")
+    coef_df.to_csv(coef_path, index=False, encoding="utf-8-sig")
+    plot_within_case(
+        plot_path,
+        case_tag,
+        sun_face,
+        dominant_axis,
+        times_s,
+        y_all,
+        pred_sunface,
+        pred_static,
+        pred_no,
+        features_df["t_sunface_c"].to_numpy(dtype=float),
+        train_mask,
+    )
+
+    print(f"Case: {case_id}")
+    print(f"Sun direction: {sun_face}")
+    print(f"Dominant axis: {dominant_axis}")
+    print(f"Features: {', '.join(feature_names)}")
+    print(f"Train samples: {int(train_mask.sum())}, Test samples: {int(test_mask.sum())}")
+    print(f"Predictions: {predictions_path}")
+    print(f"Metrics: {metrics_path}")
+    print(f"Coefficients: {coef_path}")
+    print(f"Plot: {plot_path}")
+    print()
+    metrics_df = pd.DataFrame(metrics_rows)
+    metric_cols = [
+        "model",
+        "rmse_x_urad" if dominant_axis == "x" else "rmse_y_urad",
+        "rmse_norm_urad",
+        "p95_error_norm_urad",
+        "max_error_norm_urad",
+    ]
+    for split in ("train", "test"):
+        print(f"--- {split} ---")
+        sub = metrics_df[metrics_df["split"] == split][metric_cols]
+        print(sub.to_string(index=False))
+    print()
+
+
+def main() -> None:
+    args = parse_args()
+
+    if args.list_cases:
+        if not args.dataset.exists():
+            raise FileNotFoundError(f"Dataset not found: {args.dataset}")
+        print(f"Cases in {args.dataset}:")
+        for number, case_id, sun_face, supported in list_numbered_cases(args.dataset):
+            flag = "supported" if supported else "skipped (not MX/MY/PX/PY)"
+            print(f"  {number:>3d}  {case_id}  sun={sun_face}  ({flag})")
+        return
+
+    case_ids, skipped = resolve_sunface_case_ids(
+        args.dataset,
+        cases=args.cases,
+        case=args.case,
+        case_ids=args.case_id,
+    )
+    config = SunfaceFeatureConfig(
+        t_ref_c=args.t_ref_c,
+        ridge_lam=args.ridge_lam,
+        include_opposite_diff=not args.no_opposite_diff,
+        include_ref_diff=not args.no_ref_diff,
+    )
+
+    for case_id in case_ids:
+        validate_one_case(
+            dataset_path=args.dataset,
+            case_id=case_id,
+            output_dir=args.output_dir,
+            orbit_period_s=args.orbit_period_s,
+            train_orbits=args.train_orbits,
+            config=config,
+        )
+
+    print(f"Processed {len(case_ids)} case(s)")
+    if skipped:
+        print(f"Skipped unsupported cases: {', '.join(skipped)}")
 
 
 def plot_within_case(
@@ -149,145 +336,6 @@ def plot_within_case(
     out_png.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_png, dpi=200)
     plt.close(fig)
-
-
-def main() -> None:
-    args = parse_args()
-    case_id = resolve_case_id(args)
-    case_tag = short_case_tag(case_id)
-    output_dir = args.output_dir or (DEFAULT_OUTPUT_ROOT / f"{case_tag}_within_case")
-
-    case_df = load_case_frame(args.dataset, case_id)
-    sun_direction = case_df["case_sun_direction_body"].iloc[0]
-    sun_face = normalize_sun_direction(sun_direction)
-
-    config = SunfaceFeatureConfig(
-        t_ref_c=args.t_ref_c,
-        ridge_lam=args.ridge_lam,
-        include_opposite_diff=not args.no_opposite_diff,
-        include_ref_diff=not args.no_ref_diff,
-    )
-    x_all, feature_names, features_df, dominant_axis = build_sunface_features(
-        case_df, sun_direction, config
-    )
-
-    y_all = extract_targets(case_df)
-    times_s = case_df["time_s"].to_numpy(dtype=float)
-    train_mask = within_case_split_mask(times_s, args.orbit_period_s, args.train_orbits)
-    test_mask = ~train_mask
-    if not np.any(train_mask) or not np.any(test_mask):
-        raise ValueError(
-            "Train/test split is empty. Check --orbit-period-s and --train-orbits."
-        )
-
-    axis_idx = 0 if dominant_axis == "x" else 1
-    x_train = x_all[train_mask]
-    y_train = y_all[train_mask]
-    axis_model = train_sunface_axis_model(
-        x_train=x_train,
-        y_axis_train=y_train[:, axis_idx],
-        feature_names=feature_names,
-        config=config,
-    )
-    static_bias = np.mean(y_train, axis=0)
-
-    pred_sunface = predict_sunface_case(
-        x=x_all,
-        dominant_axis=dominant_axis,
-        axis_model=axis_model,
-        static_bias_xy=static_bias,
-    )
-    pred_no = predict_no_correction(len(case_df))
-    pred_static = predict_static_bias(y_train, len(case_df))
-    model_name = f"sunface_{sun_face.lower()}_correction"
-
-    metrics_rows: list[dict[str, float | str]] = []
-    for split_name, mask in (
-        ("train", train_mask),
-        ("test", test_mask),
-        ("all", np.ones(len(case_df), dtype=bool)),
-    ):
-        for name, pred in (
-            ("no_correction", pred_no),
-            ("static_bias_correction", pred_static),
-            (model_name, pred_sunface),
-        ):
-            m = compute_error_metrics(y_all[mask], pred[mask])
-            metrics_rows.append({"split": split_name, "model": name, **m})
-
-    predictions = pd.DataFrame(
-        {
-            "case_id": case_id,
-            "time_s": times_s,
-            "split": np.where(train_mask, "train", "test"),
-            "sun_direction": sun_face,
-            "dominant_axis": dominant_axis,
-            "t_sunface_c": features_df["t_sunface_c"].to_numpy(dtype=float),
-            "dtheta_x_true_urad": y_all[:, 0],
-            "dtheta_y_true_urad": y_all[:, 1],
-            "dtheta_x_pred_no_correction_urad": pred_no[:, 0],
-            "dtheta_y_pred_no_correction_urad": pred_no[:, 1],
-            "dtheta_x_pred_static_bias_urad": pred_static[:, 0],
-            "dtheta_y_pred_static_bias_urad": pred_static[:, 1],
-            "dtheta_x_pred_sunface_urad": pred_sunface[:, 0],
-            "dtheta_y_pred_sunface_urad": pred_sunface[:, 1],
-        }
-    )
-    for name in feature_names:
-        predictions[name] = features_df[name].to_numpy(dtype=float)
-
-    coef_df = pd.DataFrame(
-        {
-            "feature": ["intercept", *axis_model.feature_names],
-            "coef_dominant_axis_urad": axis_model.coef[:, 0],
-        }
-    )
-
-    output_dir.mkdir(parents=True, exist_ok=True)
-    predictions_path = output_dir / f"{case_tag}_sunface_predictions.csv"
-    metrics_path = output_dir / f"{case_tag}_sunface_metrics.csv"
-    coef_path = output_dir / f"{case_tag}_sunface_coefficients.csv"
-    plot_path = output_dir / f"{case_tag}_sunface_true_vs_pred.png"
-
-    predictions.to_csv(predictions_path, index=False, encoding="utf-8-sig")
-    pd.DataFrame(metrics_rows).to_csv(metrics_path, index=False, encoding="utf-8-sig")
-    coef_df.to_csv(coef_path, index=False, encoding="utf-8-sig")
-    plot_within_case(
-        plot_path,
-        case_tag,
-        sun_face,
-        dominant_axis,
-        times_s,
-        y_all,
-        pred_sunface,
-        pred_static,
-        pred_no,
-        features_df["t_sunface_c"].to_numpy(dtype=float),
-        train_mask,
-    )
-
-    print(f"Case: {case_id}")
-    print(f"Sun direction: {sun_face}")
-    print(f"Dominant axis: {dominant_axis}")
-    print(f"Features: {', '.join(feature_names)}")
-    print(f"Train samples: {int(train_mask.sum())}, Test samples: {int(test_mask.sum())}")
-    print(f"Predictions: {predictions_path}")
-    print(f"Metrics: {metrics_path}")
-    print(f"Coefficients: {coef_path}")
-    print(f"Plot: {plot_path}")
-    print()
-    metrics_df = pd.DataFrame(metrics_rows)
-    metric_cols = [
-        "model",
-        "rmse_x_urad" if dominant_axis == "x" else "rmse_y_urad",
-        "rmse_norm_urad",
-        "p95_error_norm_urad",
-        "max_error_norm_urad",
-    ]
-    for split in ("train", "test"):
-        print(f"--- {split} ---")
-        sub = metrics_df[metrics_df["split"] == split][metric_cols]
-        print(sub.to_string(index=False))
 
 
 if __name__ == "__main__":

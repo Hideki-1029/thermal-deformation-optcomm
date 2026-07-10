@@ -14,6 +14,6 @@ from pat_acquisition.models.sunface_los.validate import main as _main
 
 
 if __name__ == "__main__":
-    if "--case" not in sys.argv and "--case-id" not in sys.argv:
+    if "--case" not in sys.argv and "--case-id" not in sys.argv and "--cases" not in sys.argv:
         sys.argv.extend(["--case", "04"])
     _main()

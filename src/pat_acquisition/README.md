@@ -66,8 +66,9 @@ python "src/pat_acquisition/models/temperature_los/train.py"
 LOS 予測の within-case 検証:
 
 ```powershell
-python "src/pat_acquisition/models/sunface_los/validate.py" --case 04
-python "src/pat_acquisition/models/sunface_los/validate.py" --case 05
+python "src/pat_acquisition/models/sunface_los/validate.py" --case 4
+python "src/pat_acquisition/models/sunface_los/validate.py" --cases 4,5,6
+python "src/pat_acquisition/models/sunface_los/validate.py" --list-cases
 ```
 
 → `results/pat_acquisition/sunface_los_model/case*_within_case/`
@@ -76,6 +77,8 @@ PAT 粗捕捉評価（MX/MY/PX/PY ケース。MZ はスキップ）:
 
 ```powershell
 python "src/pat_acquisition/models/sunface_los/run_pat.py"
+python "src/pat_acquisition/models/sunface_los/run_pat.py" --cases 4,5,6
+python "src/pat_acquisition/models/sunface_los/run_pat.py" --list-cases
 ```
 
 → `results/pat_acquisition/sunface_los_model/pat/`

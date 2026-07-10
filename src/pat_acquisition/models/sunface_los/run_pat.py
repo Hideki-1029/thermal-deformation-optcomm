@@ -7,7 +7,6 @@ from pathlib import Path
 import sys
 
 import numpy as np
-import pandas as pd
 
 PAT_ROOT = Path(__file__).resolve().parents[2]
 SRC_ROOT = PAT_ROOT.parent
@@ -18,13 +17,11 @@ if str(PAT_ROOT) not in sys.path:
 
 from pat_acquisition.models.sunface_los.dataset import (  # noqa: E402
     DEFAULT_DATASET,
+    list_numbered_cases,
     load_case_frame,
+    resolve_sunface_case_ids,
 )
-from pat_acquisition.models.sunface_los.features import (  # noqa: E402
-    SunfaceFeatureConfig,
-    normalize_sun_direction,
-    resolve_dominant_axis,
-)
+from pat_acquisition.models.sunface_los.features import SunfaceFeatureConfig  # noqa: E402
 from pat_acquisition.models.sunface_los.model import fit_sunface_predictions  # noqa: E402
 from pat_acquisition.runners.pat_common import (  # noqa: E402
     DEFAULT_CONFIG_PATH,
@@ -57,10 +54,19 @@ def parse_args() -> argparse.Namespace:
     add_common_pat_arguments(parser)
     parser.add_argument("--dataset", type=Path, default=DEFAULT_DATASET)
     parser.add_argument(
+        "--cases",
+        help="Case numbers, e.g. 4,5,6 or 4-6 (0-padding optional; same syntax as TD/Femap).",
+    )
+    parser.add_argument(
         "--case-id",
         action="append",
         default=None,
         help="Case id to evaluate. Repeatable. Default: all MX/MY/PX/PY cases in dataset.",
+    )
+    parser.add_argument(
+        "--list-cases",
+        action="store_true",
+        help="List numbered cases in the dataset and exit.",
     )
     parser.add_argument("--orbit-period-s", type=float, default=None)
     parser.add_argument(
@@ -74,20 +80,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--no-opposite-diff", action="store_true")
     parser.add_argument("--no-ref-diff", action="store_true")
     return parser.parse_args()
-
-
-def list_supported_case_ids(dataset_path: Path) -> list[str]:
-    df = pd.read_csv(dataset_path, usecols=["case_id", "case_sun_direction_body"])
-    rows = df.groupby("case_id", sort=True)["case_sun_direction_body"].first()
-    supported: list[str] = []
-    for case_id, sun_direction in rows.items():
-        face = normalize_sun_direction(sun_direction)
-        try:
-            resolve_dominant_axis(face)
-        except ValueError:
-            continue
-        supported.append(str(case_id))
-    return supported
 
 
 def run_one_case(
@@ -159,6 +151,15 @@ def main() -> None:
     args = parse_args()
     yaml_config = load_yaml_config(args.config)
 
+    if args.list_cases:
+        if not args.dataset.exists():
+            raise FileNotFoundError(f"Dataset not found: {args.dataset}")
+        print(f"Cases in {args.dataset}:")
+        for number, case_id, sun_face, supported in list_numbered_cases(args.dataset):
+            flag = "supported" if supported else "skipped (not MX/MY/PX/PY)"
+            print(f"  {number:>3d}  {case_id}  sun={sun_face}  ({flag})")
+        return
+
     output_dir = config_path_value(
         yaml_config,
         "input",
@@ -183,21 +184,12 @@ def main() -> None:
             "Build with scripts/build_lightweight_dataset.py first."
         )
 
-    supported = set(list_supported_case_ids(args.dataset))
-    if args.case_id:
-        case_ids = []
-        skipped: list[str] = []
-        for case_id in args.case_id:
-            if case_id in supported:
-                case_ids.append(case_id)
-            else:
-                skipped.append(case_id)
-    else:
-        case_ids = sorted(supported)
-        skipped = []
-
-    if not case_ids:
-        raise ValueError("No supported sunface cases found (need MX/MY/PX/PY).")
+    case_ids, skipped = resolve_sunface_case_ids(
+        args.dataset,
+        cases=args.cases,
+        case_ids=args.case_id,
+        default_all_supported=not args.cases and not args.case_id,
+    )
 
     default_period = float(
         config_value(
