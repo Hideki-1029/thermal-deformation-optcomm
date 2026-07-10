@@ -64,7 +64,25 @@ python -m src.femap_deformation.run_femap_case --cases 9 --max-loads 3
 
 ## 2. 相対変形・LOS 図
 
+TD / Femap と同じ **ケース番号** 指定:
+
 ```powershell
+# 一覧
+python -m src.femap_deformation.plot_stt_lct_relative_deformation --list-cases
+
+# 複数ケース
+python -m src.femap_deformation.plot_stt_lct_relative_deformation --cases 8,9
+
+# 範囲
+python -m src.femap_deformation.plot_stt_lct_relative_deformation --cases 10-15
+```
+
+フル case id または単一 Excel でも可:
+
+```powershell
+python -m src.femap_deformation.plot_stt_lct_relative_deformation `
+  --case-id 08_LTAN06_800km_1213COLD_PY_ALL_HEAT_PY_0p5
+
 python -m src.femap_deformation.plot_stt_lct_relative_deformation `
   --input inputs/data_femap_deformation/08_LTAN06_800km_1213COLD_PY_ALL_HEAT_PY_0p5.xlsx
 ```
@@ -82,7 +100,7 @@ python -m src.femap_deformation.plot_stt_lct_relative_deformation `
 ## 典型フロー
 
 ```text
-TD:  --cases 8,9  → mapper_from_TD/output.dat
+TD:    --cases 8,9  → mapper_from_TD/output.dat
 Femap: --cases 8,9  → Excel
-plot:  --input .../{case_id}.xlsx → 図
+plot:  --cases 8,9  → 図
 ```

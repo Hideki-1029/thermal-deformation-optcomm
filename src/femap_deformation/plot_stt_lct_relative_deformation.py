@@ -2,11 +2,14 @@ import argparse
 import csv
 import json
 import re
+import sys
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+
+from src.thermal_desktop.case_selection import case_number_from_name, parse_case_spec
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -1086,14 +1089,117 @@ def parse_sheet_name(value):
         return value
 
 
-def parse_args():
+def list_numbered_excel_cases(excel_dir: Path) -> list[tuple[int, str]]:
+    """Return ``(case_number, case_id)`` for ``NN_*.xlsx`` under ``excel_dir``."""
+    rows: list[tuple[int, str]] = []
+    if not excel_dir.is_dir():
+        return rows
+    for path in sorted(excel_dir.glob("*.xlsx"), key=lambda p: p.name.casefold()):
+        number = case_number_from_name(path.stem)
+        if number is not None:
+            rows.append((number, path.stem))
+    return rows
+
+
+def resolve_case_ids_from_numbers(excel_dir: Path, numbers: list[int]) -> list[str]:
+    """Map case numbers (same syntax as TD ``--cases``) to Excel stems."""
+    by_num: dict[int, list[str]] = {}
+    for number, case_id in list_numbered_excel_cases(excel_dir):
+        by_num.setdefault(number, []).append(case_id)
+
+    case_ids: list[str] = []
+    missing: list[int] = []
+    ambiguous: list[str] = []
+    for number in numbers:
+        names = by_num.get(number, [])
+        if not names:
+            missing.append(number)
+            continue
+        if len(names) > 1:
+            ambiguous.append(f"{number} → {names}")
+            continue
+        case_ids.append(names[0])
+
+    if missing or ambiguous:
+        available = ", ".join(f"{n}:{name}" for n, name in list_numbered_excel_cases(excel_dir))
+        parts: list[str] = []
+        if missing:
+            parts.append(f"not found: {missing}")
+        if ambiguous:
+            parts.append(f"ambiguous: {ambiguous}")
+        raise FileNotFoundError(
+            "Could not resolve --cases under "
+            f"{excel_dir} ({'; '.join(parts)}). Available: {available or '(none)'}"
+        )
+    return case_ids
+
+
+def resolve_input_paths(args) -> list[Path]:
+    excel_dir = Path(args.excel_dir)
+    case_ids: list[str] = list(args.case_ids or [])
+
+    if args.cases:
+        numbers = parse_case_spec(args.cases)
+        case_ids.extend(resolve_case_ids_from_numbers(excel_dir, numbers))
+
+    if case_ids:
+        seen: set[str] = set()
+        unique_ids: list[str] = []
+        for case_id in case_ids:
+            if case_id not in seen:
+                seen.add(case_id)
+                unique_ids.append(case_id)
+        return [excel_dir / f"{case_id}.xlsx" for case_id in unique_ids]
+
+    return [Path(args.input)]
+
+
+def parse_args(argv=None):
     parser = argparse.ArgumentParser(
         description=(
             "Plot STT-LCT relative displacement, rotation, and far-field PAT LOS "
             "angle from Femap Excel."
-        )
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=(
+            "Examples:\n"
+            "  python -m src.femap_deformation.plot_stt_lct_relative_deformation --list-cases\n"
+            "  python -m src.femap_deformation.plot_stt_lct_relative_deformation --cases 8,9\n"
+            "  python -m src.femap_deformation.plot_stt_lct_relative_deformation --cases 10-15\n"
+            "  python -m src.femap_deformation.plot_stt_lct_relative_deformation "
+            "--case-id 08_LTAN06_800km_1213COLD_PY_ALL_HEAT_PY_0p5\n"
+        ),
     )
-    parser.add_argument("--input", type=Path, default=DEFAULT_INPUT)
+    parser.add_argument(
+        "--cases",
+        help=(
+            "Case numbers under --excel-dir, same syntax as TD: "
+            "7,8,9 or 10-15 or 7,10-12,15. Resolves NN_*.xlsx files."
+        ),
+    )
+    parser.add_argument(
+        "--case-id",
+        action="append",
+        dest="case_ids",
+        help="Full case id (Excel stem). Repeatable.",
+    )
+    parser.add_argument(
+        "--list-cases",
+        action="store_true",
+        help="List NN_*.xlsx cases under --excel-dir and exit.",
+    )
+    parser.add_argument(
+        "--excel-dir",
+        type=Path,
+        default=DEFAULT_INPUT_DIR,
+        help=f"Directory of Femap STT/LCT Excel exports (default: {DEFAULT_INPUT_DIR})",
+    )
+    parser.add_argument(
+        "--input",
+        type=Path,
+        default=DEFAULT_INPUT,
+        help="Single Excel input (used when --cases / --case-id are not given).",
+    )
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
     parser.add_argument("--sheet", type=parse_sheet_name, default=0)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
@@ -1138,25 +1244,27 @@ def parse_args():
         default=250.0,
         help="Scale factor for displacement and rotation in the 3D plane sketch.",
     )
-    return parser.parse_args()
+    return parser.parse_args(argv)
 
 
-def main():
-    args = parse_args()
+def run_one_case(args, input_path: Path) -> None:
+    if not input_path.is_file():
+        raise FileNotFoundError(f"Input Excel not found: {input_path}")
+
     config = load_config(args.config)
-    df = pd.read_excel(args.input, sheet_name=args.sheet)
+    df = pd.read_excel(input_path, sheet_name=args.sheet)
 
     result, metadata = compute_relative_motion(df, config)
     case_matrix_row = apply_case_matrix_time_axis(
         result,
         metadata,
-        input_path=args.input,
+        input_path=input_path,
         case_matrix_path=args.case_matrix,
         sheet_name=args.case_matrix_sheet,
     )
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
-    stem = args.input.stem
+    stem = input_path.stem
     detail_output_dir = args.output_dir / stem
     detail_output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -1222,7 +1330,8 @@ def main():
         else:
             print(f"Temperature probes skipped: mapper dir not found: {mapper_dir}")
 
-    print(f"Input Excel          : {args.input}")
+    print(f"=== {stem} ===")
+    print(f"Input Excel          : {input_path}")
     print(f"Config               : {args.config}")
     print(
         f"Nodes                : {metadata['from_label']} {metadata['from_node']} -> "
@@ -1260,7 +1369,49 @@ def main():
         "stt_relative_los_angle_magnitude_urad",
     ]
     print(result[summary_columns].describe().loc[["mean", "min", "max"]].to_string())
+    print()
+
+
+def main(argv=None):
+    args = parse_args(argv)
+    excel_dir = Path(args.excel_dir)
+
+    if args.list_cases:
+        rows = list_numbered_excel_cases(excel_dir)
+        if not rows:
+            print(f"No NN_*.xlsx cases under {excel_dir}")
+            return 0
+        print(f"Cases under {excel_dir}:")
+        for number, case_id in rows:
+            excel_path = excel_dir / f"{case_id}.xlsx"
+            flag = "excel=OK" if excel_path.is_file() else "excel=MISSING"
+            print(f"  {number:>3d}  {case_id}  ({flag})")
+        return 0
+
+    try:
+        input_paths = resolve_input_paths(args)
+    except (ValueError, FileNotFoundError) as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 1
+
+    failures: list[str] = []
+    for input_path in input_paths:
+        try:
+            run_one_case(args, input_path)
+        except Exception as exc:
+            print(f"ERROR on {input_path.name}: {exc}", file=sys.stderr)
+            failures.append(input_path.stem)
+            if len(input_paths) == 1:
+                raise
+
+    if failures:
+        print(f"Failed cases: {failures}", file=sys.stderr)
+        return 1
+
+    if len(input_paths) > 1:
+        print(f"All {len(input_paths)} requested case(s) finished.")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
