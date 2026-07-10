@@ -19,9 +19,14 @@ from .opentd_runtime import (
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_FEMAP_MODEL_ROOT = Path(r"C:\Users\Hide\Femap\research_model")
 DEFAULT_NASTRAN_BDF = DEFAULT_FEMAP_MODEL_ROOT / "research_model.bdf"
+DEFAULT_STAGING_DIR = DEFAULT_FEMAP_MODEL_ROOT / "_td_mapper_staging"
 MAPPER_SUBDIR = "mapper_from_TD"
 OUTPUT_BASENAME = "output"
 REQUIRED_MAPPER_FILES = ("output.dat",)
+# Relative path to set in the TD DataMapper GUI (from the DWG directory).
+DEFAULT_STAGING_OUTPUT_REL = (
+    r"..\..\Femap\research_model\_td_mapper_staging\output.dat"
+)
 
 
 def _log(msg: str) -> None:
@@ -269,7 +274,12 @@ def activate_dataset(td: Any, OpenTD: Any, *, sav_path: Path, dwg_dir: Path) -> 
     return current_name
 
 
-def assert_output_dat_matches_case(output_dat: Path, case: SelectedCase) -> None:
+def assert_output_dat_matches_case(
+    output_dat: Path,
+    case: SelectedCase,
+    *,
+    require_case_name: bool = False,
+) -> None:
     """Fail fast if output.dat header still points at another case's .sav."""
     try:
         with output_dat.open("r", encoding="utf-8", errors="replace") as fh:
@@ -283,22 +293,27 @@ def assert_output_dat_matches_case(output_dat: Path, case: SelectedCase) -> None
         _log(f"  verified output.dat header mentions {case.name}")
         return
 
-    # mapnastran may omit the dataset comment line; accept TEMP* cards if the
-    # file is freshly written and does not name a *different* case.
     other = None
     for token in header.replace("/", "\\").split("'"):
-        if "ltan" in token.casefold() and token.casefold().endswith(".sav"):
+        if token.casefold().endswith(".sav"):
             other = token
             break
     if other and case.name.casefold() not in other.casefold():
         raise RuntimeError(
             f"{output_dat} still references another dataset ({other!r}), "
             f"not case {case.name}.\nHeader:\n{header.strip()}\n"
-            "Close any editor that has output.dat open, delete the stale file, "
-            "and retry. If this persists, mapnastran may be ignoring the current "
-            "dataset — check TD's Postprocessing Datasets dialog."
+            "Staging may have stale data, or Set Current failed. "
+            "Clear staging, confirm Postprocessing Datasets, and retry."
         )
 
+    if require_case_name:
+        raise RuntimeError(
+            f"{output_dat} header does not mention case {case.name}. "
+            "Refusing to copy into the Femap case folder.\n"
+            f"Header:\n{header.strip()}"
+        )
+
+    # mapnastran may omit the dataset comment line.
     if "temp*" in header_l or "temp " in header_l:
         _log(
             "  warning: output.dat has TEMP cards but no case-id comment; "
@@ -310,6 +325,53 @@ def assert_output_dat_matches_case(output_dat: Path, case: SelectedCase) -> None
         f"{output_dat} does not look like mapped temperature data for {case.name}.\n"
         f"Header:\n{header.strip()}"
     )
+
+
+def default_staging_dir(femap_root: Path) -> Path:
+    return Path(femap_root) / "_td_mapper_staging"
+
+
+def assert_mapper_writes_to_staging(
+    mapper: Any,
+    dwg_dir: Path,
+    staging_dir: Path,
+) -> Path:
+    """
+    Ensure DataMapper.OutputFile points at the shared staging folder.
+
+    OpenTD cannot safely Update OutputFile on this DWG, so the GUI must keep
+    Output File fixed at staging. Writing into a case's mapper_from_TD would
+    clobber that case when mapping another.
+    """
+    td_output = resolve_mapper_output_path(mapper, dwg_dir)
+    td_out_dir = mapper_output_dir(td_output).resolve()
+    expected = staging_dir.resolve()
+    if td_out_dir != expected:
+        raise RuntimeError(
+            "DataMapper OutputFile is not the shared staging folder.\n"
+            f"  OutputFile → {td_output}\n"
+            f"  resolved dir → {td_out_dir}\n"
+            f"  expected staging → {expected}\n"
+            "In the TD DataMapper dialog set Output File to:\n"
+            f"  {DEFAULT_STAGING_OUTPUT_REL}\n"
+            f"  (or absolute: {expected / 'output.dat'})\n"
+            "Keep the mapper Enabled, save the DWG, then retry. "
+            "Do not point Output File at a case's mapper_from_TD."
+        )
+    return td_out_dir
+
+
+def ensure_mapper_enabled_for_tdmap(mapper: Any) -> None:
+    try:
+        enabled = int(mapper.Enabled)
+    except Exception:
+        enabled = -1
+    if enabled != 1:
+        raise RuntimeError(
+            f"DataMapper Enabled={enabled!r} (need 1). "
+            "Enable the mapper in the TD GUI, save the DWG, and retry. "
+            "Do not use --enable-mapper (DataMapper.Update crashes this model)."
+        )
 
 
 def resolve_mapper_output_path(mapper: Any, dwg_dir: Path) -> Path:
@@ -469,22 +531,26 @@ def map_case_to_femap(
     femap_root: Path,
     mapper: Any | None,
     enable_mapper: bool = False,
-    map_backend: str = "mapnastran",
+    map_backend: str = "tdmapallmappers",
     nastran_bdf: Path | None = None,
+    staging_dir: Path | None = None,
 ) -> Path:
     """
     Map temperatures for one case into Femap ``mapper_from_TD``.
 
-    Default backend is ``mapnastran`` (maps the *current* PP dataset to
-    ``output.dat``). ``tdmapallmappers`` uses the DataMapper's baked-in
-    ``CurrentPPDataset`` (often stuck on a previous case) and is easy to misuse.
-    Avoid ``DataMapper.Map()`` — it calls ``Update()`` and crashes this DWG.
+    Recommended backend ``tdmapallmappers``: TD DataMapper must be Enabled with
+    Output File fixed at a shared staging folder. This function clears staging,
+    activates the case dataset, maps, verifies the ``output.dat`` header names
+    this case, copies into the case folder, then clears staging again.
+
+    Avoid ``DataMapper.Map()`` / ``Update()`` — they crash this DWG.
     """
     sav_path = resolve_sav_path(dwg_dir, case)
     dest_dir = mapper_dest_dir(femap_root, case.name)
     dest_dat = mapper_output_dat(femap_root, case.name)
     # TD cannot create mapper_from_TD itself; same requirement as the manual GUI flow.
     dest_dir.mkdir(parents=True, exist_ok=True)
+    staging = Path(staging_dir) if staging_dir else default_staging_dir(femap_root)
 
     _log(f"  sav: {sav_path}")
     _log(f"  femap dest: {dest_dat}")
@@ -498,37 +564,47 @@ def map_case_to_femap(
         set_mapper_enabled(mapper, True)
 
     if map_backend == "tdmapallmappers":
-        if mapper is not None:
-            refresh_mapper(mapper)
-            baked = str(getattr(mapper, "CurrentPPDataset", "") or "")
-            _log(f"  DataMapper.CurrentPPDataset (baked): {baked!r}")
-            # Empty baked value usually means "use the current PP dataset" (GUI has
-            # no separate dataset picker). Only warn when a *different* case is named.
-            if baked and case.name.casefold() not in baked.casefold():
-                _log(
-                    f"  warning: baked CurrentPPDataset={baked!r} does not name "
-                    f"{case.name}; Map may still use the active dataset. "
-                    "Verify output.dat header after mapping."
-                )
-            td_output = resolve_mapper_output_path(mapper, dwg_dir)
-            td_out_dir = mapper_output_dir(td_output)
-            _log(f"  TD mapper OutputFile: {td_output}")
-            # OutputFile may point at dest_dir or a staging path; both must exist.
-            td_out_dir.mkdir(parents=True, exist_ok=True)
-        else:
-            td_out_dir = dest_dir
-            _log("  warning: no mapper object; expecting outputs already under dest")
+        if mapper is None:
+            raise RuntimeError("tdmapallmappers backend requires a DataMapper object")
+        refresh_mapper(mapper)
+        ensure_mapper_enabled_for_tdmap(mapper)
+        baked = str(getattr(mapper, "CurrentPPDataset", "") or "")
+        _log(f"  DataMapper.CurrentPPDataset (baked): {baked!r}")
+        if baked and case.name.casefold() not in baked.casefold():
+            _log(
+                f"  warning: baked CurrentPPDataset={baked!r} does not name "
+                f"{case.name}; Map should still use the active dataset. "
+                "Header check after Map is authoritative."
+            )
 
+        td_out_dir = assert_mapper_writes_to_staging(mapper, dwg_dir, staging)
+        _log(f"  staging dir: {td_out_dir}")
+        td_out_dir.mkdir(parents=True, exist_ok=True)
+
+        # 1) Clear staging so only this case's outputs remain.
+        clear_output_files(td_out_dir)
+
+        # 2) Dataset already activated above. 3) Map into staging.
         run_existing_mappers_server_side(td)
 
-        if not any(td_out_dir.glob("output*")):
+        staging_dat = td_out_dir / f"{OUTPUT_BASENAME}.dat"
+        if not staging_dat.is_file():
             raise FileNotFoundError(
-                f"tdmapallmappers finished but no output* under {td_out_dir}. "
-                "Check DataMapper Output File in TD / MapperPP_*.log. "
-                "If you see names like output\"\"MapSummary*.txt, an old script "
-                "bug inserted quotes into the append string — pull the latest fix."
+                f"tdmapallmappers finished but {staging_dat} is missing. "
+                "Check MapperPP_*.log / DataMapper Enabled + Output File."
             )
-        copy_mapper_outputs(td_out_dir, dest_dir)
+
+        # 4) Header must name this case before we touch the Femap case folder.
+        assert_output_dat_matches_case(staging_dat, case, require_case_name=True)
+
+        # 5) Copy into the case folder (replace previous mapper outputs there).
+        clear_output_files(dest_dir)
+        copied = copy_mapper_outputs(td_out_dir, dest_dir)
+        if not copied:
+            raise FileNotFoundError(f"No output* files to copy from {td_out_dir}")
+
+        # 6) Clear staging so the next case cannot pick up leftovers.
+        clear_output_files(td_out_dir)
 
     elif map_backend == "mapnastran":
         bdf = Path(nastran_bdf) if nastran_bdf else DEFAULT_NASTRAN_BDF
@@ -563,7 +639,11 @@ def map_case_to_femap(
     if not dest_dat.is_file():
         raise FileNotFoundError(f"Expected {dest_dat} after mapping, but it is missing.")
 
-    assert_output_dat_matches_case(dest_dat, case)
+    assert_output_dat_matches_case(
+        dest_dat,
+        case,
+        require_case_name=(map_backend == "tdmapallmappers"),
+    )
     size_mb = dest_dat.stat().st_size / (1024 * 1024)
     _log(f"  wrote {dest_dat} ({size_mb:.1f} MB)")
     return dest_dat
@@ -654,6 +734,9 @@ def run_pipeline(args: argparse.Namespace) -> int:
     )
 
     if args.dry_run:
+        staging = Path(args.staging_dir) if args.staging_dir else default_staging_dir(femap_root)
+        _log(f"  staging (TD Output File must match): {staging / 'output.dat'}")
+        _log(f"  GUI relative path hint: {DEFAULT_STAGING_OUTPUT_REL}")
         for case in selected:
             dest = mapper_output_dat(femap_root, case.name)
             sav = None
@@ -663,7 +746,7 @@ def run_pipeline(args: argparse.Namespace) -> int:
                 sav = f"(missing) {exc}"
             _log(f"  [{case.number}] {case.name}")
             _log(f"       sav → {sav}")
-            _log(f"       map → {dest}")
+            _log(f"       map → staging → {dest}")
         return 0
 
     mapper = None
@@ -681,6 +764,8 @@ def run_pipeline(args: argparse.Namespace) -> int:
                 _log(f"  warning: could not load DataMapper ({exc}); continuing with mapnastran")
             else:
                 raise
+
+    staging = Path(args.staging_dir) if args.staging_dir else default_staging_dir(femap_root)
 
     failures: list[str] = []
     for case in selected:
@@ -707,6 +792,7 @@ def run_pipeline(args: argparse.Namespace) -> int:
                     enable_mapper=args.enable_mapper,
                     map_backend=args.map_backend,
                     nastran_bdf=args.nastran_bdf,
+                    staging_dir=staging,
                 )
                 copy_mapper_sidecars_if_needed(
                     dwg_dir=dwg_dir,
@@ -783,13 +869,22 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p.add_argument(
         "--map-backend",
-        choices=("mapnastran", "tdmapallmappers", "opentd-map"),
-        default="mapnastran",
+        choices=("tdmapallmappers", "mapnastran", "opentd-map"),
+        default="tdmapallmappers",
         help=(
-            "How to run mapping. Default mapnastran maps the *current* PP dataset "
-            "to each case's mapper_from_TD/output.dat. tdmapallmappers uses the "
-            "DataMapper's baked CurrentPPDataset (often stuck on a previous case). "
+            "How to run mapping. Default tdmapallmappers uses the Enabled DataMapper "
+            "with Output File fixed at --staging-dir (header-checked, then copied to "
+            "each case mapper_from_TD). mapnastran is a legacy fallback. "
             "opentd-map calls DataMapper.Map()/Update and often crashes."
+        ),
+    )
+    p.add_argument(
+        "--staging-dir",
+        type=Path,
+        default=None,
+        help=(
+            "Shared TD mapper output folder (must match DataMapper Output File). "
+            f"Default: {DEFAULT_STAGING_DIR}"
         ),
     )
     p.add_argument(
