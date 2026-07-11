@@ -37,6 +37,20 @@ src/pat_acquisition/
 src/pat_acquisition/configs/pat_femap_los_config.yaml
 ```
 
+### 前提：軽量データセットの構築（温度・Sunface 用）
+
+温度モデルと Sunface モデルを動かす前に、必ず共通入力データセットを作る。
+
+```powershell
+python scripts/build_lightweight_dataset.py
+```
+
+→ `results/pat_acquisition/lightweight_dataset/`
+
+Femap 結果（`results/femap_deformation/*/los_angles.csv` と温度 CSV）・ケース行列・軌道カタログ・TD 日照シンボルをマージする。Femap ケースを追加・更新したあとも再実行する。
+
+真値ベースラインと Fourier モデルは `los_angles.csv` を直接読むため、このステップは不要。
+
 ### 真値ベースライン（モデルなし）
 
 ```powershell
@@ -55,6 +69,8 @@ python "src/pat_acquisition/models/fourier_los/run_pat.py"
 
 ### 温度モデル
 
+事前に `python scripts/build_lightweight_dataset.py` を実行済みであること。
+
 ```powershell
 python "src/pat_acquisition/models/temperature_los/train.py"
 ```
@@ -62,6 +78,8 @@ python "src/pat_acquisition/models/temperature_los/train.py"
 → `results/pat_acquisition/temperature_los_model/`
 
 ### Sunface モデル
+
+事前に `python scripts/build_lightweight_dataset.py` を実行済みであること。
 
 LOS 予測の within-case 検証:
 
