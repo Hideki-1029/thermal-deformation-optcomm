@@ -58,6 +58,7 @@ C:/Users/Hide/Femap/research_model/{case_id}/mapper_from_TD/output.dat
 | header does not mention case | Set Current 失敗。Postprocessing Datasets を確認 |
 | 同じ `.sav` が相対/絶対で二重表示 | 古い絶対パス行を GUI で Delete して DWG 保存。以後の自動化は相対パスのみ |
 | `eNotOpenForWrite` | `DataMapper.Update` を使わない。TD を開き直して `--attach-only` |
+| `RCDataSetManager: already open for write` | 連続 map 中のロック残り。既定でケース間 10s pause（`--case-pause 0` で無効）。再発時は TD 再起動して該当ケースから `--map-only` |
 | Connect 失敗 | 対象 DWG を開いてから `--attach-only` |
 
 ## オプション
@@ -72,6 +73,7 @@ C:/Users/Hide/Femap/research_model/{case_id}/mapper_from_TD/output.dat
 | `--attach-only` | 起動中 TD に attach（推奨） |
 | `--dry-run` | 実行せずパス表示 |
 | `--fail-fast` | 最初の失敗で停止 |
+| `--case-pause` | ケース間待機秒（既定 `10`、`0` で無効） |
 
 ## ファイル
 
