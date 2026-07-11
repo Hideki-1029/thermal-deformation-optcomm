@@ -73,6 +73,16 @@ python "src/pat_acquisition/models/sunface_los/validate.py" --list-cases
 
 → `results/pat_acquisition/sunface_los_model/case*_within_case/`
 
+係数のケース横断比較表（`case*_within_case/` を集約）:
+
+```powershell
+python "src/pat_acquisition/models/sunface_los/summarize_coefficients.py"
+```
+
+→ `results/pat_acquisition/sunface_los_model/sunface_coefficients_comparison.csv`
+
+`validate.py` 実行後も同じ CSV を自動更新する。
+
 PAT 粗捕捉評価（MX/MY/PX/PY ケース。MZ はスキップ）:
 
 ```powershell

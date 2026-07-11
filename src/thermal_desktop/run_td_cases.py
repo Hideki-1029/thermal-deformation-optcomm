@@ -163,19 +163,83 @@ def legacy_com(td: Any, command: str, *, delay_ms: int = 0) -> str:
         return str(td.SendLegacyComCommand(command) or "")
 
 
+def dataset_lookup_names(sav_ref: str, sav_name: str) -> list[str]:
+    """Names to try with DatasetManager.GetDataset (relative refs first)."""
+    names = [sav_ref, sav_ref.replace("\\", "/"), sav_name]
+    deduped: list[str] = []
+    seen: set[str] = set()
+    for name in names:
+        key = name.casefold()
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(name)
+    return deduped
+
+
+def _dataset_name_for_create(sav_ref: str) -> str:
+    return sav_ref.replace("\\", "_")
+
+
+def _is_absolute_path_ref(path_ref: str) -> bool:
+    ref = path_ref.strip()
+    if not ref:
+        return False
+    if ref.startswith("\\\\"):
+        return True
+    if len(ref) >= 2 and ref[1] == ":":
+        return True
+    return ref.startswith("/")
+
+
+def _normalized_path_ref(path_ref: str) -> str:
+    return path_ref.replace("/", "\\").casefold()
+
+
+def _exact_dataset_ref_match(ds_name: str, sav_ref: str) -> bool:
+    left = _normalized_path_ref(ds_name)
+    right = _normalized_path_ref(sav_ref)
+    return left == right or left == _normalized_path_ref(sav_ref.replace("\\", "/"))
+
+
+def _matching_dataset_entries(
+    datasets: list[Any],
+    *,
+    sav_ref: str,
+    sav_name: str,
+) -> list[tuple[int, str, Any]]:
+    """Return matching datasets, preferring relative-path registry entries."""
+    matches: list[tuple[int, str, Any]] = []
+    for ds in datasets:
+        ds_name = str(getattr(ds, "Name", "") or "")
+        if _exact_dataset_ref_match(ds_name, sav_ref):
+            priority = 0
+        elif ds_name.casefold() == sav_name.casefold():
+            priority = 1
+        elif sav_name.casefold() in ds_name.casefold() or casefold_path_match(
+            ds_name, sav_ref
+        ):
+            priority = 2
+        else:
+            continue
+        if _is_absolute_path_ref(ds_name):
+            priority += 3
+        matches.append((priority, ds_name, ds))
+    matches.sort(key=lambda item: (item[0], item[1].casefold()))
+    return matches
+
+
 def activate_dataset(td: Any, OpenTD: Any, *, sav_path: Path, dwg_dir: Path) -> str:
-    """Make ``sav_path`` the active post-processing dataset and verify it stuck."""
+    """Make ``sav_path`` the active post-processing dataset and verify it stuck.
+
+    Registry entries use the DWG-relative ``.sav`` path only so Postprocessing
+    Datasets does not accumulate duplicate absolute-path rows.
+    """
     sav_ref = dataset_ref_for_sav(dwg_dir, sav_path)
     sav_name = sav_path.name
     manager = td.DatasetManager
-    candidates = [
-        sav_ref,
-        sav_ref.replace("\\", "/"),
-        str(sav_path.resolve()),
-        sav_name,
-    ]
 
-    for name in candidates:
+    for name in dataset_lookup_names(sav_ref, sav_name):
         try:
             ds = manager.GetDataset(name)
         except Exception:
@@ -190,25 +254,25 @@ def activate_dataset(td: Any, OpenTD: Any, *, sav_path: Path, dwg_dir: Path) -> 
         break
     else:
         try:
-            for ds in list(manager.GetDatasets()):
-                ds_name = str(getattr(ds, "Name", "") or "")
-                if sav_name.casefold() in ds_name.casefold() or casefold_path_match(
-                    ds_name, sav_ref
-                ):
-                    _log(f"  activating dataset: {ds_name!r}")
-                    try:
-                        ds.SetCurrent()
-                    except Exception as exc:
-                        _log(f"  warning: SetCurrent failed: {exc}")
-                    break
+            matches = _matching_dataset_entries(
+                list(manager.GetDatasets()),
+                sav_ref=sav_ref,
+                sav_name=sav_name,
+            )
+            for _, ds_name, ds in matches:
+                _log(f"  activating dataset: {ds_name!r}")
+                try:
+                    ds.SetCurrent()
+                except Exception as exc:
+                    _log(f"  warning: SetCurrent failed: {exc}")
+                break
         except Exception as exc:
             _log(f"  warning: GetDatasets failed: {exc}")
 
-    for ppsave in (sav_ref, str(sav_path.resolve())):
-        try:
-            legacy_com(td, f'ppsavefile "{ppsave}"')
-        except Exception as exc:
-            _log(f"  warning: ppsavefile {ppsave!r} failed: {exc}")
+    try:
+        legacy_com(td, f'ppsavefile "{sav_ref}"')
+    except Exception as exc:
+        _log(f"  warning: ppsavefile {sav_ref!r} failed: {exc}")
 
     current_name = ""
     try:
@@ -225,8 +289,8 @@ def activate_dataset(td: Any, OpenTD: Any, *, sav_path: Path, dwg_dir: Path) -> 
         _log(f"  creating dataset for {sav_path.name}")
         Dataset = OpenTD.PostProcessing.Dataset
         dataset = manager.CreateDataset(
-            sav_ref.replace("\\", "_"),
-            str(sav_path.resolve()),
+            _dataset_name_for_create(sav_ref),
+            sav_ref,
             Dataset.DataSourceTypes.SF,
         )
         try:

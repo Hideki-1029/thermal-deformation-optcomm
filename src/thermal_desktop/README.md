@@ -19,7 +19,7 @@ TD の Case Set を実行し、DataMapper 出力を Femap の
 ## スクリプトの流れ（ケースごと）
 
 1. staging の `output*` を削除  
-2. 指定ケースの `.sav` を Set Current  
+2. 指定ケースの `.sav` を Set Current（**DWG 相対パスのみ**登録。絶対パスは使わない）  
 3. `tdmapallmappers`（TD → staging）  
 4. staging の `output.dat` ヘッダがケース名を含むか検証  
 5. `{femap}/{case_id}/mapper_from_TD/` へコピー（フォルダは自動作成）  
@@ -56,6 +56,7 @@ C:/Users/Hide/Femap/research_model/{case_id}/mapper_from_TD/output.dat
 | OutputFile is not staging | GUI で `_td_mapper_staging\output.dat` に設定して保存 |
 | Enabled≠1 | GUI で Enabled |
 | header does not mention case | Set Current 失敗。Postprocessing Datasets を確認 |
+| 同じ `.sav` が相対/絶対で二重表示 | 古い絶対パス行を GUI で Delete して DWG 保存。以後の自動化は相対パスのみ |
 | `eNotOpenForWrite` | `DataMapper.Update` を使わない。TD を開き直して `--attach-only` |
 | Connect 失敗 | 対象 DWG を開いてから `--attach-only` |
 

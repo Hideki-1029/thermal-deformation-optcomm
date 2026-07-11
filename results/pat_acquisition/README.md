@@ -22,7 +22,7 @@ pat_acquisition/
 - `fourier_los_model`: 各ケースの `los_angles.csv` からフィットした Fourier 系モデルの PAT 評価。
 - `lightweight_dataset`: `scripts/build_lightweight_dataset.py` が作る共通入力。温度・日照・LOS真値などをケース横断でまとめたもの。
 - `temperature_los_model`: 上記データセットを読んで学習・検証した結果。現状は LOS 予測評価が主で、PAT 粗捕捉評価は未接続。
-- `sunface_los_model`: 同上データセットを読む。`case*_within_case/` が LOS 予測検証、`pat/` が PAT 粗捕捉評価。
+- `sunface_los_model`: 同上データセットを読む。`case*_within_case/` が LOS 予測検証、`pat/` が PAT 粗捕捉評価。係数比較は `sunface_coefficients_comparison.csv`（`summarize_coefficients.py` で再生成）。
 
 ## データ依存
 

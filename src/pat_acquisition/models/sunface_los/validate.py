@@ -42,6 +42,9 @@ from pat_acquisition.models.sunface_los.features import (  # noqa: E402
     predict_sunface_case,
     train_sunface_axis_model,
 )
+from pat_acquisition.models.sunface_los.summarize_coefficients import (  # noqa: E402
+    write_coefficients_comparison,
+)
 
 DEFAULT_ORBIT_PERIOD_S = 6052.0
 
@@ -265,6 +268,9 @@ def main() -> None:
     print(f"Processed {len(case_ids)} case(s)")
     if skipped:
         print(f"Skipped unsupported cases: {', '.join(skipped)}")
+
+    comparison_path = write_coefficients_comparison()
+    print(f"Coefficient comparison: {comparison_path}")
 
 
 def plot_within_case(
