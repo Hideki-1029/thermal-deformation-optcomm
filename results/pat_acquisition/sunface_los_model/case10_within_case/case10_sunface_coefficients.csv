@@ -1,5 +1,5 @@
 ﻿feature,coef_dominant_axis_urad
-intercept,19.819208133317392
-t_sunface_c,-0.23382662557892706
-t_sunface_minus_ref_c,-0.23382884826119754
-t_sunface_minus_opposite_c,29.35529570542584
+intercept,130.21085840045689
+t_sunface_c,-0.7759888510572346
+t_sunface_minus_ref_c,-0.7759891575824907
+t_sunface_minus_opposite_c,29.004547258745202
