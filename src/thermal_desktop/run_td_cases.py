@@ -17,6 +17,8 @@ DEFAULT_FEMAP_MODEL_ROOT = Path(r"C:\Users\Hide\Femap\research_model")
 DEFAULT_STAGING_DIR = DEFAULT_FEMAP_MODEL_ROOT / "_td_mapper_staging"
 MAPPER_SUBDIR = "mapper_from_TD"
 OUTPUT_BASENAME = "output"
+# Pause between cases to reduce RCDataSetManager write-lock races during map.
+DEFAULT_CASE_PAUSE_S = 10.0
 # Relative path to set in the TD DataMapper GUI (from the DWG directory).
 DEFAULT_STAGING_OUTPUT_REL = (
     r"..\..\Femap\research_model\_td_mapper_staging\output.dat"
@@ -569,7 +571,11 @@ def run_pipeline(args: argparse.Namespace) -> int:
     )
 
     failures: list[str] = []
-    for case in selected:
+    case_pause_s = float(args.case_pause)
+    for i, case in enumerate(selected):
+        if i > 0 and case_pause_s > 0:
+            _log(f"  pausing {case_pause_s:g}s between cases...")
+            time.sleep(case_pause_s)
         _log(f"\n=== case {case.number}: {case.name} ===")
         try:
             if not args.map_only:
@@ -661,6 +667,16 @@ def build_parser() -> argparse.ArgumentParser:
         help="Resolve cases/paths and print the plan; do not run/map",
     )
     p.add_argument("--fail-fast", action="store_true", help="Stop on the first case failure")
+    p.add_argument(
+        "--case-pause",
+        type=float,
+        default=DEFAULT_CASE_PAUSE_S,
+        help=(
+            "Seconds to wait between cases (default: "
+            f"{DEFAULT_CASE_PAUSE_S:g}; set 0 to disable). "
+            "Helps avoid intermittent RCDataSetManager write-lock errors while mapping."
+        ),
+    )
     return p
 
 
