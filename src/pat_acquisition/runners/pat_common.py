@@ -80,10 +80,17 @@ FOURIER_MODEL_NAMES = (
 )
 
 SUNFACE_MODEL_NAMES = (
-    "static_bias_correction",
+    "thermal_plus_nonthermal_no_correction",
     "sunface_correction",
     "sunface_correction_with_nonthermal",
 )
+
+# Short legend labels for the acq-time / scan-center panels.
+SUNFACE_PLOT_LABELS = {
+    "thermal_plus_nonthermal_no_correction": "thermal+nonthermal, no correction",
+    "sunface_correction": "sunface only",
+    "sunface_correction_with_nonthermal": "sunface + nonthermal",
+}
 
 
 @dataclass(frozen=True)
@@ -523,9 +530,11 @@ def plot_case(
     results_by_model: dict[str, np.ndarray],
     lightweight_predictions: dict[str, np.ndarray] | None = None,
     title: str = "PAT coarse acquisition with Femap thermal LOS truth",
+    plot_labels: dict[str, str] | None = None,
 ) -> None:
     output_png.parent.mkdir(parents=True, exist_ok=True)
     time_min = times_s / 60.0
+    labels = plot_labels or {}
 
     fig, axes = plt.subplots(4, 1, figsize=(11, 11), sharex=True)
 
@@ -579,13 +588,15 @@ def plot_case(
     axes[1].legend()
 
     for model_name, result in results_by_model.items():
-        axes[2].plot(time_min, result[:, 1], "o-", markersize=3, label=model_name)
+        label = labels.get(model_name, model_name)
+        axes[2].plot(time_min, result[:, 1], "o-", markersize=3, label=label)
     axes[2].set_ylabel("Acq time [s]")
     axes[2].grid(True)
     axes[2].legend()
 
     for model_name, result in results_by_model.items():
-        axes[3].plot(time_min, result[:, 7], "o-", markersize=3, label=model_name)
+        label = labels.get(model_name, model_name)
+        axes[3].plot(time_min, result[:, 7], "o-", markersize=3, label=label)
     axes[3].set_xlabel("Time [min]")
     axes[3].set_ylabel("Scan-center error [urad]")
     axes[3].grid(True)
@@ -640,6 +651,7 @@ def write_case_bundle(
     results_by_model: dict[str, np.ndarray],
     lightweight_predictions: dict[str, np.ndarray] | None,
     title: str,
+    plot_labels: dict[str, str] | None = None,
 ) -> None:
     case_output_dir = output_dir / case_id
     write_result_csv(
@@ -657,6 +669,7 @@ def write_case_bundle(
         results_by_model,
         lightweight_predictions=lightweight_predictions,
         title=title,
+        plot_labels=plot_labels,
     )
 
 
@@ -697,6 +710,7 @@ __all__ = [
     "DEFAULT_TRUTH_OUTPUT_DIR",
     "FOURIER_MODEL_NAMES",
     "SUNFACE_MODEL_NAMES",
+    "SUNFACE_PLOT_LABELS",
     "NonthermalErrorConfig",
     "REPO_ROOT",
     "TRUTH_MODEL_NAMES",

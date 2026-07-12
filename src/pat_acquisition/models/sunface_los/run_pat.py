@@ -27,6 +27,7 @@ from pat_acquisition.runners.pat_common import (  # noqa: E402
     DEFAULT_CONFIG_PATH,
     DEFAULT_SUNFACE_PAT_OUTPUT_DIR,
     SUNFACE_MODEL_NAMES,
+    SUNFACE_PLOT_LABELS,
     add_common_pat_arguments,
     build_case_metadata_paths,
     build_nonthermal_config,
@@ -106,13 +107,12 @@ def run_one_case(
         train_orbits=train_orbits,
     )
     zero_error = np.zeros_like(theta_thermal_true)
-    pred_static = np.asarray(predictions["static_bias"], dtype=float)
     pred_sunface = np.asarray(predictions["sunface"], dtype=float)
 
     model_specs = {
-        "static_bias_correction": {
-            "theta_hat": pred_static,
-            "nonthermal": zero_error,
+        "thermal_plus_nonthermal_no_correction": {
+            "theta_hat": zero_error,
+            "nonthermal": nonthermal_error,
         },
         "sunface_correction": {
             "theta_hat": pred_sunface,
@@ -134,13 +134,13 @@ def run_one_case(
         nonthermal_error,
         results_by_model,
         lightweight_predictions={
-            "static_bias": pred_static,
             "sunface": pred_sunface,
         },
         title=(
             "PAT coarse acquisition with sunface LOS model "
             f"(T_{predictions['sun_face']} -> {predictions['dominant_axis']})"
         ),
+        plot_labels=SUNFACE_PLOT_LABELS,
     )
     return summary_rows_for_models(
         case_id, theta_thermal_true, zero_error, model_specs, results_by_model

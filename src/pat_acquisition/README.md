@@ -154,6 +154,12 @@ results/femap_deformation/*/los_angles.csv
 - `fourier_plus_drift_correction`
 - `fourier_ff_correction_with_nonthermal`
 
+`sunface_los_model/pat/`（軽量 sunface 予測モデル）:
+
+- `thermal_plus_nonthermal_no_correction`（熱+非熱・補正なし）
+- `sunface_correction`（sunface のみ・非熱なし）
+- `sunface_correction_with_nonthermal`（sunface + 非熱）
+
 非熱誤差は、現時点では簡易モデルとして以下を足し合わせる。
 
 - 軌道予測誤差
