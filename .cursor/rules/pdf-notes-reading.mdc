@@ -3,14 +3,19 @@ description: How to read research note PDFs (MD first, PNG for figures/broken te
 alwaysApply: true
 ---
 
-# Research note PDFs (google_doc など)
+# Research note PDFs (google_doc / literature など)
 
-Print-to-PDF メモはテキスト層が無いことが多い。直接 PDF を読まず、次の順で扱う。
+Print-to-PDF メモはテキスト層が無いことが多い。
 
-## 読み方
+## モデル選択（先に確認）
+
+- **API 枠に余裕があり GPT が使えるとき:** PDF を GPT に直接読ませるのを**推奨**する（図・数式・中国語も含め精度が高い）。チャットで「GPT でこの PDF を直接読むのがよさそうです（枠があれば）」と促す。
+- **Grok / Composer など GPT 以外、または枠が厳しいとき:** 下記の MD → PNG フローを使う。
+
+## 読み方（GPT 以外）
 
 1. まず `MD/<pdf名>/content.md` を読む（トークン節約）
-2. 図・数式・日本語が崩れている／空のページだけ、対応する `PNG/<pdf名>/page_XXX.png` を開く
+2. 図・数式・日本語／中国語が崩れている／空のページだけ、対応する `PNG/<pdf名>/page_XXX.png` を開く
 3. PDF 本体の直読みは最終手段
 
 パス対応（例）:
@@ -27,12 +32,14 @@ Print-to-PDF メモはテキスト層が無いことが多い。直接 PDF を�
 - チャットで次を促す:
 
 ```text
-この PDF はまだ MD/PNG 化されていません。先に実行しますか？
+この PDF はまだ MD/PNG 化されていません。
 
-  python scripts/pdf_to_png.py "<pdf or folder>"
-  python scripts/png_to_md.py  "<対応する PNG フォルダ or 親>"
+- API 枠に余裕があれば: GPT で PDF を直接読むのがおすすめです
+- そうでなければ先に:
 
-詳細: scripts/README.md
+  python scripts/prepare_pdf_notes.py "<pdf or folder>"
+
+（内部で PNG → MD。中国語論文は --lang chi_sim+eng。詳細: scripts/README.md）
 ```
 
 `PNG/` は gitignore。ローカル未生成なら上記を促す。

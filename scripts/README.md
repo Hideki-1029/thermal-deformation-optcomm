@@ -90,15 +90,36 @@ python scripts/generate_icso_results.py
 
 ## PDF メモ読み（推奨フロー）
 
-1. `pdf_to_png.py` … ページ画像（gitignore、図の確認用）
-2. `png_to_md.py` … PNG を OCR して Markdown 化（Print-to-PDF 向け）
-3. 普段は MD を読む。図欠落・文字化けのページだけ PNG を開く
-
-（テキスト層がある PDF なら `pdf_to_md.py` でも可。`google_doc/` の Print-to-PDF は空になりやすい）
+**普段使うコマンド（一体）:**
 
 ```bash
-python scripts/pdf_to_png.py docs/research_notes/google_doc
-python scripts/png_to_md.py  docs/research_notes/google_doc/PNG/260712_JANUS研究
+# 単一 PDF → PNG/ + MD/ をまとめて生成
+python scripts/prepare_pdf_notes.py docs/research_notes/google_doc/260712_JANUS研究.pdf
+
+# フォルダ内の全 PDF
+python scripts/prepare_pdf_notes.py docs/research_notes/google_doc
+```
+
+内部順: `pdf_to_png` → `png_to_md`（ファイルは分離のまま）。
+
+その後の読み方:
+
+1. まず `MD/<名前>/content.md`
+2. 図・数式・崩れ箇所だけ `PNG/<名前>/page_XXX.png`
+3. （テキスト層がある PDF なら `pdf_to_md.py` でも可。Print-to-PDF は空になりやすい）
+
+---
+
+## `prepare_pdf_notes.py`
+
+**役割:** PDF メモ準備の一体入口（PNG 化 → OCR で MD 化）。
+
+```bash
+python scripts/prepare_pdf_notes.py path/to/notes.pdf
+python scripts/prepare_pdf_notes.py docs/research_notes/google_doc
+python scripts/prepare_pdf_notes.py notes.pdf --dpi 144
+python scripts/prepare_pdf_notes.py notes.pdf --skip-png   # 既存 PNG だけ OCR
+python scripts/prepare_pdf_notes.py notes.pdf --skip-md    # PNG だけ作る
 ```
 
 ---
@@ -149,7 +170,7 @@ python scripts/png_to_md.py docs/research_notes/google_doc
 **役割:** PDF からネイティブテキストを抽出し Markdown 化。文字が少ない／無いページは PNG へのリンクを付ける。
 
 依存: `pip install pymupdf`  
-任意: `--ocr`（PDF ページ直接 OCR。PNG 経由なら `png_to_md.py` の方がわかりやすい）
+任意: `--ocr`（PDF ページ直接 OCR。PNG 経由なら `png_to_md.py` / `prepare_pdf_notes.py` の方がわかりやすい）
 
 ```bash
 python scripts/pdf_to_md.py docs/research_notes/google_doc
