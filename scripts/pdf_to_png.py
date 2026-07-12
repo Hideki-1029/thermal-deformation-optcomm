@@ -101,8 +101,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--dpi",
         type=float,
-        default=144.0,
-        help="Rasterization DPI (default: 144 ≈ 2x screen)",
+        default=300.0,
+        help="Rasterization DPI (default: 300, better for OCR)",
     )
     return parser.parse_args(argv)
 

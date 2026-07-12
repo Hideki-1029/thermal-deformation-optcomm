@@ -15,7 +15,9 @@ env/
 Thumbs.db
 *.swp
 .vscode/
-.cursor/
+.cursor/*
+!.cursor/rules/
+!.cursor/rules/**
 
 # Large external orbit data (local download — see README.md, data/orbit/README.md)
 *.parquet

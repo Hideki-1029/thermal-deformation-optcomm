@@ -88,6 +88,21 @@ python scripts/generate_icso_results.py
 
 ---
 
+## PDF メモ読み（推奨フロー）
+
+1. `pdf_to_png.py` … ページ画像（gitignore、図の確認用）
+2. `png_to_md.py` … PNG を OCR して Markdown 化（Print-to-PDF 向け）
+3. 普段は MD を読む。図欠落・文字化けのページだけ PNG を開く
+
+（テキスト層がある PDF なら `pdf_to_md.py` でも可。`google_doc/` の Print-to-PDF は空になりやすい）
+
+```bash
+python scripts/pdf_to_png.py docs/research_notes/google_doc
+python scripts/png_to_md.py  docs/research_notes/google_doc/PNG/260712_JANUS研究
+```
+
+---
+
 ## `pdf_to_png.py`
 
 **役割:** PDF をページ単位の PNG にラスタライズする（Print-to-PDF などテキスト層なし向け）。出力は gitignore（`**/PNG/`）。
@@ -101,6 +116,45 @@ python scripts/pdf_to_png.py docs/research_notes/google_doc
 # 単一 PDF → <親>/PNG/<pdf名>/
 python scripts/pdf_to_png.py path/to/notes.pdf
 
-# DPI 変更
-python scripts/pdf_to_png.py docs/research_notes/google_doc --dpi 200
+# DPI 変更（既定は 300）
+python scripts/pdf_to_png.py docs/research_notes/google_doc --dpi 144
 ```
+
+---
+
+## `png_to_md.py`
+
+**役割:** `PNG/<名前>/page_*.png` を Tesseract OCR し、`MD/<名前>/content.md` を書く。
+
+依存:
+- `pip install pytesseract pillow`
+- Tesseract OCR（`winget install --id UB-Mannheim.TesseractOCR -e`）
+- 日本語データ `jpn.traineddata`（未導入なら `%LOCALAPPDATA%\tesseract-ocr\tessdata\` に配置）
+
+```bash
+# 1ドキュメント
+python scripts/png_to_md.py docs/research_notes/google_doc/PNG/260712_JANUS研究
+
+# PNG/ 配下すべて
+python scripts/png_to_md.py docs/research_notes/google_doc/PNG
+
+# 親フォルダ（中の PNG/ を見る）
+python scripts/png_to_md.py docs/research_notes/google_doc
+```
+
+---
+
+## `pdf_to_md.py`
+
+**役割:** PDF からネイティブテキストを抽出し Markdown 化。文字が少ない／無いページは PNG へのリンクを付ける。
+
+依存: `pip install pymupdf`  
+任意: `--ocr`（PDF ページ直接 OCR。PNG 経由なら `png_to_md.py` の方がわかりやすい）
+
+```bash
+python scripts/pdf_to_md.py docs/research_notes/google_doc
+python scripts/pdf_to_md.py docs/research_notes/google_doc --ocr
+python scripts/pdf_to_md.py docs/research_notes/google_doc --link-png always
+```
+
+`MD/` は再生成可能だが軽いので、gitignore せずコミットしてもよい。
