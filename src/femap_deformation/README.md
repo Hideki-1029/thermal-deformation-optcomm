@@ -11,6 +11,7 @@ Femap の熱変形解析結果から STT/LCT 相対変形・LOS 角度を出す�
 | `run_femap_case.py` | **Femap 自動化の入口**。クリーン → mapper import → 解析 → STT/LCT(+パネル中心) Excel 出力 |
 | `reexport_from_op2.py` | **既存 `.op2` から再出力**。結果削除 → OP2 import → Excel 更新（再解析なし） |
 | `plot_stt_lct_relative_deformation.py` | **図の入口**。Excel から相対変形・LOS 予算図を作成 |
+| `plot_lct_face_proxy_los.py` | **LCT 配置代理**。STT 固定 + 各パネル中心を LCT とみなした far-field LOS サマリ |
 
 それ以外はライブラリ:
 
@@ -87,7 +88,33 @@ python -m src.femap_deformation.reexport_from_op2 --cases 4,5,8
 
 `run_femap_case` の Analyze 実行中は使わないこと。
 
-## 3. 相対変形・LOS 図
+## 3. LCT 配置代理の far-field LOS
+
+STT は固定し、指定したパネル中心（または現状 LCT）を LCT 代理として、面外向き法線を名目光軸にした相対回転 LOS（metric B）を出す。  
+デフォルトは **summary.csv のみ**（ファイルが増えにくい）。
+
+```powershell
+# サマリだけ
+python -m src.femap_deformation.plot_lct_face_proxy_los `
+  --cases 4,5 --lct-faces MX,MY,PY
+
+# 気になった組み合わせだけ時系列・図も
+python -m src.femap_deformation.plot_lct_face_proxy_los `
+  --cases 4 --lct-faces MX --write-timeseries --plot --heatmap
+```
+
+出力:
+
+```text
+results/femap_deformation/lct_face_proxy/
+  summary.csv                       # 全ケース横断（再実行分はマージ更新）
+  summary_heatmap_rms_mag.png       # --heatmap
+  {case_id}/
+    summary.csv
+    timeseries/LCT_{face}.csv       # --write-timeseries
+    plots/LCT_{face}.png            # --plot
+```
+## 4. 相対変形・LOS 図
 
 TD / Femap と同じ **ケース番号** 指定:
 
