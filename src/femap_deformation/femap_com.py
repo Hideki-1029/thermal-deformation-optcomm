@@ -124,6 +124,53 @@ def delete_all_of_type(app, entity_type: int) -> int:
         app.DialogAutoSkipMsg = prev_msg
 
 
+# File type for feFileReadNastranResults when importing *.op2 / Nastran results.
+# Matches Siemens community examples for File > Import > Analysis Results.
+FNR_NASTRAN_RESULTS = 8
+
+
+def delete_all_output_sets(app) -> int:
+    """Delete every Femap output set (analysis results). Returns count deleted."""
+    return delete_all_of_type(app, FT_OUT_CASE)
+
+
+def import_nastran_results_op2(app, op2_path: Path) -> int:
+    """
+    Import a Nastran ``.op2`` via ``feFileReadNastranResults``.
+
+    This mirrors the GUI path File > Import > Analysis Results.
+    Returns the number of output sets present after import.
+    """
+    op2_path = Path(op2_path)
+    if not op2_path.is_file():
+        raise FemapComError(f"OP2 file not found: {op2_path}")
+
+    before = entity_count(app, FT_OUT_CASE)
+    prev_skip = getattr(app, "DialogAutoSkip", 0)
+    prev_msg = getattr(app, "DialogAutoSkipMsg", 0)
+    app.DialogAutoSkip = 1
+    app.DialogAutoSkipMsg = 1
+    try:
+        rc = app.feFileReadNastranResults(FNR_NASTRAN_RESULTS, str(op2_path))
+        require_ok(rc, f"feFileReadNastranResults({op2_path})")
+    finally:
+        app.DialogAutoSkip = prev_skip
+        app.DialogAutoSkipMsg = prev_msg
+
+    try:
+        app.feAppUpdatePanes(True)
+    except Exception:
+        pass
+
+    after = entity_count(app, FT_OUT_CASE)
+    if after <= before:
+        raise FemapComError(
+            f"OP2 import did not create output sets: {op2_path} "
+            f"(sets before={before}, after={after})"
+        )
+    return after
+
+
 def set_nastran_output_dir(app, output_dir: Path, *, analysis_id: int = 1) -> None:
     """Point Nastran scratch/output files at the per-case folder.
 

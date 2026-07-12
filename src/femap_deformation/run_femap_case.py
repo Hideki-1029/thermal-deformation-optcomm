@@ -362,7 +362,7 @@ def export_case_excel(
     node_config: Path,
 ) -> Path:
     excel_path = excel_dir / f"{case_id}.xlsx"
-    _log(f"  exporting STT/LCT Excel -> {excel_path}")
+    _log(f"  exporting STT/LCT(+panel centers) Excel -> {excel_path}")
     export_stt_lct_results(app, excel_path, node_config_path=node_config)
     case_excel = case_dir / f"{case_id}.xlsx"
     shutil.copy2(excel_path, case_excel)

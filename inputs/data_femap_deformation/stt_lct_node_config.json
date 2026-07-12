@@ -47,5 +47,38 @@
       "node_id": 19459,
       "cad_position_m": [0.3, 0.3, 0.95]
     }
+  },
+  "panel_center_points": {
+    "description": "Nearest mapper grid nodes to each panel geometric center (from default_surface_9points). Stable across cases while the mesh is unchanged.",
+    "PANEL_MX": {
+      "node_id": 6837,
+      "cad_position_m": [0.005, 0.3, 0.495],
+      "probe_name": "panel_mx_center"
+    },
+    "PANEL_PX": {
+      "node_id": 28360,
+      "cad_position_m": [0.595, 0.3, 0.495],
+      "probe_name": "panel_px_center"
+    },
+    "PANEL_MY": {
+      "node_id": 22371,
+      "cad_position_m": [0.295, 0.0, 0.495],
+      "probe_name": "panel_my_center"
+    },
+    "PANEL_PY": {
+      "node_id": 12827,
+      "cad_position_m": [0.305, 0.6, 0.495],
+      "probe_name": "panel_py_center"
+    },
+    "PANEL_MZ": {
+      "node_id": 484,
+      "cad_position_m": [0.305, 0.3, 0.005],
+      "probe_name": "panel_mz_center"
+    },
+    "PANEL_PZ": {
+      "node_id": 17598,
+      "cad_position_m": [0.295, 0.3, 0.995],
+      "probe_name": "panel_pz_center"
+    }
   }
 }

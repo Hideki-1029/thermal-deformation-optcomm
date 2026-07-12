@@ -8,13 +8,14 @@ Femap の熱変形解析結果から STT/LCT 相対変形・LOS 角度を出す�
 
 | ファイル | 役割 |
 |---|---|
-| `run_femap_case.py` | **Femap 自動化の入口**。クリーン → mapper import → 解析 → STT/LCT Excel 出力 |
+| `run_femap_case.py` | **Femap 自動化の入口**。クリーン → mapper import → 解析 → STT/LCT(+パネル中心) Excel 出力 |
+| `reexport_from_op2.py` | **既存 `.op2` から再出力**。結果削除 → OP2 import → Excel 更新（再解析なし） |
 | `plot_stt_lct_relative_deformation.py` | **図の入口**。Excel から相対変形・LOS 予算図を作成 |
 
 それ以外はライブラリ:
 
 - `femap_com.py` — Femap COM 接続・解析セット操作
-- `export_stt_lct_excel.py` — STT/LCT ノード結果の Excel 出力（`run_femap_case` から呼ばれる）
+- `export_stt_lct_excel.py` — STT/LCT + パネル中心ノード結果の Excel 出力
 
 ## 前提
 
@@ -62,7 +63,31 @@ python -m src.femap_deformation.run_femap_case --cases 8 --skip-export
 python -m src.femap_deformation.run_femap_case --cases 9 --max-loads 3
 ```
 
-## 2. 相対変形・LOS 図
+Excel には STT/LCT に加え、パネル中心 6 点（MX/PX/MY/PY/MZ/PZ）の並進・回転も出る。  
+ノード定義は `inputs/data_femap_deformation/stt_lct_node_config.json`。
+
+## 2. 既存 `.op2` から Excel を更新（再解析なし）
+
+ケースフォルダの `.op2` を Femap に読み直し、STT/LCT + パネル中心の Excel を更新する:
+
+```powershell
+# 計画だけ確認
+python -m src.femap_deformation.reexport_from_op2 --cases 3-15 --dry-run
+
+# 実行（Femap で research_model.modfem を開いておく）
+python -m src.femap_deformation.reexport_from_op2 --cases 3-15
+
+# 単一 / 複数
+python -m src.femap_deformation.reexport_from_op2 --cases 4
+python -m src.femap_deformation.reexport_from_op2 --cases 4,5,8
+```
+
+ケースごとに: 既存 output set 削除 → `.op2` import → Excel 出力  
+（`inputs/data_femap_deformation/{case_id}.xlsx` とケースフォルダへコピー）。
+
+`run_femap_case` の Analyze 実行中は使わないこと。
+
+## 3. 相対変形・LOS 図
 
 TD / Femap と同じ **ケース番号** 指定:
 

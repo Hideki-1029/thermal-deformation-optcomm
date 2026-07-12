@@ -1,8 +1,11 @@
-"""Export STT/LCT translation and rotation from Femap results to Excel/CSV.
+"""Export nodal translation and rotation from Femap results to Excel/CSV.
 
 The Excel layout matches the existing hand-exported files under
 inputs/data_femap_deformation/:
   Set ID | Set Value | Set Title | Study ID | node vectors...
+
+By default this exports STT/LCT plus the six panel-center nodes defined in
+``stt_lct_node_config.json`` (``points`` + ``panel_center_points``).
 """
 
 from __future__ import annotations
@@ -35,16 +38,69 @@ DEFAULT_NODE_CONFIG = (
     / "stt_lct_node_config.json"
 )
 
+# Keep LCT/STT first for backward-compatible column layout, then panels.
+_PANEL_CENTER_ORDER = (
+    "PANEL_MX",
+    "PANEL_PX",
+    "PANEL_MY",
+    "PANEL_PY",
+    "PANEL_MZ",
+    "PANEL_PZ",
+)
 
-def load_stt_lct_nodes(config_path: Path | None = None) -> dict[str, int]:
+_VECTOR_SPECS = (
+    (VEC_TOTAL_T, "1..Total Translation"),
+    (VEC_T1, "2..T1 Translation"),
+    (VEC_T2, "3..T2 Translation"),
+    (VEC_T3, "4..T3 Translation"),
+    (VEC_TOTAL_R, "5..Total Rotation"),
+    (VEC_R1, "6..R1 Rotation"),
+    (VEC_R2, "7..R2 Rotation"),
+    (VEC_R3, "8..R3 Rotation"),
+)
+
+
+def load_node_config(config_path: Path | None = None) -> dict:
     path = Path(config_path) if config_path else DEFAULT_NODE_CONFIG
     with path.open(encoding="utf-8") as f:
-        config = json.load(f)
-    points = config["points"]
+        return json.load(f)
+
+
+def load_stt_lct_nodes(config_path: Path | None = None) -> dict[str, int]:
+    """Return ``{"LCT": id, "STT": id}`` (legacy helper)."""
+    points = load_node_config(config_path)["points"]
     return {
         "LCT": int(points["LCT"]["node_id"]),
         "STT": int(points["STT"]["node_id"]),
     }
+
+
+def load_export_nodes(
+    config_path: Path | None = None,
+    *,
+    include_panel_centers: bool = True,
+) -> list[tuple[str, int]]:
+    """
+    Ordered ``(label, node_id)`` list for Excel export.
+
+    Order: LCT, STT, then PANEL_MX..PANEL_PZ when present in the config.
+    """
+    config = load_node_config(config_path)
+    points = config["points"]
+    nodes: list[tuple[str, int]] = [
+        ("LCT", int(points["LCT"]["node_id"])),
+        ("STT", int(points["STT"]["node_id"])),
+    ]
+    if not include_panel_centers:
+        return nodes
+
+    panel_points = config.get("panel_center_points") or {}
+    for label in _PANEL_CENTER_ORDER:
+        entry = panel_points.get(label)
+        if not isinstance(entry, dict) or "node_id" not in entry:
+            continue
+        nodes.append((label, int(entry["node_id"])))
+    return nodes
 
 
 def _output_set_ids(app) -> list[int]:
@@ -73,17 +129,21 @@ def export_stt_lct_results(
     excel_path: Path,
     *,
     node_config_path: Path | None = None,
+    include_panel_centers: bool = True,
 ) -> Path:
-    nodes = load_stt_lct_nodes(node_config_path)
-    lct_id = nodes["LCT"]
-    stt_id = nodes["STT"]
+    nodes = load_export_nodes(
+        node_config_path,
+        include_panel_centers=include_panel_centers,
+    )
+    if not nodes:
+        raise FemapComError("No export nodes found in node config.")
 
     set_ids = _output_set_ids(app)
     if not set_ids:
         raise FemapComError("No output sets available to export.")
 
     node_obj = app.feNode
-    for label, nid in nodes.items():
+    for label, nid in nodes:
         if node_obj.Exist(nid) != FE_OK:
             raise FemapComError(f"{label} node {nid} does not exist in the model.")
 
@@ -96,44 +156,18 @@ def export_stt_lct_results(
         value = float(getattr(out_meta, "value", 0.0) or 0.0)
         study_id = int(getattr(out_meta, "studyID", 1) or 1)
 
-        def vals(nid: int) -> dict[str, float]:
-            return {
-                "total_t": _get_scalar_at_node(results, set_id, VEC_TOTAL_T, nid),
-                "t1": _get_scalar_at_node(results, set_id, VEC_T1, nid),
-                "t2": _get_scalar_at_node(results, set_id, VEC_T2, nid),
-                "t3": _get_scalar_at_node(results, set_id, VEC_T3, nid),
-                "total_r": _get_scalar_at_node(results, set_id, VEC_TOTAL_R, nid),
-                "r1": _get_scalar_at_node(results, set_id, VEC_R1, nid),
-                "r2": _get_scalar_at_node(results, set_id, VEC_R2, nid),
-                "r3": _get_scalar_at_node(results, set_id, VEC_R3, nid),
-            }
-
-        lct = vals(lct_id)
-        stt = vals(stt_id)
-        rows.append(
-            {
-                "セット ID": set_id,
-                "セットの値": value,
-                "セット　タイトル": title,
-                "スタディID": study_id,
-                f"ノード {lct_id}, 1..Total Translation": lct["total_t"],
-                f"ノード {stt_id}, 1..Total Translation": stt["total_t"],
-                f"ノード {lct_id}, 2..T1 Translation": lct["t1"],
-                f"ノード {stt_id}, 2..T1 Translation": stt["t1"],
-                f"ノード {lct_id}, 3..T2 Translation": lct["t2"],
-                f"ノード {stt_id}, 3..T2 Translation": stt["t2"],
-                f"ノード {lct_id}, 4..T3 Translation": lct["t3"],
-                f"ノード {stt_id}, 4..T3 Translation": stt["t3"],
-                f"ノード {lct_id}, 5..Total Rotation": lct["total_r"],
-                f"ノード {stt_id}, 5..Total Rotation": stt["total_r"],
-                f"ノード {lct_id}, 6..R1 Rotation": lct["r1"],
-                f"ノード {stt_id}, 6..R1 Rotation": stt["r1"],
-                f"ノード {lct_id}, 7..R2 Rotation": lct["r2"],
-                f"ノード {stt_id}, 7..R2 Rotation": stt["r2"],
-                f"ノード {lct_id}, 8..R3 Rotation": lct["r3"],
-                f"ノード {stt_id}, 8..R3 Rotation": stt["r3"],
-            }
-        )
+        row: dict[str, object] = {
+            "セット ID": set_id,
+            "セットの値": value,
+            "セット　タイトル": title,
+            "スタディID": study_id,
+        }
+        for vec_id, suffix in _VECTOR_SPECS:
+            for _label, nid in nodes:
+                row[f"ノード {nid}, {suffix}"] = _get_scalar_at_node(
+                    results, set_id, vec_id, nid
+                )
+        rows.append(row)
 
     df = pd.DataFrame(rows)
     excel_path = Path(excel_path)
