@@ -29,6 +29,8 @@ src/pat_acquisition/
 └── archive/                       # 旧試作スクリプト
 ```
 
+
+
 ## 実行方法
 
 リポジトリルートで実行する。設定は共通 YAML:
@@ -36,6 +38,8 @@ src/pat_acquisition/
 ```text
 src/pat_acquisition/configs/pat_femap_los_config.yaml
 ```
+
+
 
 ### 前提：軽量データセットの構築（温度・Sunface 用）
 
@@ -106,6 +110,8 @@ PAT 粗捕捉評価（MX/MY/PX/PY ケース。MZ はスキップ）:
 ```powershell
 python "src/pat_acquisition/models/sunface_los/run_pat.py"
 python "src/pat_acquisition/models/sunface_los/run_pat.py" --cases 4,5,6
+
+# 一覧示す用。実行はしない
 python "src/pat_acquisition/models/sunface_los/run_pat.py" --list-cases
 ```
 
@@ -116,6 +122,8 @@ python "src/pat_acquisition/models/sunface_los/run_pat.py" --list-cases
 ```powershell
 python "src/pat_acquisition/run_pat_with_femap_los.py"
 ```
+
+
 
 ## 入力
 
@@ -191,6 +199,8 @@ python "src/pat_acquisition/models/fourier_los/run_pat.py" `
   --max-range-urad 1600
 ```
 
+
+
 ## 粗捕捉スキャンの想定
 
 粗捕捉は、scan centerから外側へ広がる矩形スパイラルスキャンとしてモデル化している。各scan点で `dwell_time_s` だけ滞在し、真の目標位置がそのscan点から `detect_radius_urad` 以内に入れば捕捉成功とする。
@@ -217,3 +227,4 @@ python src/orbit/run_orbit_prediction_error.py
 python src/pat_acquisition/runners/run_femap_los_truth.py
 python src/pat_acquisition/models/fourier_los/run_pat.py
 ```
+

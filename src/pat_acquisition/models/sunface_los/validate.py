@@ -36,6 +36,7 @@ from pat_acquisition.models.sunface_los.dataset import (  # noqa: E402
     within_case_split_mask,
 )
 from pat_acquisition.models.sunface_los.features import (  # noqa: E402
+    SUN_FACE_OPPOSITE,
     SunfaceFeatureConfig,
     build_sunface_features,
     normalize_sun_direction,
@@ -191,6 +192,9 @@ def validate_one_case(
     predictions.to_csv(predictions_path, index=False, encoding="utf-8-sig")
     pd.DataFrame(metrics_rows).to_csv(metrics_path, index=False, encoding="utf-8-sig")
     coef_df.to_csv(coef_path, index=False, encoding="utf-8-sig")
+    t_opposite_diff = None
+    if "t_sunface_minus_opposite_c" in features_df.columns:
+        t_opposite_diff = features_df["t_sunface_minus_opposite_c"].to_numpy(dtype=float)
     plot_within_case(
         plot_path,
         case_tag,
@@ -203,6 +207,7 @@ def validate_one_case(
         pred_no,
         features_df["t_sunface_c"].to_numpy(dtype=float),
         train_mask,
+        t_opposite_diff=t_opposite_diff,
     )
 
     print(f"Case: {case_id}")
@@ -285,16 +290,26 @@ def plot_within_case(
     pred_no: np.ndarray,
     t_sunface: np.ndarray,
     train_mask: np.ndarray,
+    t_opposite_diff: np.ndarray | None = None,
 ) -> None:
     t_min = times_s / 60.0
     train_end_min = float(times_s[train_mask][-1] / 60.0) if np.any(train_mask) else t_min[0]
     model_label = f"sunface_{sun_face.lower()}"
+    opposite_face = SUN_FACE_OPPOSITE.get(sun_face)
 
     fig, axes = plt.subplots(4, 1, figsize=(11, 10), sharex=True)
 
     axes[0].plot(t_min, t_sunface, color="#d62728", label=f"T_{sun_face} center")
+    if t_opposite_diff is not None and opposite_face is not None:
+        axes[0].plot(
+            t_min,
+            t_opposite_diff,
+            color="#1f77b4",
+            linestyle="--",
+            label=f"T_{sun_face} - T_{opposite_face}",
+        )
     axes[0].axvline(train_end_min, color="k", linestyle=":", alpha=0.7, label="train/test split")
-    axes[0].set_ylabel(f"T_{sun_face} [C]")
+    axes[0].set_ylabel("T [C]")
     axes[0].grid(True, alpha=0.3)
     axes[0].legend(fontsize=8)
 
@@ -337,7 +352,14 @@ def plot_within_case(
     axes[3].grid(True, alpha=0.3)
     axes[3].legend(fontsize=8)
 
-    fig.suptitle(f"{case_tag} within-case: T_{sun_face} -> LOS {dom_name}")
+    if t_opposite_diff is not None and opposite_face is not None:
+        title = (
+            f"{case_tag} within-case: "
+            f"T_{sun_face}, T_{sun_face}-T_{opposite_face} -> LOS {dom_name}"
+        )
+    else:
+        title = f"{case_tag} within-case: T_{sun_face} -> LOS {dom_name}"
+    fig.suptitle(title)
     fig.tight_layout()
     out_png.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_png, dpi=200)
