@@ -1,0 +1,497 @@
+--- page 1 ---
+  
+978-1-7281-7556-0/21/$31.00 ©2021 IEEE 
+ 
+ 
+JANUS Optical Head Line of Sight Temperature 
+dependence Characterization and Validation by on 
+ground test 
+ 
+Andrea Turella 
+Leonardo S.p.A. 
+Campi Bisenzio, Italy 
+andrea.turella@leonardocompany.com 
+Marilena Amoroso 
+ASI 
+Matera, Italy 
+marilena.amoroso@asi.it 
+Vincenzo Della Corte 
+INAF-IAPS  
+Rome, Italy  
+vincenzo.dellacorte@inaf.it 
+Raffaele Mugnuolo 
+ASI 
+Matera, Italy 
+raffaele.mugnuolo@asi.it 
+Pasquale Palumbo 
+Parthenope University 
+Napoli, Italy 
+pasquale.palumbo@uniparthenope.it 
+Giovanni Enrico Noci 
+Leonardo S.p.A. 
+Campi Bisenzio, Italy 
+giovannienrico.noci@leonardocompany 
+.com 
+ 
+Abstract — JANUS (Jupiter Amorum ac Natorum Undique 
+Scrutator) is the multispectral camera that, on board of JUICE 
+(JUpiter ICy moons Explorer) ESA mission, will prov ide high-
+resolution images of Jupiter atmosphere and major G alilean 
+icy moons surface: Europa, Ganymede, Callisto. Iner tial 
+pointing, mosaicking, object tracking, stereo imagi ng for DTM 
+(Digital Terrain Model) and the peculiar Ganymede L ibration 
+measurements defined highly stringent requirement on the LoS 
+(Line of Sight) knowledge of the JANUS OHU (Optical  Head 
+Unit). Once in flight, the JANUS LoS is expected to  vary as 
+consequence of thermal environment variations, in f act, orbit 
+attitude change, spacecraft maneuvering and scienti fic 
+payloads heat dissipations can modify the OHU tempe rature 
+distribution. Optical elements translation and rota tion have 
+been predicted through a STOP (Structural Thermal O ptical 
+and Performance) Analysis, deriving a linear relati on between 
+LoS, value and uncertainty, and OHU structure tempe rature 
+gradient. This relation has been validated thorough  an on-
+ground and in-air characterization test, the result s are 
+presented in this paper. Test based coefficients al low real time 
+and indirect LoS prediction & evaluation as functio n of OHU 
+temperature sensor readings.  
+Keywords— JUICE ESA mission, JANUS, Optical stabilit y, 
+Performances, Line of Sight Space Instrument, High resolution 
+camera 
+I.  INTRODUCTION  
+The JUpiter ICy moons Explorer (JUICE) mission will  
+survey the Jovian system with a special focus on th e three 
+Galilean Moons – Europa, Ganymede and Callisto – 
+becoming the first SpaceCraft (S/C) to orbit around  the 
+Jupiter moon Ganymede [1]. The main objective of JUICE is 
+to address two key questions: what are the conditio ns for 
+planet formation and the emergence of life? And how  does 
+the Solar System work? The main components of the mission 
+scientific strategy are: 1) to conduct a comparativ e study of 
+Ganymede, Callisto and Europa 2) to provide a compl ete 
+spatial-temporal characterization of the giant, rot ating 
+magnetosphere, and of the meteorology, chemistry an d 
+structure of Jupiter's gaseous atmosphere, and 3) t o study 
+coupling processes inside Jupiter’s system and in p articular 
+about the two key coupling processes within that system: the 
+tidal effects that couple Jupiter with its satellit es, and the 
+electrodynamic interactions that couple Jupiter and  its 
+satellites with their atmospheres, subsurface ocean s, 
+magnetospheres and magnetodisc.  
+JANUS (Jovis Amorum ac Natorum Undique Scrutator) 
+is the narrow-angle camera selected as the visible (from near 
+UV to NIR) imager onboard JUICE. The JANUS instrume nt 
+is composed by three units: 
+- Optical Head Unit (OHU), mounted on the S/C Optic al 
+Bench; 
+- Proximity Electronics Unit (PEU); 
+- Main Electronics Unit (MEU), located in the S/C vault.  
+To meet the mission scientific requirements related to the 
+Jovian Atmosphere investigations and Ganymede Libra tion 
+measurements, the knowledge and characterization of  the 
+Line Of Sight (LOS) of the OHU is crucial. In [2] a  
+Structural-Thermal-Optical-Performance (STOP) analysis of 
+the prediction of the LOS behaviour has been perfor med. In 
+this paper the verification by on ground test measurements of 
+this analysis is reported. 
+II.  LOS CHARACTERIZATION WITH IN-AIR TEST  
+The test focused on the main contributor of the LoS , that 
+is the OMS (Opto Mechanical Structure) [3] deformation due 
+to BW (Baffle Wall) and OW (Optical Wall) temperatu re 
+gradient. 
+According to [2], Y axis rotation is dominant wrt ( with 
+respect to) X rotation, for this reason: 
+  LoS = LoS Y (1) 
+Knowing that all other sources of LoS variation are  of 
+negligible effect, the test was conducted using the  OHU 
+STM (Structural Thermal Model), including FPM (Foca l 
+Plane Module) STM and FWM (Filter Wheel Module) STM. 
+External harness and the S/C purging line were not installed. 
+The involvement of Leonardo as JANUS 
+Instrument Prime contractor 
+and OHU design authority is performed in the frame of Italian Space 
+Agency (ASI) Industrial Contract N. 2018-01- I.0. The Italian Principal 
+Investigator team acknowledges support from ASI und er ASI- INAF 
+agreement N. 2018-25-HH.0. 
+442
+2021 IEEE 8th International Workshop on Metrology for AeroSpace (MetroAeroSpace) | 978-1-7281-7556-0/21/$31.00 ©2021 IEEE | DOI: 10.1109/METROAEROSPACE51421.2021.9511686
+Authorized licensed use limited to: University of Tokyo. Downloaded on July 11,2026 at 08:20:29 UTC from IEEE Xplore.  Restrictions apply. --- page 2 ---
+  
+ 
+ 
+Contributors to LoS such like FPM Detector / PCB 
+deformation and FWM Filters rotation/deformation were not 
+considered. 
+A.  Concept 
+Installed on an aluminum rigid interface plate (kep t at 
+ambient temperature) the OW was heated to obtain a 
+temperature gradient wrt the BW. This gradient lead ed to a 
+differential contraction in X direction of the OW w rt BW, 
+indeed causing a flexure of the full OMS (i.e. Y rotation). 
+The temperature difference between OW and BW is 
+named: Wall’s temperature gradient (ΔT Walls ). 
+ 
+Fig. 1.  : OHU LoS variation due to Walls temperature gradient (spatial) 
+B.  Assumption 
+• Primary Mirror tilt = LoS of OHU  
+The LoS main contribution is the global tilting of 
+OHU structure. Being TEM (Telescope Module) 
+stiffly connected to the OW, any rotation of the OW  
+causes TEM  optical components rotation. So, the 
+measurement of the M1 (Primary Mirror) rotation is 
+equivalent to measure the whole TEM rotation, and 
+of all OHU LoS variation. 
+• Air environment and convection effects  
+Involving only the reflection for theodolite 
+measurement, the test was done in air.  
+The advantages of testing in air were: a) the const ant 
+accessibility to the OHU and the setup; b) the shor t 
+transitory of the temperature distribution accelera ted 
+thanks to convection; c) the absence of «chamber 
+windows bending» due to vacuum that affect the 
+theodolite measurement uncertainty (the LoS 
+variation was previously tested in vacuum, but the 
+depressurized condition induced the window to bend;  
+such bending introduced uncertainty during 
+measurement of more than 60 arcsec, larger than the  
+measure itself).  
+The disadvantage were: a) the convection constantly  
+chilling the OHU so heating power to be injected was 
+widely lost (i.e. setup required high Wattage); b) 
+convection enhanced the hot spots location due to 
+heating injection and reduced the uniformity of the  
+temperature distribution. 
+• Temperature stability in air similar to in flight 
+The test data were collected when the variation of the 
+M1 temperature wrt the OW temperature was slower 
+than 2°C/h. From OHU in flight thermal analysis 
+(Ganymede 500km orbit), the variation is predicted to 
+be 1°C/h.  
+So, the collection of data during in air-lab test w as 
+done when thermal transient was comparable and any 
+eventual different elongation, that could have induced 
+a relative rotation between M1 and OW, was 
+considered negligible wrt global OMS angular 
+rotation (confirmed by analysis [2]).  
+• Heating source location representativeness 
+Test heaters installed were sufficiently representa tive 
+of the hot spots expected from thermal analysis, se e 
+Fig. 4. 
+• Interface 
+OHU interface was rigidly fixed on an aluminum 
+plate kept at room temperature to avoid distortion due 
+to differential thermo-elastic elongation. The plat e 
+needed to be monitored to check its constant 
+temperature all along the test. No external harness es 
+were installed.  
+• Theodolite measurement 
+The rotation of the M1 was measured with a 
+Theodolite, stable and permanently fixed on the lab  
+floor. Since STM flat mirror was uncoated, an 
+Optical Cube was glued on its surface, see Fig. 3. 
+C.  Setup 
+The adopted test setup is shown in Figs. 2, 3 and 4.  
+ 
+Fig. 2.  : Test Setup chain 
+PT100 were used to measure the OHU temperature in i ts 
+main location, and to derive the average temperatur e of the 
+elements: OW, BW, M1 and Aluminum interface plate. 
+ 
+443
+Authorized licensed use limited to: University of Tokyo. Downloaded on July 11,2026 at 08:20:29 UTC from IEEE Xplore.  Restrictions apply. --- page 3 ---
+  
+ 
+ 
+ 
+Fig. 3.  : Test Setup PT100 locations and Optical Cube on M1 
+Dedicated heaters of 50 Watts were placed in the lo wer 
+side of the OW to reproduce the hot spot locations showed in 
+OHU thermal analysis [2] (once in orbit, the heat o n the 
+OHU will be mainly conducted by harnesses). 
+ 
+Fig. 4.  : Test Setup Heaters location and expected in-flight hot spot 
+locations from thermal analysis 
+D.  Test Flow 
+The heating power was increased up to the limit of the 
+power supply (85 Watts) to generate the maximum gra dient 
+between Walls, with the objective of enhancing the 
+deformation of the OMS for a less impacting theodol ite 
+measurement uncertainty. 
+All theodolite measurements were taken when the 
+temperature difference of M1 (which is the slowest 
+temperature variating element during the transient and 
+therefore can be identified as the higher thermal r esistance 
+path) and OW was stabilized within 2°C/h. 
+ 
+Fig. 5.  : Test flow. 
+E.  Test Data 
+The test data collected are presented in graphical form in 
+Figs. 6 and 7. Heat power is shown by black arrows,  each of 
+them representing 5 Watts step increase.  Note that  the 
+rotation around X is confirmed to be negligible wrt  Y 
+rotation. 
+ 
+Fig. 6.  : Test data: Temperature measurments and injected Heating 
+ 
+Fig. 7.  : Test data: Rotation measurments and Heating injected 
+III.  6 L OS PROPORTIONALITY FACTOR  
+The proportionality factor, according to [2], is defined as: 
+ K = LoS / ∆Τ Walls  ± uK (2) 
+A.  Assumptions 
+For the calculation of the gradient some assumption s are 
+made.  
+• The temperature of the OW and BW are equal to 
+the average of all thermistors measurements 
+available. 
+ T
+OW  = avg (T OW i) (3) 
+ TBW = avg (T BWj) (4) 
+• The uncertainty of the Walls temperatures, due to 
+the position of the sensors and the non homogeneity 
+of the surface temperatures (caused by the heaters 
+plus convection that generated the hot spots) will be 
+determined taking into account the dispersion of the 
+values measured:  
+ uT 
+OW  = ± 
+
+ ∑ T	 
+ avgT	  
+  (5) 
+ uT BW  = ± 
+
+ ∑ T	 
+ avgT	  
+  (6) 
+444
+Authorized licensed use limited to: University of Tokyo. Downloaded on July 11,2026 at 08:20:29 UTC from IEEE Xplore.  Restrictions apply. --- page 4 ---
+  
+ 
+ 
+• The uncertainty is also variable as function of the  
+heating power. Non homogeneity increases when 
+heating power increases. The larger uncertainty is 
+always associated to OW (e.g. at 0 Watt, uT 
+OW  = 
+uT BW  =± 0°C, at 85W uT OW  = ± 3.3°C and uT BW = ± 
+1°C). So, applying Kline McClintock formulation 
+[4], the gradient uncertainty can be approximated 
+as:  
+ u∆T
+Walls  =  uT	 
+  uT	 
+  ∼ uT	  (7) 
+• The PT100 measurement uncertainty is ± 0.5°C and 
+it is considered negligible. 
+• The theodolite uncertainty is assumed to be (based 
+on technical laboratory experience): uLoS = 5arcsec 
+= 24μrad. 
+B.  Proportionality Factor 
+Adopting the proportional relation between LoS and 
+ΔT 
+Walls , in agreement with the multidisciplinary study in (2), 
+the K proportional factor was calculated as best li near fit of 
+the test data. The fit was imposed to pass for the reference 
+measurement at ambient temperature, where by definition the 
+LoS is zero when no temperature gradient is present  on the 
+structure. And the uncertainty calculation of the K  factor is 
+obtained as well as linear fit of the measurements including 
+uncertainty values.  
+The fit shows a partial agreement of the test 
+measurements at low  ∆Τ Walls , the causes is probably the not 
+completion of the transitory (i.e. the temperature of the 
+structure was rising slowly, not stabilized yet, ca using low 
+distortion being still close to ambient temperature). 
+Fig. 8 shows also the LoS predicted with the STOP F EM 
+(Finite Element Model) [2] in which the temperature  
+distribution measured during the test (at 85 W) was  imposed 
+as analysis input. The FEM model was updated with the CTE 
+measurement (2.0·10 -6 1/K) of the Invar36 provided by the 
+manufactured ‒ OMS bulk material. The FEM predicted LoS 
+proportional factor K is in agreement with the unce rtainty 
+region of the test results. 
+ 
+Fig. 8.  : LoS vs Walls gradient temperature, analysis prediction, test 
+results, uncertainties and best linear fit 
+IV.  6 L OS & AKE  IN-FLIGHT PREDICTION  
+The LoS can be expressed as: 
+    ∙ ∆ 	!""# t %  &'() t (8) 
+The AKE (Absolute Knowledge Error of Pointing) is 
+defined as the instantaneous knowledge of the point ing error 
+(difference between the actual spacecraft attitude and the 
+desired target attitude guidance reference) at any given time. 
+Part of the AKE is caused by the S/C attitude control and S/C 
+structural deformations; the remaining part is caus ed by the 
+variation of the JANUS LoS. The LoS reference is 
+determined during star calibration (sky pointing). Any 
+variation from the reference LoS during the scienti fic 
+acquisition around Ganymede is. 
+*+    ,-./,.  
+  012-341-/  
+                   ⋅ 6 
+	!""# 
+)78978  
+ 6 	!""# 
+:!";<!=(9  % &>?@  (9) 
+where t is the instantaneous time in which Walls gradient 
+is measured. Please note that ΔTWalls  during calibration is not 
+time dependent being a single calibration activity. 
+A.  Walls gradient measurement during flight 
+When OHU will be in space, during imaging while 
+orbiting, the measurements of the Wall’s temperature will be 
+recorded by two PT1000 in specific locations of the  box, see 
+Fig. 9. 
+ 
+Fig. 9.  : Location of PT1000 in OHU Proto Flight Model 
+To estimate the uncertainty of the Walls gradient 
+measurement using only two sensors (i.e. the temper ature 
+measurment might be representative only of the loca l 
+position), OHU STM TVC (Thermal Vacuum Cycling) tes t 
+data were port-processed. A wide set of PT100 senso rs (at 
+different Walls locations) were registered, offerin g a direct 
+evaluation of the Walls temperature homogeneity. Du ring 
+TVC, thanks to the absence of convection and the sl ow 
+boundary condition change, the gradient based on se nsors 
+BW-X and OW-X (see Fig. 9 and10 to appreciate the 
+identical location of PT100 and PT1000) resulted ve ry close 
+to the value estimated by averaging all available sensors. 
+In Fig. 11, the difference between the gradient mea surement 
+methods (averiging of all sensors available versus use of only 
+two, like on PFM) is represented by a green line. T he 
+maximum and the minimum peak occurred in 
+correspondence of the STM vacuum test boundaries sw itch 
+(fast change from/to hot/cold non operative environ ments). 
+These unrealistic variation will never be seen in f light 
+(slower time scale of Spacecraft Attitude and Orbit  changes 
+during JANUS imaging) High temperature uniformity o f 
+OW and BW are expected. The uncertainty is assumed at 1-
+sigma as the standard deviation over the whole temp erature 
+history recoreded in STM TVC test. 
+445
+Authorized licensed use limited to: University of Tokyo. Downloaded on July 11,2026 at 08:20:29 UTC from IEEE Xplore.  Restrictions apply. --- page 5 ---
+  
+ 
+ 
+ 
+ 
+Fig. 10.  : Location of PT1000 in OHU Structural Thermal Model during 
+Thermal Vacuum Cycling test 
+ 
+Fig. 11.  : Uncertainty in measuring the Walls gradient by means of only 
+two PT1000, data from OHU STM thermal vacuum cycling test 
+B.  LoS empirical functions 
+Neglecting the uncertainty due to the PT1000 
+measurement (i.e. ± 0.1°C from datasheet) and knowing that: 
+ & 6 
+	!""#  ⋅ &?   ⋅ &∆A	!""#  (10) 
+the graphical and tabular form of the LoS function of the 
+Walls gradient is presented in Fig. 12 and 13 with associated 
+2 sigma uncertainty (as to mission scientific requi rement). It 
+is assumed that inverting the Walls gradient, also the LoS 
+and AKE change sign maintaining the proportional relation.  
+ 
+ 
+Fig. 12.  : Graphical form of LoS function of Wall’s gradient (2 sigma 
+uncertainty) 
+ 
+Fig. 13.  : Tabular form of LoS function of Wall’s gradient (2 sigma 
+uncertainty) 
+C.  AKE empirical functions 
+Neglecting the uncertainty due to the PT1000 
+measurement (i.e. ± 0.1° C from datasheet) and know ing 
+that: 
+&
+>?@  
+ B6 	!""# 
+)78978  
+ 6 	!""# 
+:!";<!=(9  ⋅ &?C
+
+ 2 E ⋅ &∆A	  
+ (11) 
+where conservatively uΔTWalls Science  ∼ uΔTWalls Calibration , the 
+graphical and tabular form of the AKE function of t he Walls 
+gradient variation are reported in Fig. 14 and 15. Uncertainty 
+is expressed at 2 sigma (as to mission scientific requirement). 
+ 
+Fig. 14.  : Graphical form of AKE function of Wall’s gradient (2 sigma 
+uncertainty) 
+446
+Authorized licensed use limited to: University of Tokyo. Downloaded on July 11,2026 at 08:20:29 UTC from IEEE Xplore.  Restrictions apply. --- page 6 ---
+  
+ 
+ 
+ 
+Fig. 15.  : Tabular form of AKE function of Wall’s gradient (2 sigma 
+uncertainty) 
+ 
+V.  CONCLUSIONS  
+Thanks to the in air characterization of the LoS as  
+function of the Wall’s gradient, the proportional c onstant K 
+has been measured and expressed with its uncertainty. 
+From the data analysis collected during OHU STM 
+thermal balance/cycle test, the error due to the PT 1000 
+position representativeness wrt average of Walls temperature 
+has been derived and considered for the uncertainty  
+estimation. 
+As result, when OHU will be in flight, the scientific team 
+can use the telemetry of the two PT1000 sensors emb edded 
+in OHU structure (at Baffle Wall and Optical Wall l ocation) 
+to have a real time indirect measurement of the LoS  and the 
+AKE. 
+REFERENCES  
+[1]  Grasset, O., Dougherty, O., Coustenis, A., Bunce, E.J., Erd, C., Titov, 
+D., Blanc, M., Coates, A., Drossart, P., Fletcher, L.N., Hussmann, H., 
+Jaumann, R., Krupp, N., Lebreton, J.-P., Prieto-Bal lesteros, O., 
+Tortora, P., Tosi, F., Van Hoolst, T., “JUpiter ICy  moons Explorer 
+(JUICE): An ESA mission to orbit Ganymede and to ch aracterise the 
+Jupiter system,” PSS 78, 1-21 (2013). 
+[2]  A. Turella, V. Della Corte, at al., “Structural-The rmal-Optical-
+Performance (STOP) analysis for the prediction of t he line-of-sight 
+stability of JANUS camera on board JUICE ESA missio n, ” Proc. 
+SPIE 11103, (2019). 
+[3]  V. Della Corte, G. Noci, A. Turella, R. Paolinetti,  et al., “Scientific 
+objectives of JANUS Instrument onboard JUICE missio n and key 
+technical solutions for its Optical Head,” 2019 IEEE 5th International 
+Workshop on Metrology for AeroSpace (MetroAeroSpace). 
+[4]  S. Kline, F. Mcclintock, “Describing Uncertainties in Single-Sample 
+Experiments,” Mechanical Engineering, Vol. 75, 1953. 
+ 
+ 
+(OW PT1000  - BW PT1000 )sci  - (OW PT1000  - BW PT1000 )calib AKE +unc 2σ -unc 2σ 
+[°C] [μrad] [μrad] [μrad] 
+-8 -58 19 -16 
+-7.5 -54 18 -15 
+-7 -50 17 -14 
+-6.5 -47 16 -14 
+-6 -43 15 -13 
+-5.5 -40 14 -12 
+-5 -36 14 -12 
+-4.5 -32 13 -11 
+-4 -29 12 -11 
+-3.5 -25 11 -10 
+-3 -22 10 -10 
+-2.5 -18 10 -9 
+-2 -14 9 -9 
+-1.5 -11 9 -9 
+-1 -7 8 -8 
+-0.5 -4 8 -8 
+0 0 8 -8 
+0.5 4 8 -8 
+1 7 8 -8 
+1.5 11 9 -9 
+2 14 9 -9 
+2.5 18 10 -9 
+3 22 10 -10 
+3.5 25 11 -10 
+4 29 12 -11 
+4.5 32 13 -11 
+5 36 14 -12 
+5.5 40 14 -12 
+6 43 15 -13 
+6.5 47 16 -14 
+7 50 17 -14 
+7.5 54 18 -15 
+8 58 19 -16 
+447
+Authorized licensed use limited to: University of Tokyo. Downloaded on July 11,2026 at 08:20:29 UTC from IEEE Xplore.  Restrictions apply. 
