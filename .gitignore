@@ -22,3 +22,6 @@ Thumbs.db
 data/orbit/tle/
 data/orbit/sentinel1/
 data/sentinel1_orbits/
+
+# Regenerable PDF page renders (scripts/pdf_to_png.py)
+**/PNG/
