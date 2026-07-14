@@ -33,8 +33,6 @@ src/pat_acquisition/
 └── archive/                       # 旧試作スクリプト
 ```
 
-
-
 ## 実行方法
 
 リポジトリルートで実行する。設定は共通 YAML:
@@ -42,8 +40,6 @@ src/pat_acquisition/
 ```text
 src/pat_acquisition/configs/pat_femap_los_config.yaml
 ```
-
-
 
 ### 前提：軽量データセットの構築（温度・Sunface 用）
 
@@ -128,6 +124,7 @@ python "src/pat_acquisition/models/sunface_los/run_pat.py" --list-cases
 
 ```powershell
 python "src/pat_acquisition/models/sunface_deltaT_los/validate.py" --cases 4,5,6,8,9,10,11,12,13,14,15
+python "src/pat_acquisition/models/sunface_deltaT_los/validate.py" --cases 16-21
 python "src/pat_acquisition/models/sunface_deltaT_los/validate.py" --list-cases
 python "src/pat_acquisition/models/sunface_deltaT_los/summarize_coefficients.py"
 ```
@@ -153,8 +150,6 @@ python "src/pat_acquisition/models/sunface_compo_los/summarize_coefficients.py"
 ```powershell
 python "src/pat_acquisition/run_pat_with_femap_los.py"
 ```
-
-
 
 ## 入力
 
@@ -236,8 +231,6 @@ python "src/pat_acquisition/models/fourier_los/run_pat.py" `
   --lightweight-fourier-order 6 `
   --max-range-urad 1600
 ```
-
-
 
 ## 粗捕捉スキャンの想定
 
