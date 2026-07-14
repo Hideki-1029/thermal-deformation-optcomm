@@ -1,8 +1,5 @@
 """
-Aggregate per-case sunface Ridge coefficients into a cross-case comparison CSV.
-
-Reads ``case*_within_case/*_sunface_coefficients.csv`` under the sunface output
-root and writes a single wide table for quick case-to-case comparison.
+Aggregate per-case deltaT Ridge coefficients into a cross-case comparison CSV.
 """
 
 from __future__ import annotations
@@ -18,35 +15,34 @@ SRC_ROOT = REPO_ROOT / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
-from pat_acquisition.models.sunface_los.dataset import (  # noqa: E402
+from pat_acquisition.models.sunface_deltaT_los.dataset import (  # noqa: E402
     DEFAULT_OUTPUT_ROOT,
 )
 from thermal_desktop.case_selection import case_number_from_name  # noqa: E402
 
-DEFAULT_COMPARISON_CSV = DEFAULT_OUTPUT_ROOT / "sunface_coefficients_comparison.csv"
+DEFAULT_COMPARISON_CSV = DEFAULT_OUTPUT_ROOT / "deltaT_coefficients_comparison.csv"
 DEFAULT_COMPARISON_DISPLAY_CSV = (
-    DEFAULT_OUTPUT_ROOT / "sunface_coefficients_comparison_display.csv"
+    DEFAULT_OUTPUT_ROOT / "deltaT_coefficients_comparison_display.csv"
 )
-# Human-readable companion; full-precision CSV remains the source of truth.
 DISPLAY_FLOAT_FORMAT = "%.3g"
 
 COEF_COLUMNS = {
     "intercept": "intercept_urad",
-    "t_sunface_c": "coef_t_sunface_c_urad",
-    "t_sunface_minus_ref_c": "coef_t_sunface_minus_ref_c_urad",
     "t_sunface_minus_opposite_c": "coef_t_sunface_minus_opposite_c_urad",
 }
+
+FILE_STEM = "deltaT"
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Build cross-case sunface coefficient comparison CSV."
+        description="Build cross-case sunface-deltaT coefficient comparison CSV."
     )
     parser.add_argument(
         "--input-dir",
         type=Path,
         default=DEFAULT_OUTPUT_ROOT,
-        help="Sunface output root containing case*_within_case/ folders.",
+        help="deltaT output root containing case*_within_case/ folders.",
     )
     parser.add_argument(
         "--output",
@@ -58,7 +54,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def _read_case_metadata(case_dir: Path, case_tag: str) -> dict[str, str]:
-    predictions_path = case_dir / f"{case_tag}_sunface_predictions.csv"
+    predictions_path = case_dir / f"{case_tag}_{FILE_STEM}_predictions.csv"
     if not predictions_path.exists():
         return {"case_id": "", "sun_face": "", "dominant_axis": ""}
     head = pd.read_csv(predictions_path, nrows=1)
@@ -70,19 +66,19 @@ def _read_case_metadata(case_dir: Path, case_tag: str) -> dict[str, str]:
 
 
 def _read_test_metrics(case_dir: Path, case_tag: str, dominant_axis: str) -> dict[str, float]:
-    metrics_path = case_dir / f"{case_tag}_sunface_metrics.csv"
+    metrics_path = case_dir / f"{case_tag}_{FILE_STEM}_metrics.csv"
     if not metrics_path.exists():
         return {}
 
     metrics_df = pd.read_csv(metrics_path)
-    sunface_rows = metrics_df[
+    model_rows = metrics_df[
         (metrics_df["split"] == "test")
-        & (metrics_df["model"].astype(str).str.startswith("sunface_"))
+        & (metrics_df["model"].astype(str).str.startswith("deltaT_"))
     ]
-    if sunface_rows.empty:
+    if model_rows.empty:
         return {}
 
-    row = sunface_rows.iloc[0]
+    row = model_rows.iloc[0]
     dom_col = "rmse_x_urad" if dominant_axis == "x" else "rmse_y_urad"
     return {
         "test_rmse_norm_urad": float(row["rmse_norm_urad"]),
@@ -97,7 +93,7 @@ def build_coefficients_comparison(input_dir: Path) -> pd.DataFrame:
 
     for case_dir in sorted(input_dir.glob("case*_within_case")):
         case_tag = case_dir.name.replace("_within_case", "")
-        coef_paths = sorted(case_dir.glob(f"{case_tag}_sunface_coefficients.csv"))
+        coef_paths = sorted(case_dir.glob(f"{case_tag}_{FILE_STEM}_coefficients.csv"))
         if not coef_paths:
             continue
 

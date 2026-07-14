@@ -19,10 +19,14 @@ src/pat_acquisition/
 │   ├── temperature_los/
 │   │   ├── features.py / dataset.py / model.py
 │   │   └── train.py               # → results/.../temperature_los_model/
-│   └── sunface_los/
+│   ├── sunface_los/
+│   │   ├── features.py / dataset.py / model.py
+│   │   ├── validate.py            # → results/.../sunface_los_model/{case}_within_case/
+│   │   └── run_pat.py             # → results/.../sunface_los_model/pat/
+│   └── sunface_deltaT_los/
 │       ├── features.py / dataset.py / model.py
-│       ├── validate.py            # → results/.../sunface_los_model/{case}_within_case/
-│       └── run_pat.py             # → results/.../sunface_los_model/pat/
+│       └── validate.py            # → results/.../sunface_deltaT_los_model/{case}_within_case/
+│                                  # LOS ~ b + a*(T_sun - T_opp) only
 ├── configs/
 ├── docs/
 ├── tools/                         # スライド等の派生・互換ラッパー
@@ -81,7 +85,7 @@ python "src/pat_acquisition/models/temperature_los/train.py"
 
 → `results/pat_acquisition/temperature_los_model/`
 
-### Sunface モデル
+### Sunface モデル（既存: T_sun + (T_sun−T_ref) + (T_sun−T_opp)）
 
 事前に `python scripts/build_lightweight_dataset.py` を実行済みであること。
 
@@ -102,6 +106,7 @@ python "src/pat_acquisition/models/sunface_los/summarize_coefficients.py"
 ```
 
 → `results/pat_acquisition/sunface_los_model/sunface_coefficients_comparison.csv`
+（閲覧用の有効数字3桁版: `sunface_coefficients_comparison_display.csv`）
 
 `validate.py` 実行後も同じ CSV を自動更新する。
 
@@ -116,6 +121,19 @@ python "src/pat_acquisition/models/sunface_los/run_pat.py" --list-cases
 ```
 
 → `results/pat_acquisition/sunface_los_model/pat/`
+
+### Sunface ΔT モデル（最小: LOS ~ b + a·(T_sun − T_opp)）
+
+既存 `sunface_los` は残し、共線項 `T_sun` / `(T_sun−T_ref)` を外した版。切片 `b` の解釈用。
+
+```powershell
+python "src/pat_acquisition/models/sunface_deltaT_los/validate.py" --cases 4,5,6,8,9,10,11,12,13,14,15
+python "src/pat_acquisition/models/sunface_deltaT_los/validate.py" --list-cases
+python "src/pat_acquisition/models/sunface_deltaT_los/summarize_coefficients.py"
+```
+
+→ `results/pat_acquisition/sunface_deltaT_los_model/case*_within_case/`  
+→ `results/pat_acquisition/sunface_deltaT_los_model/deltaT_coefficients_comparison.csv`
 
 ### 互換エントリ（truth + Fourier を連続実行）
 
@@ -177,6 +195,7 @@ results/pat_acquisition/
 ├── fourier_los_model/
 ├── temperature_los_model/
 ├── sunface_los_model/
+├── sunface_deltaT_los_model/   # b + a*(T_sun-T_opp) only
 └── lightweight_dataset/   # 温度・sunface の共通入力
 ```
 
