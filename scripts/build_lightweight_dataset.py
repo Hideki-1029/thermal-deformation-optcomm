@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import argparse
+import importlib.util
 from pathlib import Path
+from types import SimpleNamespace
 
 import numpy as np
 import pandas as pd
@@ -12,13 +14,17 @@ DEFAULT_ORBIT_CATALOG = REPO_ROOT / "cases" / "orbit_catalog.xlsx"
 DEFAULT_SYMBOL_DIR = REPO_ROOT / "inputs" / "data_symbols_TD"
 DEFAULT_FEMAP_RESULT_DIR = REPO_ROOT / "results" / "femap_deformation"
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "results" / "pat_acquisition" / "lightweight_dataset"
+DEFAULT_MAPPER_ROOT = Path("C:/Users/Hide/Femap/research_model")
+DEFAULT_PROBE_SET_FILE = REPO_ROOT / "cases" / "temperature_probe_sets.yaml"
+EXTRACT_SCRIPT = REPO_ROOT / "scripts" / "extract_mapper_temperature_probe.py"
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
             "Build lightweight LOS model dataset by merging case metadata, "
-            "orbit catalog, TD LOGIC_SUN symbols, representative temperature CSV, and LOS CSV."
+            "orbit catalog, TD LOGIC_SUN symbols, representative temperature CSV, and LOS CSV. "
+            "Missing probe-set temperature CSVs are extracted from mapper_from_TD when available."
         )
     )
     parser.add_argument("--case-matrix", type=Path, default=DEFAULT_CASE_MATRIX)
@@ -27,6 +33,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--orbit-catalog-sheet", default="orbit_catalog")
     parser.add_argument("--symbol-dir", type=Path, default=DEFAULT_SYMBOL_DIR)
     parser.add_argument("--femap-result-dir", type=Path, default=DEFAULT_FEMAP_RESULT_DIR)
+    parser.add_argument(
+        "--mapper-root",
+        type=Path,
+        default=DEFAULT_MAPPER_ROOT,
+        help="Root containing {case_id}/mapper_from_TD/ (for auto temperature extract).",
+    )
     parser.add_argument("--temperature-csv-name", default="default_surface_9points_temperatures.csv")
     parser.add_argument(
         "--extra-temperature-csv-names",
@@ -37,12 +49,84 @@ def parse_args() -> argparse.Namespace:
             "Pass empty list to disable: --extra-temperature-csv-names"
         ),
     )
+    parser.add_argument(
+        "--no-auto-extract-temps",
+        action="store_true",
+        help="Do not extract missing temperature CSVs from mapper_from_TD.",
+    )
+    parser.add_argument("--probe-set-file", type=Path, default=DEFAULT_PROBE_SET_FILE)
     parser.add_argument("--los-csv-name", default="los_angles.csv")
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     parser.add_argument("--train-ratio", type=float, default=0.6)
     parser.add_argument("--val-ratio", type=float, default=0.2)
     parser.add_argument("--seed", type=int, default=42)
     return parser.parse_args()
+
+
+def probe_set_name_from_temperature_csv(csv_name: str) -> str | None:
+    """Map ``{probe_set}_temperatures.csv`` -> probe set name."""
+    stem = Path(csv_name).name
+    suffix = "_temperatures.csv"
+    if not stem.endswith(suffix):
+        return None
+    return stem[: -len(suffix)]
+
+
+def _load_extract_module():
+    spec = importlib.util.spec_from_file_location(
+        "extract_mapper_temperature_probe", EXTRACT_SCRIPT
+    )
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Cannot load extract script: {EXTRACT_SCRIPT}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def ensure_temperature_csv(
+    *,
+    case_id: str,
+    csv_path: Path,
+    mapper_root: Path,
+    probe_set_file: Path,
+    auto_extract: bool,
+) -> bool:
+    """
+    Return True if ``csv_path`` exists (extracting from mapper when missing).
+    """
+    if csv_path.exists():
+        return True
+    if not auto_extract:
+        return False
+
+    probe_set = probe_set_name_from_temperature_csv(csv_path.name)
+    if not probe_set:
+        print(
+            f"  cannot auto-extract {csv_path.name}: "
+            "expected name like {{probe_set}}_temperatures.csv"
+        )
+        return False
+
+    mapper_dir = mapper_root / case_id / "mapper_from_TD"
+    grid_path = mapper_dir / "outputMapSummaryGridPoints.txt"
+    transient_path = mapper_dir / "outputTransient.txt"
+    if not (grid_path.exists() and transient_path.exists()):
+        print(
+            f"  cannot auto-extract {csv_path.name} for {case_id}: "
+            f"mapper missing under {mapper_dir}"
+        )
+        return False
+
+    print(f"  auto-extract {probe_set} <- {mapper_dir}")
+    extract = _load_extract_module()
+    csv_path.parent.mkdir(parents=True, exist_ok=True)
+    args = SimpleNamespace(
+        probe_set_file=probe_set_file,
+        probe_set=probe_set,
+        output_dir=csv_path.parent,
+    )
+    extract.run_probe_set(args, grid_path, transient_path)
+    return csv_path.exists()
 
 
 def normalize_ratio(train_ratio: float, val_ratio: float) -> tuple[float, float, float]:
@@ -239,6 +323,17 @@ def main() -> None:
             los_path = args.femap_result_dir / case_id / args.los_csv_name
         temp_path = args.femap_result_dir / case_id / args.temperature_csv_name
         symbol_path = args.symbol_dir / f"{case_id}.xlsx"
+        auto_extract = not args.no_auto_extract_temps
+
+        # Only spend mapper I/O when the case can actually enter the dataset.
+        if los_path.exists() and symbol_path.exists() and not temp_path.exists():
+            ensure_temperature_csv(
+                case_id=case_id,
+                csv_path=temp_path,
+                mapper_root=args.mapper_root,
+                probe_set_file=args.probe_set_file,
+                auto_extract=auto_extract,
+            )
 
         if not (los_path.exists() and temp_path.exists() and symbol_path.exists()):
             print(
@@ -251,6 +346,14 @@ def main() -> None:
         temperature = read_representative_temperatures(temp_path)
         for extra_name in args.extra_temperature_csv_names or []:
             extra_path = args.femap_result_dir / case_id / extra_name
+            if not extra_path.exists():
+                ensure_temperature_csv(
+                    case_id=case_id,
+                    csv_path=extra_path,
+                    mapper_root=args.mapper_root,
+                    probe_set_file=args.probe_set_file,
+                    auto_extract=auto_extract,
+                )
             if not extra_path.exists():
                 print(f"Skip extra temps for {case_id}: missing {extra_path.name}")
                 continue

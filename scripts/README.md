@@ -49,19 +49,29 @@ python scripts/export_case_inputs.py
 
 **役割:** case / orbit / TD symbols / Femap LOS・温度 CSV を結合し、軽量 LoS モデル用データセットを作る。
 
+温度 CSV（9点・`compo_attach_points` など）がケースフォルダに無くても、  
+`{mapper-root}/{case_id}/mapper_from_TD/` があれば **自動抽出してから結合**する（既存 CSV は触らない）。
+
 ```bash
 python scripts/build_lightweight_dataset.py
+
+# 自動抽出を切る
+python scripts/build_lightweight_dataset.py --no-auto-extract-temps
+
 # 任意: --case-matrix --orbit-catalog --symbol-dir --femap-result-dir
-#       --output-dir --train-ratio --val-ratio --seed
+#       --mapper-root --output-dir --train-ratio --val-ratio --seed
+#       --extra-temperature-csv-names   # 空指定で extra マージ無効
 ```
 
-既定出力: `results/pat_acquisition/lightweight_dataset/`
+既定出力: `results/pat_acquisition/lightweight_dataset/`  
+既定 extra: `compo_attach_points_temperatures.csv`
 
 ---
 
 ## `extract_mapper_temperature_probe.py`
 
-**役割:** Thermal Desktop → Femap mapper 出力から、代表ノード（または probe set）の温度履歴を抽出する。
+**役割:** Thermal Desktop → Femap mapper 出力から、代表ノード（または probe set）の温度履歴を抽出する。  
+通常は `build_lightweight_dataset.py` が不足分を呼ぶので、単体実行はデバッグ・再抽出用。
 
 ```bash
 # 単一パネル代表点
@@ -69,6 +79,7 @@ python scripts/extract_mapper_temperature_probe.py --mapper-dir <path> --panel P
 
 # probe set（cases/temperature_probe_sets.yaml）
 python scripts/extract_mapper_temperature_probe.py --mapper-dir <path> --probe-set default_surface_9points
+python scripts/extract_mapper_temperature_probe.py --mapper-dir <path> --probe-set compo_attach_points
 ```
 
 既定の `--mapper-dir` はローカル Femap パス。環境に合わせて指定する。
