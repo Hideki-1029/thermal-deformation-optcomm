@@ -23,10 +23,14 @@ src/pat_acquisition/
 │   │   ├── features.py / dataset.py / model.py
 │   │   ├── validate.py            # → results/.../sunface_los_model/{case}_within_case/
 │   │   └── run_pat.py             # → results/.../sunface_los_model/pat/
-│   └── sunface_deltaT_los/
+│   ├── sunface_deltaT_los/
+│   │   ├── features.py / dataset.py / model.py
+│   │   └── validate.py            # → results/.../sunface_deltaT_los_model/{case}_within_case/
+│   │                              # LOS ~ b + a*(T_sun - T_opp) only
+│   └── sunface_deltaT_bcase_los/
 │       ├── features.py / dataset.py / model.py
-│       └── validate.py            # → results/.../sunface_deltaT_los_model/{case}_within_case/
-│                                  # LOS ~ b + a*(T_sun - T_opp) only
+│       └── validate.py            # → results/.../sunface_deltaT_bcase_los_model/
+│                                  # hierarchical: shared a + b_case(sun, I_heat)
 ├── configs/
 ├── docs/
 ├── tools/                         # スライド等の派生・互換ラッパー
@@ -132,6 +136,24 @@ python "src/pat_acquisition/models/sunface_deltaT_los/summarize_coefficients.py"
 → `results/pat_acquisition/sunface_deltaT_los_model/case*_within_case/`  
 → `results/pat_acquisition/sunface_deltaT_los_model/deltaT_coefficients_comparison.csv`
 
+### Sunface ΔT + case bias（階層: `sunface_deltaT_bcase_los`）
+
+軌道内は共有 `a(sun)` + ケース定数 `b_case`。ケース間で
+
+`b_case ≈ b0(sun) + c_prop·I_prop + c_pcdu·I_pcdu`
+
+（既定では発熱フラグは MY/PY のみ有効）。within-case にコンポ温度を足さない。
+
+```powershell
+python "src/pat_acquisition/models/sunface_deltaT_bcase_los/validate.py" --cases 4-6,8-21
+python "src/pat_acquisition/models/sunface_deltaT_bcase_los/validate.py" --list-cases
+# 発熱フラグを全太陽面に広げる例:
+python "src/pat_acquisition/models/sunface_deltaT_bcase_los/validate.py" --cases 4-6,8-21 --heat-faces all
+```
+
+→ `results/pat_acquisition/sunface_deltaT_bcase_los_model/bcase_case_table.csv`  
+→ `.../bcase_level2_coefficients.csv` / `bcase_a_shared.csv` / `bcase_los_metrics.csv`
+
 ### Sunface + コンポ取付温度モデル（compo: ΔT + PROP/PCDU attach）
 
 `sunface_deltaT_los` に PROP/PCDU 取付点温度（`T − T_ref`）を追加した版。  
@@ -203,7 +225,8 @@ results/pat_acquisition/
 ├── fourier_los_model/
 ├── temperature_los_model/
 ├── sunface_los_model/
-├── sunface_deltaT_los_model/   # b + a*(T_sun-T_opp) only
+├── sunface_deltaT_los_model/      # b + a*(T_sun-T_opp) only
+├── sunface_deltaT_bcase_los_model/ # hierarchical b_case + shared a
 └── lightweight_dataset/   # 温度・sunface の共通入力
 ```
 

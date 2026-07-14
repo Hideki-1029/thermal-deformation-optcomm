@@ -1,0 +1,248 @@
+# 階層 sunface ΔT モデル（`sunface_deltaT_bcase_los`）
+
+- 作成: 2026-07-14
+- 背景: `260714_sunface_compo_handoff.md` までの試行錯誤の結論として実装・検証
+- パッケージ: `src/pat_acquisition/models/sunface_deltaT_bcase_los/`
+- 結果: `results/pat_acquisition/sunface_deltaT_bcase_los_model/`
+
+---
+
+## 0. 結論（先に読む）
+
+熱ひずみ LOS（支配軸）の主成分は、次の**階層モデル**でケース横断に説明できる。
+
+```text
+# Level 1（軌道内・時刻 t）
+LOS_dom(t) ≈ b_case + a(sun_face) · ΔT(t)
+
+# Level 2（ケース間・定数）
+b_case ≈ b0(sun_face) + c_prop · I_prop + c_pcdu · I_pcdu
+```
+
+ここで
+
+- `ΔT(t) = T_sunface_center − T_opposite_center`（計測／シミュレーション温度）
+- `sun_face ∈ {MX, MY, PX, PY}`
+- `I_prop`, `I_pcdu` ∈ {0,1}（コンポ発熱 ON/OFF）
+- **`a`, `b0_*`, `c_prop`, `c_pcdu` はケース横断の固定係数**
+
+生の支配軸はだいたい **100～1000+ µrad**。本モデル後の残りは標準ケースで **数 µrad**、被覆・HOT でも **十数 µrad 以下**。数百 µrad 級の熱バイアスに対し 1～2 桁の低減。
+
+先行の within-case 拡張（`sunface_compo_los` / `sunface_compo_local_los`）は、取付温度を時系列特徴に入れると共線・低 SNR で係数が壊れる。**コンポ効果は軌道内特徴ではなく、ケース定数 `b` 側に置く**のが正しい分離だった。
+
+---
+
+## 1. モデルの形
+
+### 1.1 Level 1 — 軌道内（時変）
+
+支配軸のみを温度で説明する（非支配軸は別扱い／静的寄り）。
+
+| 記号 | 意味 |
+|------|------|
+| `ΔT(t)` | 太陽面パネル中心 − 反対面パネル中心 [°C] |
+| `a(sun)` | 感度 [µrad/°C]。**太陽面ごとに 1 値**（符号は面で変わる） |
+| `b_case` | そのケースの DC バイアス [µrad]（軌道内では定数） |
+
+物理イメージ: 面間温度差が構造の「曲げ／反り」を駆動し、LOS 支配軸にほぼ線形に載る。切片 `b` は ΔT ゼロ近傍でも残るオフセット（取付・内部発熱の DC 残差など）。
+
+### 1.2 Level 2 — ケース間（`b` の説明）
+
+| 記号 | 意味 |
+|------|------|
+| `b0(sun)` | STT+LCT のみ（PROP/PCDU OFF）のときのベースバイアス。面ごと |
+| `I_prop` | PROP 発熱 ON なら 1 |
+| `I_pcdu` | PCDU 発熱 ON なら 1 |
+| `c_prop`, `c_pcdu` | 各発熱が `b` に足す**残差 DC**（∆T に入りきらない分）[µrad] |
+
+実装の既定: 発熱フラグが効くのは **MY / PY のみ**（PROP/PCDU 取付面）。MX/PX では `I_*` を設計行列上ゼロにする（実測でも PX の発熱モード差は数 µrad 程度）。
+
+`ALL_HEAT` は `I_prop=I_pcdu=1`。効果はほぼ足し算（MY/PY のスクリーニングで確認済み）。
+
+### 1.3 ケースごとに「測る／知る」もの vs 固定値
+
+| 入力（ケース依存） | 固定パラメータ（横断） |
+|--------------------|------------------------|
+| `ΔT(t)` 時系列 | `a(MX/MY/PX/PY)` × 4 |
+| 太陽面 | `b0(MX/MY/PX/PY)` × 4 |
+| PROP/PCDU ON/OFF | `c_prop`, `c_pcdu` × 2 |
+
+合計 **10 個のスカラー係数**で、複数太陽面・発熱モードの支配軸 LOS をまとめて記述する。
+
+---
+
+## 2. 係数の求め方
+
+### Step A — ケースごと（Level 1）
+
+各ケースの先頭 1 軌道を train に使い、
+
+```text
+LOS_dom ≈ b + a · ΔT
+```
+
+を Ridge（`λ≈1e-3`、実質ほぼ OLS）で当て、切片を **`b_emp`**、傾きを **`a_emp`** とする。
+
+### Step B — ケース横断（Level 2）
+
+全ケースの `(sun, I_prop, I_pcdu, b_emp)` を 1 行にして OLS:
+
+```text
+b_emp ≈ Σ_face b0_face · 1_face + c_prop · I_prop_eff + c_pcdu · I_pcdu_eff
+```
+
+グローバル切片は置かない（面ダミー `b0_*` が切片役）。
+
+### Step C — 共有 `a`
+
+面ごとに `a_emp` の中央値を **`a_shared(sun)`** とする。予測時は
+
+```text
+LOS_dom_hat(t) = b_pred(sun, I_prop, I_pcdu) + a_shared(sun) · ΔT(t)
+```
+
+Leave-one-case-out で Level-2 だけ再フィットし、`b_pred_loo` も評価する。
+
+---
+
+## 3. フィット結果（cases 4–6, 8–21）
+
+実行:
+
+```powershell
+python "src/pat_acquisition/models/sunface_deltaT_bcase_los/validate.py" --cases 4-6,8-21
+```
+
+### 3.1 共有 `a` [µrad/°C]
+
+| sun | a_shared |
+|-----|----------|
+| MX | +30.6 |
+| MY | +28.6 |
+| PX | −28.1 |
+| PY | −28.7 |
+
+絶対値はおおむね **28–31 µrad/°C**。符号は太陽面（支配軸の向き）で決まる。`sunface_deltaT_los` の within-case `a` と一致。
+
+### 3.2 Level-2 係数 [µrad]
+
+| feature | coef |
+|---------|------|
+| b0_MX | +15.2 |
+| b0_MY | +2.8 |
+| b0_PX | −12.0 |
+| b0_PY | −23.1 |
+| c_prop | **−23.8** |
+| c_pcdu | **−11.1** |
+
+解釈の要点:
+
+- 面ごとのベース `b0` は数十 µrad オーダーで、太陽面によって符号・大きさが違う。
+- PROP/PCDU はどちらも **`b` をより負側へ**ずらす（同符号）。MY では概ね  
+  `Δb_PROP≈−24`, `Δb_PCDU≈−11`, 両方≈−35 → ALL_HEAT と整合。
+- 面加熱の主効果の多くはすでに **`a·ΔT` に吸収**される。Level-2 の `c_*` は「ΔT に入りきらない DC 残差」。
+
+### 3.3 `b_emp` vs `b_pred`（要約）
+
+| 指標 | 値 |
+|------|-----|
+| in-sample `b` RMSE | **1.72 µrad** |
+| LOO `b` RMSE | **2.31 µrad** |
+| 最大 |Δb|（主に HOT case10） | ~5–7 µrad |
+
+発熱スクリーニング（MY: 15/13/14/04、PY: 16/18/19/08）は Level-2 の足し算でほぼ再現。MX は ALL≈STTLCT（`b≈+15`）。PX は発熱フラグ無効のためすべて `b0_PX` 近傍（実測差も小さい）。
+
+詳細表: `results/pat_acquisition/sunface_deltaT_bcase_los_model/bcase_case_table_display.csv`
+
+### 3.4 支配軸 LOS 残差（test RMSE）
+
+標準の 1213COLD + 既定被覆:
+
+| 面 | 典型 test RMSE（階層予測） |
+|----|----------------------------|
+| MY 発熱系列 | ~6.5–6.8 µrad |
+| PY | ~3 µrad |
+| MX | ~3 µrad |
+| PX | ~5–6 µrad |
+
+この **~数 µrad** は、主に Level-1 の時変残差の床（`b_emp + a_emp·ΔT` の oracle と同程度）。Level-2 で `b` を置き換えても、標準ケースではほぼ床を維持する。
+
+### 3.5 生スケールとの比較（オーダー感）
+
+| case | 生 RMS / peak（支配軸） | モデル後 test RMSE |
+|------|-------------------------|---------------------|
+| 04 MY ALL | ~160 / ~260 | ~7 |
+| 15 MY STTLCT | ~250 / ~360 | ~7 |
+| 08 PY ALL | ~1250 / ~1400 | ~3 |
+| 09 MX ALL | ~670 / ~840 | ~3 |
+| 11 MY Black | ~260 / ~530 | ~13 |
+| 10 MY HOT | ~161（ほぼ DC） | ~3–5（`b` ずれ） |
+
+「ゼロ誤差」ではないが、**数百 µrad 級の熱ひずみ LOS を固定係数 + ΔT + 太陽面 + 発熱フラグで 1～2 桁落とせる**、というのが本モデルの実務的意義。
+
+---
+
+## 4. うまくいかない／別扱いのケース
+
+| ケース | 現象 | 含意 |
+|--------|------|------|
+| **11 Black** | oracle でも支配軸 RMSE ~13 µrad | 被覆が時変残差の床を上げる。`a`/`b` の枠は同じだが、残りが大きい |
+| **10 HOT** | 時変はほぼ完璧、`b` が COLD 用 Level-2 から ~5–7 µrad ずれ | 熱環境（HOT/COLD）は現状 Level-2 に未投入。必要なら `b0` や別フラグで拡張 |
+| **被覆 alodine (12)** | `b` は ALL に近い、RMSE は低い | 標準系に近い |
+| **PX 発熱差** | Level-2 では意図的に無視 | 実測でも数 µrad。当面 MY/PY のみで十分 |
+
+---
+
+## 5. 先行モデルとの位置づけ
+
+| パッケージ | 役割 | 結果 |
+|------------|------|------|
+| `sunface_los` | 3 特徴（共線気味）の初期版 | アーカイブ |
+| `sunface_deltaT_los` | **核**: `b + a·ΔT` within-case | `a` の安定性を確立 |
+| `sunface_compo_los` | ΔT + `(T_attach−T_ref)` | 共線で失敗寄り |
+| `sunface_compo_local_los` | ΔT + 局所差 | `b` 振れは減るが係数不安定（ほぼ DC） |
+| **`sunface_deltaT_bcase_los`** | **本命**: 共有 `a` + Level-2 `b` | 本ノート |
+
+失敗から得た設計原則:
+
+1. 軌道内の時変は **ΔT 一本**で足りる（`a` は面ごと固定でよい）。
+2. コンポ発熱の残りは **ケース定数 `b`** に出す。within-case 時系列に足さない。
+3. `b` のケース間差は、まず **太陽面 + 発熱 ON/OFF** の線形モデルで足りる。
+
+---
+
+## 6. 再現手順・成果物
+
+```powershell
+# 前提: lightweight_dataset 構築済み
+python scripts/build_lightweight_dataset.py
+
+python "src/pat_acquisition/models/sunface_deltaT_bcase_los/validate.py" --cases 4-6,8-21
+# 発熱フラグを全太陽面に広げる場合:
+python "src/pat_acquisition/models/sunface_deltaT_bcase_los/validate.py" --cases 4-6,8-21 --heat-faces all
+```
+
+出力（`results/pat_acquisition/sunface_deltaT_bcase_los_model/`）:
+
+| ファイル | 内容 |
+|----------|------|
+| `bcase_a_shared.csv` | 面ごとの共有 `a` |
+| `bcase_level2_coefficients.csv` | `b0_*`, `c_prop`, `c_pcdu` |
+| `bcase_case_table.csv` | `b_emp` / `b_pred` / LOO / `a_emp` |
+| `bcase_los_metrics.csv` | oracle / 階層予測の支配軸 RMSE |
+| `*_display.csv` | 閲覧用（有効数字 3 桁） |
+
+実装の入口: `src/pat_acquisition/README.md`（Sunface ΔT + case bias 節）。
+
+---
+
+## 7. 今後の拡張候補（メモ）
+
+優先度は低いが、必要になったら:
+
+- Level-2 に **HOT/COLD** や被覆フラグを追加（case10 / case11 向け）
+- `I_prop`/`I_pcdu` を 0/1 ではなく **電力 [W] 比例**にする
+- 非支配軸・ノルム誤差の扱いを PAT 評価まで接続（`run_pat` 系）
+- 軌道平均の局所温度を Level-2 特徴にする（ON/OFF の連続版）
+
+現時点の本命は、**固定 10 係数 + ΔT(t) + 太陽面 + 発熱フラグ**のまま十分強い。

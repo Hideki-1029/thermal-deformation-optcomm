@@ -4,6 +4,7 @@
 - 更新: 2026-07-14 午後 — **実装・検証済みの知見を追記**。ノート PC でも既存結果を回せるようにする
 - いま研究室 PC: Femap `cases 16–21` 解析中（完了待ち）
 - ノート PC 向け: mapper / 新規 Femap は不要。**既存 deltaT・係数表の再読・考察・次モデル設計**まで可
+- **階層モデルのまとめ（本命）:** → [`260714_sunface_deltaT_bcase_los.md`](260714_sunface_deltaT_bcase_los.md)
 
 ---
 
