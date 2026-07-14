@@ -7,6 +7,8 @@ input:
   truth_output_dir: results/pat_acquisition/femap_los_truth
   # Fourier / static-bias lightweight model PAT evaluation
   fourier_output_dir: results/pat_acquisition/fourier_los_model
+  # Hierarchical sunface ΔT (bcase) PAT evaluation
+  bcase_output_dir: results/pat_acquisition/sunface_deltaT_bcase_los_model/pat
   los_prefix: far_field_los
 
 scan:

@@ -28,8 +28,9 @@ src/pat_acquisition/
 │   │   └── validate.py            # → results/.../sunface_deltaT_los_model/{case}_within_case/
 │   │                              # LOS ~ b + a*(T_sun - T_opp) only
 │   └── sunface_deltaT_bcase_los/
-│       ├── features.py / dataset.py / model.py
-│       └── validate.py            # → results/.../sunface_deltaT_bcase_los_model/
+│       ├── features.py / dataset.py / model.py / plots.py
+│       ├── validate.py            # → results/.../sunface_deltaT_bcase_los_model/
+│       └── run_pat.py             # → .../sunface_deltaT_bcase_los_model/pat/
 │                                  # hierarchical: shared a + b_case(sun, I_heat)
 ├── configs/
 ├── docs/
@@ -149,10 +150,26 @@ python "src/pat_acquisition/models/sunface_deltaT_bcase_los/validate.py" --cases
 python "src/pat_acquisition/models/sunface_deltaT_bcase_los/validate.py" --list-cases
 # 発熱フラグを全太陽面に広げる例:
 python "src/pat_acquisition/models/sunface_deltaT_bcase_los/validate.py" --cases 4-6,8-21 --heat-faces all
+# プロット省略 / 時系列ケース指定:
+python "src/pat_acquisition/models/sunface_deltaT_bcase_los/validate.py" --cases 4-6,8-21 --no-plots
+python "src/pat_acquisition/models/sunface_deltaT_bcase_los/validate.py" --cases 4-6,8-21 --plot-cases 4,8,15
 ```
 
-→ `results/pat_acquisition/sunface_deltaT_bcase_los_model/bcase_case_table.csv`  
+→ `results/pat_acquisition/sunface_deltaT_bcase_los_model/bcase_case_table.csv`
 → `.../bcase_level2_coefficients.csv` / `bcase_a_shared.csv` / `bcase_los_metrics.csv`
+→ `.../bcase_a_emp_by_sunface.png` / `bcase_b_emp_vs_b_pred.png` / `bcase_raw_vs_model_rmse.png`
+→ `.../timeseries/case*_bcase_true_vs_pred.png`
+
+PAT（no / static / bcase / truth）:
+
+```powershell
+python "src/pat_acquisition/models/sunface_deltaT_bcase_los/run_pat.py" --cases 4-6,8-21
+python "src/pat_acquisition/models/sunface_deltaT_bcase_los/run_pat.py" --cases 4-6,8-21 --b-mode insample
+```
+
+→ `results/pat_acquisition/sunface_deltaT_bcase_los_model/pat/summary.csv`
+→ `.../pat/pat_model_comparison.png`
+→ `.../pat/{case_id}/pat_acquisition_comparison.png`
 
 ### Sunface + コンポ取付温度モデル（compo: ΔT + PROP/PCDU attach）
 

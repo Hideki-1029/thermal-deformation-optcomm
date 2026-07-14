@@ -5,6 +5,7 @@ from pat_acquisition.models.sunface_deltaT_bcase_los.model import (
     BCaseLevel2Model,
     fit_bcase_level2,
     predict_bcase,
+    predict_bcase_xy,
     run_bcase_pipeline,
 )
 
@@ -13,5 +14,6 @@ __all__ = [
     "BCaseLevel2Model",
     "fit_bcase_level2",
     "predict_bcase",
+    "predict_bcase_xy",
     "run_bcase_pipeline",
 ]

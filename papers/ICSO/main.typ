@@ -1,7 +1,21 @@
 #import "template.typ": spie-paper
 
+#let todo-fig(label-text) = {
+  block(
+    width: 100%,
+    height: 3.2cm,
+    stroke: 0.6pt + luma(120),
+    fill: luma(245),
+    inset: 10pt,
+    align(center + horizon)[
+      #set text(size: 9pt, fill: luma(60))
+      （自作図予定）#label-text
+    ],
+  )
+}
+
 #show: spie-paper.with(
-  title: [熱変形LOSバイアス予測による光通信粗捕捉のfeedforward・adaptive補正],
+  title: [時変熱LOSバイアスの階層ΔTモデルと光通信粗捕捉へのfeedforward補正],
   authors: [
     Hideki Takamoto#super[\*], Kazuki Takashima, Yuki Kusano, Satoshi Ikari, and Ryu Funase
   ],
@@ -10,7 +24,7 @@
   ],
   corresponding-email: [Corresponding author: Hideki Takamoto, email: TBD],
   abstract: [
-    光通信ではビーム拡がり角が小さいため，Pointing, Acquisition, and Tracking (PAT) の粗捕捉段階における初期指向誤差が捕捉時間と捕捉成功率に大きく影響する．本研究では，熱変形に起因する時変 Line-of-Sight (LOS) バイアスを予測し，粗捕捉時の scan center 補正に用いる手法を検討する．低軌道衛星では，日照・食サイクル，姿勢条件，内部発熱によって衛星構体や光通信端末取付部が熱変形し，スターセンサ基準と光通信端末光軸の間に相対変位・相対回転が生じる．この変形は，光フィードバックが得られる前の粗捕捉段階では初期指向バイアスとして現れる．本研究では，TD/Femap代表ケースからSTT-relative LOS角度を作成し，その時系列を軽量モデルで近似する．さらに，予測した熱LOSバイアスをPATシミュレータに接続し，補正なし，static bias，Fourier feedforward，physical lightweight model，feedforward + adaptive の捕捉時間および必要 scan area を比較する．
+    光通信ではビーム拡がり角が小さいため，Pointing, Acquisition, and Tracking (PAT) の粗捕捉における初期指向誤差が捕捉時間を支配する．本研究では，低軌道衛星の熱変形に起因するスターセンサ (STT) と光通信端末 (LCT) 間の時変 Line-of-Sight (LOS) バイアスを，少数の温度・運用情報から予測し，粗捕捉の scan center に feedforward 補正する．Thermal Desktop と Femap による熱構造解析から遠方通信用の相対 LOS 時系列を生成し，太陽指向面と反対面の温度差 $Delta T(t)$ に対する共有感度と，太陽面・内部発熱 ON/OFF で説明するケース定数バイアスからなる階層モデルを構築する．標準ケースでは数百〜千 µrad 級の熱LOSを数 µrad 程度まで低減でき，PAT シミュレーションでは補正なし平均捕捉時間約 137 s に対し，本モデル補正で約 0.12 s まで短縮できた（理想真値補正 0.10 s）．軌道上観測による adaptive 層は枠組みとして位置づけ，本稿では物理ベース予測層を主結果とする．
   ],
   keywords: (
     "optical communication",
@@ -23,119 +37,126 @@
 
 = 序論
 
-衛星光通信は，高いアンテナ利得と広い通信帯域を実現できるため，小型衛星ミッションにおける大容量通信手段として期待されている@2017-kaushal-survey．一方で，光通信ではビーム拡がり角が小さいため，通信リンクを確立するための Pointing, Acquisition, and Tracking (PAT) が重要になる．特に粗捕捉段階では，相手機からの光フィードバックがまだ得られないため，軌道予測誤差，姿勢決定誤差，アライメント誤差，熱変形，相手機側誤差などを含む初期指向誤差を考慮して探索する必要がある@2023-riesing-tbird．
+衛星光通信は高いアンテナ利得と広い帯域を実現できる一方，ビーム拡がり角が小さいため Pointing, Acquisition, and Tracking (PAT) がリンク確立の鍵となる@2017-kaushal-survey．特に粗捕捉段階では相手機からの光フィードバックが得られないため，軌道予測誤差，姿勢誤差，アライメント誤差，熱変形などを含む初期指向誤差を考慮して探索する必要がある@2023-riesing-tbird．探索コストは不確定領域半径の概ね二乗に比例するため，予測可能な誤差成分を事前に補正できれば捕捉時間を短縮できる．
 
-粗捕捉に必要な時間は，探索すべき不確定領域の大きさに強く依存する．不確定領域の代表半径を $theta_U$ とすると，単純なラスタ走査やスパイラル走査では，探索コストはおおよそ $theta_U^2$ に比例する．したがって，初期指向誤差のうち予測可能な成分を事前に補正できれば，scan area，捕捉時間，再捕捉時間を低減できる可能性がある．
+本研究ではその成分として，衛星構体の熱変形に起因する STT–LCT 相対 LOS バイアスに着目する．低軌道では日照・食サイクルや内部発熱により温度場が時変し，相対 LOS も軌道位相に応じて変化する@2024-badas@2023-shi-thermal．本稿の貢献は次の三点である．(1) 熱構造解析により代表 LEO 条件での STT–LCT 相対 LOS を定量化する．(2) 太陽面−反対面温度差に対する共有感度と，ケース定数バイアスを発熱 ON/OFF で説明する階層 ΔT モデルを提案する．(3) 予測 LOS を粗捕捉の scan center 補正に接続し，補正なし・静的バイアス・理想真値補正と比較する．
 
-本研究では，この予測可能な成分として，衛星構体および光学系の熱変形に起因する LOS バイアスに着目する．熱変形は従来，構造設計や熱設計によって低減すべき外乱として扱われることが多い．しかし，すべての軌道条件，姿勢条件，運用モードを設計段階で吸収することは難しい．そこで本研究では，熱変形を単なる未知外乱ではなく，熱構造解析と軌道・熱情報から部分的に予測可能な時変バイアスとして扱い，粗捕捉時の scan center 補正に利用する．
+= 関連研究
 
-= 熱変形に起因するLOSバイアス
+光学機器では，構造の温度勾配と LOS 変動を一次関係で結び，地上試験で係数を得た例がある（JANUS 光学ヘッド）@2021-turella-janus ．観測衛星では軌道位相や観測履歴に基づく LOS 補正も報告されている@2022-hu-thermal-motion @2025-li-thermal-los ．光通信衛星では，STT–LCT 相対角変動を構造最適化で低減する研究@2023-shi-thermal や，姿勢・取付不確かさを FSM で feedforward する研究@2026-riiddenklau-ff がある．後者は熱変形を温度から予測する枠組みではない．
 
-低軌道衛星では，日照・食サイクル，太陽方向，内部発熱，運用モードに応じて温度場が時間変化する．この温度場は衛星構体，光学ベンチ，光通信端末取付構造を変形させる．光通信系では，スターセンサ (STT) の基準座標系と光通信端末 (LCT) の光軸基準系の間の相対変位・相対回転が，通信光軸の LOS バイアスとして現れる．
+本研究の差分は，衛星バス上の離隔した STT–LCT 相対 LOS を対象に，主説明変数として太陽指向面と反対面の温度差を用い，感度をケース横断で共有しつつ，ΔT に入りきらない DC を内部発熱フラグで階層的に説明し，粗捕捉の scan center 補正へ直結させる点にある．式形そのもの（切片付き一次）を新規と主張するものではない．
 
-相対変位だけを考えると，代表長さを $L$，横方向相対変位を $Delta x$ として，熱変形LOS角度は
+= 問題設定とLOS定義
 
-$ Delta theta_("LOS") approx (Delta x) / L $
-
-と近似できる．例えば $L = 1$ m，$Delta x = 100$--$200$ um であれば，$Delta theta_("LOS")$ はおよそ 100--200 urad となる．これは小型衛星光通信で想定されるビーム拡がり角，捕捉センサ視野，姿勢決定由来のLOS誤差と同程度になり得る．
-
-ただし，実際には相対変位だけでは不十分な場合がある．Femap結果からは，STT-LCT重心線の傾きに加えて，LCT光軸面の局所回転，およびSTT基準面の回転がLOS角度に寄与する．本研究では，PAT補正に接続する主指標としてSTT-relative LOSを用いる．これは，STT観測基準から見たLCT光軸ずれであり，以下のように整理する．
-
-$ Delta theta_("STT-rel") = "centerline tilt" + ("LCT rotation" - "STT rotation") $
+遠方通信の粗捕捉では，衛星姿勢基準が STT に依存する場合，通信光軸の初期ずれは主に STT 基準で見た LCT 外向き光軸の相対回転として現れる．本稿ではこの量を遠方通信用熱 LOS（支配軸成分を $theta_"dom"$）と呼ぶ．名目指向を $theta_"nom"$，予測熱LOSを $hat(theta)_"th"$ とすると，scan center 指令は
+$
+theta_"scan" = theta_"nom" - hat(theta)_"th"
+$<eq_scan>
+とする．補正後残差は非熱誤差と熱予測誤差の和であり，本手法は全指向誤差を消去するものではなく，予測可能な熱成分を減らすことで探索負荷を下げる．
 
 #figure(
-  image("../master_seminar/figure/image_thermal_deformation_from_Shi.png", width: 88%),
-  caption: [衛星構体の熱変形解析例@2023-shi-thermal],
-)<fig_thermal_example>
+  todo-fig[S1: 箱型衛星・STT/LCT・太陽光・構体曲げと相対LOS，および scan center 補正式],
+  caption: [問題設定の概念図（自作図予定）．],
+)<fig_s1>
 
-既存の代表Femapケースでは，STT-LCT重心線の傾きの平均値は約206 uradである一方，STT基準で見たLCT相対回転成分は約460 uradとなる．その結果，STT-relative LOSの大きさは平均約665 urad，範囲として約631--694 uradとなる．この結果は，熱LOSバイアスを相対変位だけで評価すると過小評価する可能性があることを示している．
+= 熱構造解析
 
-#figure(
-  image("figure/femap_stt_relative_los_angles.png", width: 100%),
-  caption: [代表Femapケースから得たSTT-relative LOS角度と成分分解],
-)<fig_femap_los>
-
-= 軽量モデル化
-
-TD/Femap解析は高忠実度な熱変形・LOSバイアスの参照データを与えるが，そのまま軌道上で逐次実行することは現実的ではない．そのため，本研究ではTD/Femap結果をtruthとして扱い，軌道上で扱いやすい軽量モデルへ圧縮する．
-
-軽量モデルの入力候補は，軌道位相，日照・食状態，太陽方向，内部発熱モード，代表温度差，STT/LCT取付位置である．出力はPAT補正に直接使うため，`stt_relative_los_angle_x_urad` および `stt_relative_los_angle_y_urad` とする．
-
-ICSOまでの最小構成として，以下のモデルを比較する．
-
-- static bias: 学習データの平均LOSバイアスを補正量とする．
-- Fourier model: 軌道位相に対する sin/cos で時変LOSバイアスを近似する．
-- physical lightweight model: 代表温度差または発熱・太陽方向から theta_x, theta_y を近似する．
-- feedforward + adaptive: feedforwardモデルの残差を捕捉後観測で逐次更新する．
-
-まずは static bias と Fourier model を実装し，次に簡易 physical lightweight model を追加する．NNモデルや詳細な thermal sensor model は，ICSOでは今後の課題に回す．
-
-= PATシミュレータへの接続
-
-軽量モデルで予測した熱LOSバイアスを，粗捕捉時のscan center補正に用いる．名目指向方向を $theta_("nom")(t)$，予測熱LOSバイアスを $hat(Delta theta)_("LOS")(t)$ とすると，scan center指令は
-
-$ theta_("scan")(t) = theta_("nom")(t) + u_("FF")(t), quad u_("FF")(t) = -hat(Delta theta)_("LOS")(t) $
-
-と書ける．補正後にscan centerから見た相手方向の残差は，
-
-$ e_("scan")(t) = e_("nonthermal")(t) + Delta theta_("thermal,true")(t) - hat(Delta theta)_("thermal")(t) $
-
-となる．ここで $e_("nonthermal")$ は軌道予測誤差，姿勢決定誤差，アライメント誤差など，熱変形以外の誤差を表す．本研究では，熱変形補正がすべての誤差を消すのではなく，予測可能な熱由来成分を減らすことで捕捉時間や必要scan areaを低減する，という形で評価する．
-
-PATシミュレータでは，rectangular spiral scanを仮定し，scan点が検出半径内に入れば捕捉成功とする．評価指標は，捕捉成功率，平均捕捉時間，95 percentile捕捉時間，初期指向誤差，熱残差，必要scan areaのproxyとする．
+熱環境は Thermal Desktop，構造応答は Femap/Nastran により解析する．ケース行列で太陽指向面（MX/MY/PX/PY），表面光学特性，PROP/PCDU 等の内部発熱 ON/OFF，COLD/HOT 軌道を振る．温度を構体へマッピングし，STT・LCT 代表節点の変位・回転から遠方通信用相対 LOS 時系列を得る．
 
 #figure(
-  image("figure/thermal_los_prediction_comparison.png", width: 100%),
-  caption: [熱LOSバイアスtruthと軽量モデル予測の比較],
-)<fig_los_prediction>
+  image("figure/p1_far_field_los_case04.png", width: 95%),
+  caption: [代表ケース（MY 太陽指向，ALL HEAT）の far-field PAT LOS 成分分解．支配軸は軌道内で百〜数百 µrad 級に変動する．],
+)<fig_p1>
+
+太陽指向面が変わると支配軸も変わる（例: MY/PY で y，PX/MX で x）．表面光学特性は主に変動幅（ptp）に効き，内部発熱配置は平均バイアスと波形に効く．これらの感度は次節のモデル入力（ΔT，太陽面，発熱フラグ）の物理的根拠となる．
+
+= 階層sunface ΔTモデル
+
+オンボードで TD/Femap を逐次実行することは現実的でないため，解析 LOS を truth として軽量モデルへ圧縮する．軌道内の時変は温度差一本で足り，コンポ発熱の残りはケース定数側に分離するのが安定であった．
+
+== Level 1（軌道内）
+
+支配軸について
+$
+theta_"dom"(t) approx b_"case" + a("sun") thin Delta T(t),
+quad
+Delta T(t) = T_"sunface"(t) - T_"opposite"(t)
+$<eq_level1>
+とする．$a("sun")$ は太陽面ごとの感度 [µrad/°C]，$b_"case"$ はそのケースの DC バイアス [µrad] である．非支配軸は軌道内で変動が小さい場合が多く，本稿の PAT 接続では学習区間の静的平均で扱う．
+
+== Level 2（ケース間）
+
+$b_"case"$ を太陽面ダミーと発熱フラグで説明する．
+$
+b_"case" approx b_0("sun") + c_"prop" I_"prop" + c_"pcdu" I_"pcdu"
+$<eq_level2>
+ここで $I_*(in {0,1})$ は PROP/PCDU 発熱の ON/OFF である．実装上，発熱フラグが効くのは取付面に対応する MY/PY 系を主とする．予測時は面ごとの $a_"emp"$ 中央値を共有感度 $a_"shared"$ とし，
+$
+hat(theta)_"dom"(t) = b_"pred"("sun", I_"prop", I_"pcdu") + a_"shared"("sun") thin Delta T(t)
+$
+を用いる．固定パラメータは $a$ 4 個，$b_0$ 4 個，$c_"prop"$，$c_"pcdu"$ の計 10 スカラーである．
 
 #figure(
-  image("figure/coarse_acquisition_performance_comparison.png", width: 100%),
-  caption: [粗捕捉時間と初期指向誤差の比較],
-)<fig_acq_comparison>
+  todo-fig[S2: 上段 ΔT→a·ΔT（時変），下段 太陽面・発熱→b_case，合流して LOS 予測．固定10係数],
+  caption: [階層モデルの構成（自作図予定）．],
+)<fig_s2>
 
-= 数値評価の方針
+== 係数と同定結果
 
-感度解析は，軽量モデルとPAT評価に進む時間を確保するため，基準ケースに加えて2〜3ケースだけに絞る．具体的には，内部発熱位置変更，太陽方向変更，拘束条件 sanity check を優先する．これにより，代表1ケースだけに依存した議論を避けつつ，感度解析で止まりすぎないようにする．
-
-#figure(
-  table(
-    columns: (1.8fr, 2.7fr),
-    align: left,
-    [項目], [目的],
-    [基準ケース], [TD/FemapからSTT-relative LOS truthを作る],
-    [内部発熱位置変更], [発熱方向・代表温度差がLOSに効くかを見る],
-    [太陽方向変更], [日照方向に対するLOS変化を見る],
-    [拘束条件確認], [拘束点の置き方でLOSが大きく壊れていないか確認する],
-  ),
-  caption: [ICSOまでに優先する最小ケースセット],
-)<tab_case_plan>
-
-補正ケースは，no correction，static bias，Fourier feedforward，physical lightweight model，feedforward + adaptive とする．最初にstatic/Fourierを実装してPATまで通し，その後にphysical lightweight modelを追加する．
+各ケースの先頭1軌道で @eq_level1 を当て $a_"emp"$，$b_"emp"$ を得た後，全ケースの $b_"emp"$ に @eq_level2 を OLS フィットする．共有感度は $|a_"shared"| approx 28$–$31$ µrad/°C（MX $+30.6$，MY $+28.6$，PX $-28.1$，PY $-28.7$）となり，符号は太陽面（支配軸の向き）で決まる．Level-2 係数は $c_"prop" approx -23.8$ µrad，$c_"pcdu" approx -11.1$ µrad などである．面加熱の主効果の多くは $a thin Delta T$ に吸収され，$c_*$ はパネル中心 ΔT に入りきらない残差 DC を表す．
 
 #figure(
-  table(
-    columns: (1.6fr, 2.5fr, 1.8fr),
-    align: left,
-    [Case], [補正内容], [評価目的],
-    [No correction], [熱LOSバイアスを未補正], [基準性能],
-    [Static bias], [平均LOSバイアスのみ補正], [定常補正の効果],
-    [Fourier feedforward], [軌道位相に対するsin/cosで補正], [時変事前モデルの効果],
-    [Physical lightweight], [代表温度差や発熱・太陽方向から補正], [物理モデルの効果],
-    [FF + adaptive], [捕捉後残差でモデルを更新], [モデル誤差へのロバスト性],
-  ),
-  caption: [PATシミュレータで比較する補正ケース],
-)<tab_correction_cases>
+  image("figure/p3_a_emp_by_sunface.png", width: 88%),
+  caption: [ケースごとに独立推定した $a_"emp"$ の太陽面別分布．面内で値が揃うため共有感度として使える．],
+)<fig_a>
+
+#figure(
+  image("figure/p3_b_emp_vs_b_pred.png", width: 72%),
+  caption: [経験バイアス $b_"emp"$ と Level-2 予測 $b_"pred"$．in-sample RMSE 約 1.7 µrad，leave-one-case-out 約 2.3 µrad．],
+)<fig_b>
+
+#figure(
+  image("figure/p2_bcase_true_vs_pred_case08.png", width: 95%),
+  caption: [階層予測の時系列例（PY 太陽指向）．$b_"pred" + a_"shared" Delta T$ が truth の軌道内変動を追従する．],
+)<fig_ts>
+
+#figure(
+  image("figure/p5_raw_vs_model_rmse.png", width: 90%),
+  caption: [支配軸の生 RMS/peak と階層モデル test RMSE．数百〜千 µrad 級を数〜十数 µrad へ低減する．],
+)<fig_scale>
+
+標準の 1213COLD・既定被覆では test RMSE が数 µrad 程度である（例: case08 で生 RMS 約 1250 µrad → モデル後約 3 µrad）．Black 被覆では時変残差の床が上がり（約 13 µrad），HOT 軌道では時変は追えるが COLD 用 Level-2 から $b$ が数 µrad ずれる．MZ 太陽指向など ΔT–LOS 関係が弱い条件は本稿の主評価から除外する．
+
+取付点温度を軌道内特徴に足す拡張は共線・低 SNR で係数が不安定であった．コンポ効果は時系列特徴ではなくケース定数 $b$ 側に置く，という分離が本モデルの設計原則である．
+
+= PAT評価
+
+#figure(
+  todo-fig[S3: TD/Femap truth → 階層予測 → scan center FF → spiral scan → 捕捉時間．比較: no/static/bcase/truth],
+  caption: [PAT 評価の流れ（自作図予定）．],
+)<fig_s3>
+
+矩形スパイラル走査を仮定し，検出半径内に入れば捕捉成功とする．熱LOS予測は Level-2 を leave-one-case-out した $b_"pred"$ と共有 $a$ を用いる．比較は補正なし，静的バイアス（学習区間平均），階層モデル，および Femap 真値による理想補正（上界）である．
+
+#figure(
+  image("figure/p4_pat_model_comparison.png", width: 92%),
+  caption: [17 ケース横断の平均捕捉時間比較（熱誤差のみ）．階層モデルは静的補正を上回り，理想真値補正に近い．],
+)<fig_pat>
+
+熱誤差のみの 17 ケース平均では，平均捕捉時間が補正なし約 137 s，静的バイアス約 4.9 s，階層モデル約 0.12 s，理想真値 0.10 s であった．大 LOS の例として PY ALL（case08）では 384 s → 3.2 s（static）→ 0.10 s（bcase）となる．非熱誤差（軌道予測・姿勢・アライメント等の簡易モデル）を加えた場合，熱成分を落としても非熱が残るため捕捉時間の改善幅は縮小する．これは本手法が熱成分に限定した補正であることと整合する．
+
+提出アブストで述べた二層枠組みのうち，本稿の主結果は物理ベース予測層である．捕捉後のセンサ残差による adaptive 更新は，モデル誤差や未モデル化ドリフトへの対処として位置づけ，詳細実装と定量比較は今後の課題とする．
 
 = 考察
 
-本研究の重要な点は，熱変形解析をLOS誤差のオーダー評価だけで終わらせず，軽量モデルを介してPAT粗捕捉性能に接続することである．TD/Femap代表ケースから得られたSTT-relative LOSは数百uradのオーダーであり，LCT/STTの回転成分が支配的である可能性が示されている．このため，軽量モデルでも相対変位だけでなく，光軸方向の変化を反映できる形が望ましい．
+本稿で示せるのは，代表衛星モデルと複数熱・発熱条件のもとで，固定少数係数と計測可能な ΔT・太陽面・発熱フラグにより熱LOS主成分を 1〜2 桁低減し，粗捕捉時間を理想補正近傍まで短縮し得ることである．一方，飛行実証，全軌道・全被覆への一般化，熱/非熱の完全分離は主張しない．HOT/COLD や被覆を Level-2 に明示的に入れる拡張，配置が 90° 関係の場合の説明変数の整理は今後の課題である．
 
-一方で，ICSOまでに多数ケースの網羅的な感度解析を行うと，軽量モデル実装やPAT接続に十分な時間が残らない．したがって，感度解析は基準ケースの妥当性確認と軽量モデル入力の物理的説明に必要な最小限に絞る．主成果は，代表熱構造解析からLOS truthを作り，軽量モデルで近似し，scan center補正によって捕捉時間・必要scan areaを低減できることを示す点に置く．
+新規性の芯は「切片付き一次式」ではなく，(i) バス相対 LOS における太陽面−反対面 ΔT の主変数性，(ii) 感度 $a$ のケース横断共有の実証，(iii) ΔT 残差 DC の発熱フラグによる階層説明，(iv) 粗捕捉性能への接続，である@2021-turella-janus．
 
 = 結論
 
-本稿では，熱変形に起因する時変LOSバイアスを，光通信粗捕捉のscan center補正に利用する枠組みを検討する．TD/Femap解析によりSTT-LCT間の相対変位・相対回転からSTT-relative LOSを作成し，これをtruthとして軽量モデルへ圧縮する．さらに，軽量モデルで予測した熱LOSバイアスをPATシミュレータへ接続し，補正なし，static bias，Fourier feedforward，physical lightweight model，feedforward + adaptiveを比較する．今後は，基準ケースに加えて2〜3ケースの感度解析を行い，軽量モデルとPAT評価をICSO full paperの主結果としてまとめる．
+時変熱LOSバイアスを階層 ΔT モデルで予測し，光通信粗捕捉の scan center に feedforward する枠組みを示した．TD/Femap 解析に基づき，共有感度 $a("sun")$ と発熱を含むケースバイアス $b$ の 10 係数モデルで，標準ケースの熱LOSを数 µrad 程度まで低減し，PAT シミュレーションで捕捉時間を大幅に短縮した．今後は HOT/被覆の Level-2 拡張，非熱誤差の現実的モデル化，および adaptive 層の定量評価を進める．
 
 #bibliography(
   "bibliography.bib",

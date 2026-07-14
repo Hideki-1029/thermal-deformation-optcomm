@@ -37,6 +37,9 @@ from pat_acquisition.models.sunface_deltaT_bcase_los.model import (  # noqa: E40
     evaluate_case_timeseries_with_b,
     run_bcase_pipeline,
 )
+from pat_acquisition.models.sunface_deltaT_bcase_los.plots import (  # noqa: E402
+    write_paper_plots,
+)
 
 DISPLAY_FLOAT_FORMAT = "%.3g"
 FILE_STEM = "bcase"
@@ -85,6 +88,19 @@ def parse_args() -> argparse.Namespace:
         "--heat-faces",
         default="MY,PY",
         help="Sun faces where I_prop/I_pcdu apply (comma list or 'all').",
+    )
+    parser.add_argument(
+        "--no-plots",
+        action="store_true",
+        help="Skip paper plots (P2/P3/P5).",
+    )
+    parser.add_argument(
+        "--plot-cases",
+        default=None,
+        help=(
+            "Case numbers for hierarchical true-vs-pred plots, "
+            "e.g. 4,8,9,15,10,11 (default: paper set)."
+        ),
     )
     return parser.parse_args()
 
@@ -263,6 +279,36 @@ def main() -> None:
     print(f"Wrote: {coef_path}")
     print(f"Wrote: {a_path}")
     print(f"Wrote: {metrics_path}")
+
+    if not args.no_plots:
+        plot_cases = None
+        if args.plot_cases:
+            expanded: list[str] = []
+            for token in args.plot_cases.split(","):
+                token = token.strip()
+                if not token:
+                    continue
+                if "-" in token:
+                    lo_s, hi_s = token.split("-", 1)
+                    if lo_s.isdigit() and hi_s.isdigit():
+                        expanded.extend(str(i) for i in range(int(lo_s), int(hi_s) + 1))
+                        continue
+                expanded.append(token)
+            plot_cases = expanded
+        plot_paths = write_paper_plots(
+            dataset_path=args.dataset,
+            case_table=case_table,
+            metrics_df=metrics_df,
+            a_shared=a_shared,
+            config=config,
+            out_dir=out_dir,
+            timeseries_cases=plot_cases,
+        )
+        print()
+        print("--- Paper plots ---")
+        for key, path in plot_paths.items():
+            print(f"  {key}: {path}")
+
     if skipped:
         print(f"Skipped unsupported cases: {', '.join(skipped)}")
 

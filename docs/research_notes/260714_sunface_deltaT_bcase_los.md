@@ -186,15 +186,30 @@ python "src/pat_acquisition/models/sunface_deltaT_bcase_los/validate.py" --cases
 
 | case         | 生 RMS / peak（支配軸） | モデル後 test RMSE |
 | ------------ | ----------------- | -------------- |
-| 04 MY ALL    | ~160 / ~260       | ~7             |
-| 15 MY STTLCT | ~250 / ~360       | ~7             |
-| 08 PY ALL    | ~1250 / ~1400     | ~3             |
-| 09 MX ALL    | ~670 / ~840       | ~3             |
-| 11 MY Black  | ~260 / ~530       | ~13            |
-| 10 MY HOT    | ~161（ほぼ DC）       | ~3–5（`b` ずれ）   |
+| 04 MY ALL    | 160 / 257         | 6.5            |
+| 15 MY STTLCT | 253 / 358         | 6.7            |
+| 08 PY ALL    | 1250 / 1420       | 3.3            |
+| 09 MX ALL    | 667 / 838         | 3.1            |
+| 11 MY Black  | 265 / 531         | 13.2           |
+| 10 MY HOT    | 161 / 163（ほぼ DC） | 3.2（`b` ずれ）    |
 
 
 「ゼロ誤差」ではないが、**数百 µrad 級の熱ひずみ LOS を固定係数 + ΔT + 太陽面 + 発熱フラグで 1～2 桁落とせる**、というのが本モデルの実務的意義。
+
+数値表: `bcase_raw_vs_model_scale_display.csv`  
+図: `bcase_raw_vs_model_rmse.png`（P5）
+
+### 3.6 論文用プロット（ICSO §5）
+
+`validate.py` 実行時に自動生成（`--no-plots` で省略可）:
+
+
+| ID | ファイル | 中身 |
+| ---- | -------- | ---- |
+| P3a | `bcase_a_emp_by_sunface.png` | 面ごとの `a_emp` と `a_shared` |
+| P3b | `bcase_b_emp_vs_b_pred.png` | `b_emp` vs `b_pred`（in-sample / LOO） |
+| P2 | `timeseries/case{04,08,09,15,10,11}_bcase_true_vs_pred.png` | 階層予測の true vs pred |
+| P5 | `bcase_raw_vs_model_rmse.png` | 生 RMS → モデル RMSE |
 
 ---
 
@@ -318,6 +333,13 @@ python "src/pat_acquisition/models/sunface_deltaT_bcase_los/validate.py" --cases
 | `bcase_level2_coefficients.csv` | `b0_*`, `c_prop`, `c_pcdu`         |
 | `bcase_case_table.csv`          | `b_emp` / `b_pred` / LOO / `a_emp` |
 | `bcase_los_metrics.csv`         | oracle / 階層予測の支配軸 RMSE             |
+| `bcase_raw_vs_model_scale.csv`  | 生 RMS/peak vs 階層 test RMSE        |
+| `bcase_a_emp_by_sunface.png`    | P3: `a` 横断安定性                      |
+| `bcase_b_emp_vs_b_pred.png`     | P3: Level-2 `b` 当てはまり              |
+| `bcase_raw_vs_model_rmse.png`   | P5: オーダー感                          |
+| `timeseries/*_bcase_true_vs_pred.png` | P2: 階層予測時系列                  |
+| `pat/summary.csv`               | PAT: no/static/bcase/truth 比較      |
+| `pat/pat_model_comparison.png`  | P4: 捕捉時間の横断棒グラフ               |
 | `*_display.csv`                 | 閲覧用（有効数字 3 桁）                      |
 
 
@@ -329,10 +351,40 @@ python "src/pat_acquisition/models/sunface_deltaT_bcase_los/validate.py" --cases
 
 優先度は低いが、必要になったら:
 
-- ケースを増やして ** 共有・Level-2 の確実性**を再確認（当面の LOS 予測としては現行で十分強い）
+- ケースを増やして **a 共有・Level-2 の確実性**を再確認（当面の LOS 予測としては現行で十分強い）
 - Level-2 に **HOT/COLD** や被覆フラグを追加（case10 / case11 向け）
 - `I_prop`/`I_pcdu` を 0/1 ではなく **電力 [W] 比例**にする
-- 非支配軸・ノルム誤差の扱いを PAT 評価まで接続（`run_pat` 系）
 - 軌道平均の局所温度を Level-2 特徴にする（ON/OFF の連続版）
 
 現時点の本命は、**固定 10 係数 + ΔT(t) + 太陽面 + 発熱フラグ**のまま十分強い。
+
+---
+
+## 10. PAT 接続（粗捕捉評価）
+
+```powershell
+python "src/pat_acquisition/models/sunface_deltaT_bcase_los/run_pat.py" --cases 4-6,8-21
+```
+
+- 既定: Level-2 `b` は **LOO**（`--b-mode loo`）。支配軸は `b_pred + a_shared·ΔT`、非支配軸は train 軌道の静的平均。
+- 比較アーム: `no` / `static` / `bcase` / `thermal truth`（＋ nonthermal 付き 2 本）
+- 出力: `results/pat_acquisition/sunface_deltaT_bcase_los_model/pat/`
+
+### 10.1 要約（17 ケース平均・熱のみ）
+
+| model | mean tacq [s] | success | mean thermal residual [µrad] |
+|-------|---------------|---------|------------------------------|
+| no_correction | **137** | 0.96 | 692 |
+| static_bias | **4.9** | 0.99 | 111 |
+| **bcase (LOO)** | **0.12** | **1.00** | **8.5** |
+| thermal truth | 0.10 | 1.00 | 0 |
+
+大 LOS ケース例（mean tacq [s]）:
+
+| case | no | static | bcase | truth |
+|------|-----|--------|-------|-------|
+| 08 PY ALL | 384 | 3.2 | 0.10 | 0.10 |
+| 09 MX ALL | 138 | 7.7 | 0.13 | 0.10 |
+| 18 PY+PROP | 404 | 3.2 | 0.10 | 0.10 |
+
+図: `pat/pat_model_comparison.png`（P4）。熱成分だけ見ると bcase は truth 上界にほぼ張り付く。nonthermal を足すと残りは非熱が支配（bcase+nonthermal の mean tacq ~20 s 前後）。

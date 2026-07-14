@@ -29,8 +29,10 @@ __all__ = [
     "BCaseConfig",
     "BCaseLevel2Model",
     "estimate_case_deltaT_params",
+    "evaluate_case_timeseries_with_b",
     "fit_bcase_level2",
     "predict_bcase",
+    "predict_bcase_xy",
     "run_bcase_pipeline",
 ]
 
@@ -264,4 +266,45 @@ def evaluate_case_timeseries_with_b(
         "rmse_dom_train_urad": _rmse(train_mask),
         "rmse_dom_test_urad": _rmse(test_mask),
         "rmse_dom_all_urad": _rmse(np.ones(len(case_df), dtype=bool)),
+    }
+
+
+def predict_bcase_xy(
+    case_df: pd.DataFrame,
+    *,
+    b_urad: float,
+    a_urad_per_c: float,
+    config: BCaseConfig,
+) -> dict[str, np.ndarray | str | float]:
+    """
+    Build 2-axis LOS prediction for PAT:
+
+      dominant: b + a · ΔT(t)
+      other:    train-orbit static mean
+    """
+    sun_direction = case_df["case_sun_direction_body"].iloc[0]
+    sun_face = normalize_sun_direction(sun_direction)
+    dominant_axis = resolve_dominant_axis(sun_face)
+    x_all, _, _, _ = build_deltaT_features(
+        case_df, sun_direction, DeltaTFeatureConfig(ridge_lam=config.ridge_lam)
+    )
+    y_all = extract_targets(case_df)
+    times_s = case_df["time_s"].to_numpy(dtype=float)
+    train_mask = within_case_split_mask(times_s, config.orbit_period_s, config.train_orbits)
+    if not np.any(train_mask):
+        raise ValueError("Empty train split for bcase PAT prediction")
+
+    static_bias = np.mean(y_all[train_mask], axis=0)
+    pred = np.tile(static_bias, (len(case_df), 1))
+    axis_idx = 0 if dominant_axis == "x" else 1
+    pred[:, axis_idx] = b_urad + a_urad_per_c * x_all[:, 0]
+    pred_static = np.tile(static_bias, (len(case_df), 1))
+
+    return {
+        "bcase": pred,
+        "static_bias": pred_static,
+        "sun_face": sun_face,
+        "dominant_axis": dominant_axis,
+        "b_urad": float(b_urad),
+        "a_urad_per_c": float(a_urad_per_c),
     }

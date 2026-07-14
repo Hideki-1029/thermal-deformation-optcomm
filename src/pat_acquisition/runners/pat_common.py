@@ -48,6 +48,13 @@ DEFAULT_FOURIER_OUTPUT_DIR = (
 DEFAULT_SUNFACE_PAT_OUTPUT_DIR = (
     REPO_ROOT / "results" / "pat_acquisition" / "sunface_los_model" / "pat"
 )
+DEFAULT_BCASE_PAT_OUTPUT_DIR = (
+    REPO_ROOT
+    / "results"
+    / "pat_acquisition"
+    / "sunface_deltaT_bcase_los_model"
+    / "pat"
+)
 DEFAULT_CONFIG_PATH = PAT_ROOT / "configs" / "pat_femap_los_config.yaml"
 DEFAULT_CASE_MATRIX_XLSX = REPO_ROOT / "cases" / "case_matrix.xlsx"
 DEFAULT_ORBIT_CATALOG_XLSX = REPO_ROOT / "cases" / "orbit_catalog.xlsx"
@@ -85,11 +92,30 @@ SUNFACE_MODEL_NAMES = (
     "sunface_correction_with_nonthermal",
 )
 
+# Paper P4 arms: no / static / bcase / truth (+ nonthermal realism).
+BCASE_MODEL_NAMES = (
+    "no_correction",
+    "static_bias_correction",
+    "bcase_correction",
+    "thermal_truth_correction",
+    "thermal_plus_nonthermal_no_correction",
+    "bcase_correction_with_nonthermal",
+)
+
 # Short legend labels for the acq-time / scan-center panels.
 SUNFACE_PLOT_LABELS = {
     "thermal_plus_nonthermal_no_correction": "thermal+nonthermal, no correction",
     "sunface_correction": "sunface only",
     "sunface_correction_with_nonthermal": "sunface + nonthermal",
+}
+
+BCASE_PLOT_LABELS = {
+    "no_correction": "no correction",
+    "static_bias_correction": "static bias",
+    "bcase_correction": "bcase",
+    "thermal_truth_correction": "thermal truth",
+    "thermal_plus_nonthermal_no_correction": "thermal+nonthermal, no corr.",
+    "bcase_correction_with_nonthermal": "bcase + nonthermal",
 }
 
 
@@ -706,8 +732,11 @@ __all__ = [
     "DEFAULT_CONFIG_PATH",
     "DEFAULT_FOURIER_OUTPUT_DIR",
     "DEFAULT_INPUT_GLOB",
+    "DEFAULT_BCASE_PAT_OUTPUT_DIR",
     "DEFAULT_SUNFACE_PAT_OUTPUT_DIR",
     "DEFAULT_TRUTH_OUTPUT_DIR",
+    "BCASE_MODEL_NAMES",
+    "BCASE_PLOT_LABELS",
     "FOURIER_MODEL_NAMES",
     "SUNFACE_MODEL_NAMES",
     "SUNFACE_PLOT_LABELS",
