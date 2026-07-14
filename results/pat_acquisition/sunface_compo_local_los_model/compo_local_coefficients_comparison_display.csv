@@ -1,0 +1,12 @@
+﻿case_number,case_id,sun_face,dominant_axis,intercept_urad,coef_t_sunface_minus_opposite_c_urad,coef_t_prop_attach_minus_py_center_c_urad,coef_t_pcdu_attach_minus_my_center_c_urad,test_rmse_norm_urad,test_rmse_dominant_urad,test_mae_norm_urad,test_p95_error_norm_urad
+4,04_LTAN06_800km_1213COLD_MY_ALL_HEAT_MY_0p5,MY,y,4.88,26,-38.8,-62.9,5.27,2.66,4.9,7.93
+5,05_LTAN06_800km_1213COLD_PX_ALL_HEAT_PX_0p5,PX,x,-34.5,-24,-28.4,90,13.8,2.15,10.7,27.8
+6,06_LTAN06_800km_1213COLD_PX_STTLCT_HEAT_PX_0p5,PX,x,-48.5,-24,-28.2,89.6,14.1,2.16,10.8,28.5
+8,08_LTAN06_800km_1213COLD_PY_ALL_HEAT_PY_0p5,PY,y,-113,-26.8,7.82,-6.87,4.49,1.54,4.07,6.71
+9,09_LTAN06_800km_1213COLD_MX_ALL_HEAT_MX_0p5,MX,x,17.6,30.2,-10.4,-7.34,13.5,1.39,10,27.8
+10,10_LTAN06_800km_HOT_MY_ALL_HEAT_MY_0p5,MY,y,-23,26.7,9.18,2.16,3.77,0.0429,3.29,6.46
+11,11_LTAN06_800km_1213COLD_MY_ALL_HEAT_MY_Black,MY,y,111,25.9,-162,2.83,8.87,7.1,8.3,14.3
+12,12_LTAN06_800km_1213COLD_MY_ALL_HEAT_MY_alodine,MY,y,-22.6,25.8,-0.743,-86.3,4.73,0.598,4.07,8.44
+13,13_LTAN06_800km_1213COLD_MY_STTLCT_PROP_HEAT_MY_0p5,MY,y,3.04,26.1,-37,-64.7,5.28,2.7,4.91,7.94
+14,14_LTAN06_800km_1213COLD_MY_STTLCT_PCDU_HEAT_MY_0p5,MY,y,14.2,26.1,-25.1,-70.9,5.29,2.64,4.91,8.08
+15,15_LTAN06_800km_1213COLD_MY_STTLCT_HEAT_MY_0p5,MY,y,9.18,26.1,-19.3,-74.1,5.31,2.63,4.92,8.14
