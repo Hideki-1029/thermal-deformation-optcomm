@@ -135,6 +135,19 @@ python "src/pat_acquisition/models/sunface_deltaT_los/summarize_coefficients.py"
 → `results/pat_acquisition/sunface_deltaT_los_model/case*_within_case/`  
 → `results/pat_acquisition/sunface_deltaT_los_model/deltaT_coefficients_comparison.csv`
 
+### Sunface + コンポ取付温度モデル（compo: ΔT + PROP/PCDU attach）
+
+`sunface_deltaT_los` に PROP/PCDU 取付点温度（`T − T_ref`）を追加した版。  
+事前に `compo_attach_points` の温度抽出と `build_lightweight_dataset.py` が必要。
+
+```powershell
+python "src/pat_acquisition/models/sunface_compo_los/validate.py" --cases 4,13,14,15
+python "src/pat_acquisition/models/sunface_compo_los/summarize_coefficients.py"
+```
+
+→ `results/pat_acquisition/sunface_compo_los_model/case*_within_case/`  
+→ `results/pat_acquisition/sunface_compo_los_model/compo_coefficients_comparison.csv`
+
 ### 互換エントリ（truth + Fourier を連続実行）
 
 ```powershell

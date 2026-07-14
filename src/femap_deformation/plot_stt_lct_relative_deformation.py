@@ -8,6 +8,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import yaml
 
 from src.thermal_desktop.case_selection import case_number_from_name, parse_case_spec
 
@@ -751,89 +752,66 @@ def parse_probe_scalar(value):
 
 
 def load_temperature_probe_set(probe_set_path, probe_set_name):
-    probe_sets = {}
-    current_set = None
-    section = None
-    current_point = None
-    current_face = None
-
     with open(probe_set_path, encoding="utf-8") as f:
-        for raw_line in f:
-            if not raw_line.strip() or raw_line.lstrip().startswith("#"):
-                continue
+        data = yaml.safe_load(f)
 
-            indent = len(raw_line) - len(raw_line.lstrip(" "))
-            stripped = raw_line.strip()
-
-            if indent == 0 and stripped.endswith(":"):
-                key = stripped[:-1]
-                if key != "probe_sets":
-                    current_set = None
-                    section = None
-                continue
-
-            if indent == 2 and stripped.endswith(":"):
-                current_set = stripped[:-1]
-                probe_sets[current_set] = {"points": {}, "faces": {}}
-                section = None
-                continue
-
-            if current_set is None:
-                continue
-
-            if indent == 6 and stripped == "points:":
-                section = "points"
-                continue
-            if indent == 4 and stripped == "faces:":
-                section = "faces"
-                continue
-
-            if section == "points":
-                if indent == 8 and stripped.endswith(":"):
-                    current_point = stripped[:-1]
-                    probe_sets[current_set]["points"][current_point] = {}
-                    continue
-                if indent == 10 and current_point and ":" in stripped:
-                    key, value = stripped.split(":", 1)
-                    probe_sets[current_set]["points"][current_point][key] = (
-                        parse_probe_scalar(value)
-                    )
-                    continue
-
-            if section == "faces":
-                if indent == 6 and stripped.endswith(":"):
-                    current_face = stripped[:-1]
-                    probe_sets[current_set]["faces"][current_face] = {}
-                    continue
-                if indent == 8 and current_face and ":" in stripped:
-                    key, value = stripped.split(":", 1)
-                    value = value.strip()
-                    if key == "ranges_mm":
-                        probe_sets[current_set]["faces"][current_face][key] = {}
-                    elif value:
-                        probe_sets[current_set]["faces"][current_face][key] = (
-                            parse_probe_scalar(value)
-                        )
-                    continue
-                if indent == 10 and current_face and ":" in stripped:
-                    key, value = stripped.split(":", 1)
-                    probe_sets[current_set]["faces"][current_face]["ranges_mm"][
-                        key
-                    ] = parse_probe_scalar(value)
-
+    probe_sets = data.get("probe_sets") or {}
     if probe_set_name not in probe_sets:
         raise ValueError(f"{probe_set_name!r} was not found in {probe_set_path}")
     return probe_sets[probe_set_name]
 
 
-def expand_temperature_probe_set(probe_set):
+def _explicit_temperature_probes(probe_set):
+    raw = probe_set.get("probes")
+    if not raw:
+        return None
+
+    if isinstance(raw, dict):
+        items = [{"name": name, **definition} for name, definition in raw.items()]
+    else:
+        items = list(raw)
+
     probes = []
-    for panel_name, face in probe_set["faces"].items():
+    for item in items:
+        xyz = item.get("xyz_mm")
+        if xyz is None or len(xyz) != 3:
+            raise ValueError(f"Probe {item.get('name')!r} requires xyz_mm: [x, y, z]")
+        panel = item.get("panel")
+        name = item.get("name")
+        if not panel or not name:
+            raise ValueError("Explicit probes require both name and panel")
+        probes.append(
+            {
+                "name": str(name),
+                "panel": str(panel),
+                "target_xyz": (float(xyz[0]), float(xyz[1]), float(xyz[2])),
+            }
+        )
+    return probes
+
+
+def expand_temperature_probe_set(probe_set):
+    explicit = _explicit_temperature_probes(probe_set)
+    if explicit is not None:
+        return explicit
+
+    points = probe_set.get("points")
+    if not points:
+        points = (probe_set.get("pattern") or {}).get("points") or {}
+    faces = probe_set.get("faces") or {}
+    if not points or not faces:
+        raise ValueError(
+            "Probe set must define either 'probes' (explicit xyz) "
+            "or pattern points + faces"
+        )
+
+    probes = []
+    for panel_name, face in faces.items():
         axes = face["axes"]
         fixed_axis = face["fixed_axis"]
         fixed_value = face["fixed_value_mm"]
 
-        for point_name, point_definition in probe_set["points"].items():
+        for point_name, point_definition in points.items():
             fractions = point_definition["fractions"]
             target = {fixed_axis: fixed_value}
             for axis, fraction in zip(axes, fractions):

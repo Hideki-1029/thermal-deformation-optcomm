@@ -113,3 +113,16 @@ probe_sets:
         ranges_mm:
           x: [5.0, 595.0]
           y: [0.0, 600.0]
+
+  compo_attach_points:
+    description: >
+      PROP and PCDU attachment centers on their mounting panels
+      (PY and MY). Explicit XYZ targets in Femap mapper coordinates [mm].
+    selection: nearest_xyz_within_panel
+    probes:
+      - name: prop_attach
+        panel: PANEL_PY
+        xyz_mm: [576.11, 600.0, 157.4]
+      - name: pcdu_attach
+        panel: PANEL_MY
+        xyz_mm: [322.5, 0.0, 649.0]

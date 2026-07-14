@@ -28,6 +28,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--symbol-dir", type=Path, default=DEFAULT_SYMBOL_DIR)
     parser.add_argument("--femap-result-dir", type=Path, default=DEFAULT_FEMAP_RESULT_DIR)
     parser.add_argument("--temperature-csv-name", default="default_surface_9points_temperatures.csv")
+    parser.add_argument(
+        "--extra-temperature-csv-names",
+        nargs="*",
+        default=["compo_attach_points_temperatures.csv"],
+        help=(
+            "Additional probe-set temperature CSVs to merge (same case folder). "
+            "Pass empty list to disable: --extra-temperature-csv-names"
+        ),
+    )
     parser.add_argument("--los-csv-name", default="los_angles.csv")
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     parser.add_argument("--train-ratio", type=float, default=0.6)
@@ -240,6 +249,21 @@ def main() -> None:
 
         los = read_los(los_path)
         temperature = read_representative_temperatures(temp_path)
+        for extra_name in args.extra_temperature_csv_names or []:
+            extra_path = args.femap_result_dir / case_id / extra_name
+            if not extra_path.exists():
+                print(f"Skip extra temps for {case_id}: missing {extra_path.name}")
+                continue
+            extra_temp = read_representative_temperatures(extra_path)
+            overlap = set(temperature.columns).intersection(extra_temp.columns) - {"time_s"}
+            if overlap:
+                raise ValueError(
+                    f"{case_id}: overlapping temperature columns when merging "
+                    f"{extra_path.name}: {sorted(overlap)}"
+                )
+            temperature = temperature.merge(extra_temp, on="time_s", how="outer")
+            temperature = temperature.sort_values("time_s").reset_index(drop=True)
+
         logic_sun = read_logic_sun(symbol_path)
 
         time_s = los["time_s"].to_numpy(dtype=float)
