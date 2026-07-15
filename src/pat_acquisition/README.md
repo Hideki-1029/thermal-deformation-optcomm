@@ -143,7 +143,15 @@ python "src/pat_acquisition/models/sunface_deltaT_los/summarize_coefficients.py"
 
 `b_case ≈ b0(sun) + c_prop·I_prop + c_pcdu·I_pcdu`
 
-（既定では発熱フラグは MY/PY のみ有効）。within-case にコンポ温度を足さない。
+within-case にコンポ温度を足さない。コンポ効果はケース定数 `b` 側に置く。
+
+**「発熱フラグは MY/PY のみ有効」（既定 `--heat-faces MY,PY`）の意味:**  
+TD で MY/PY だけ発熱させる、という意味ではない。Level 2 の設計行列で `I_prop` / `I_pcdu`（PROP/PCDU 発熱 ON/OFF）を使う条件が、**太陽面が MY または PY のケースだけ**、という意味。
+
+- 太陽面 = MY / PY（かつ PROP/PCDU ON）→ `I_*` を使い、`c_prop` / `c_pcdu` で `b` の差を説明
+- 太陽面 = MX / PX → たとえ PROP/PCDU が ON でも設計行列上は `I_*=0`（差は `b0(MX/PX)` 側に吸収）
+
+PROP/PCDU 効果が主に ±Y 太陽面で効き、MX/PX では発熱モード差が小さいため。全太陽面でフラグを使うなら `--heat-faces all`。
 
 ```powershell
 python "src/pat_acquisition/models/sunface_deltaT_bcase_los/validate.py" --cases 4-6,8-21
