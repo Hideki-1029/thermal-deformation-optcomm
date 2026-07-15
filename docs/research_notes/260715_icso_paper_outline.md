@@ -5,6 +5,8 @@
 - 前提モデル: `sunface_deltaT_bcase_los`（詳細: [`260714_sunface_deltaT_bcase_los.md`](260714_sunface_deltaT_bcase_los.md)）
 - 根拠: 提出アブスト（`docs/research_notes/MD/ICSO_abstract_submitted/`）、`google_doc` メモ（〜7/12）、進捗振り返り（`260712_research_progress_retrospective.md`）
 - 既存ドラフト: `papers/ICSO/main.typ` / `full_paper_story.md` は Fourier 先行の旧ストーリー。**本ノートの章立てで置き換える**
+- **題名は提出アブストと同一**（ICSO ルール上そのまま出す必要がありそう）:
+  `Feedforward and Adaptive Correction of Time-Varying Thermal Bias for Coarse Acquisition in Optical Communication Systems`
 
 ---
 
@@ -120,7 +122,17 @@ Fourier / 旧 `sunface_los` 3 特徴は本文の主役にしない（必要な�
 - 評価指標: 捕捉時間（＋必要なら success / scan area proxy）
 - adaptive: アブスト整合のため「二層の第2層」を 1 段落。同列比較は必須にしない
 
-数字（17 ケース・LOO `b`）: no ~137 s / static ~5 s / **bcase ~0.12 s** / truth 0.10 s（熱のみ）。Ideal truth は上界として 1 本。
+**評価の切り分け（執筆方針）:**
+
+- **熱LOSモデルの当てはまり**（数百 µrad → 数 µrad）は熱成分のみで語ってよい（§5）
+- **捕捉時間・全体誤差**は非熱誤差込みを主報告にする。熱のみ 137→0.12 s は「モデルが熱を取りきれる」参考に留め、主数字は非熱込み（例: ~171→~22 s）
+
+数字（17 ケース・LOO `b`）:
+
+| 条件 | no | static | bcase | truth |
+|------|-----|--------|-------|-------|
+| 熱のみ（参考） | ~137 s | ~5 s | ~0.12 s | 0.10 s |
+| 非熱込み（主） | ~171 s | — | ~22 s | — |
 
 ### §7 Discussion（~0.5–0.8 p）
 
