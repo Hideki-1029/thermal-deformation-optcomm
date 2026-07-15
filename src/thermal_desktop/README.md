@@ -33,6 +33,15 @@ TD の Case Set を実行し、DataMapper 出力を Femap の
 # 一覧
 python -m src.thermal_desktop.run_td_cases --group transient --list-cases --attach-only
 
+# Case Set 新規作成（case_matrix → symbols 既定オン、case 04 をテンプレに clone）
+python -m src.thermal_desktop.create_td_cases --cases 22 --template 4 --attach-only --dry-run
+python -m src.thermal_desktop.create_td_cases --cases 22 --template 4 --attach-only
+
+# Orbit 新規作成（orbit_catalog 白列 → TD）
+python -m src.thermal_desktop.create_td_orbits --names LTAN18_693km_SENTINEL1_MY_SUN --attach-only --dry-run
+python -m src.thermal_desktop.create_td_orbits --names LTAN18_693km_SENTINEL1_MY_SUN --attach-only
+python -m src.thermal_desktop.refresh_orbit_catalog_attitude --attach-only
+
 # 解析 + mapper
 python -m src.thermal_desktop.run_td_cases --group transient --cases 7,8,9 --attach-only
 
@@ -79,10 +88,28 @@ C:/Users/Hide/Femap/research_model/{case_id}/mapper_from_TD/output.dat
 
 | ファイル | 役割 |
 |---|---|
-| `run_td_cases.py` | CLI |
+| `run_td_cases.py` | CLI（解析 + mapper） |
+| `create_td_orbits.py` | catalog の白列（sun / constraint / Keplerian）から TD Orbit を作成 |
+| `create_td_cases.py` | case_matrix 行から Case Set をテンプレ clone で作成 |
+| `refresh_orbit_catalog_attitude.py` | TD から姿勢を読み、灰色列（`eff_*` / Rot* 等）を更新。新規行は `notes` まで手入力→本コマンドで確認列を埋める |
+| `orbit_catalog_io.py` | catalog 列順・入力(白)/確認(灰)スタイル |
 | `opentd_runtime.py` | OpenTD 接続 |
 | `case_selection.py` | ケース番号パース |
 | `test_case_selection.py` | 単体テスト |
+| `test_create_td_cases.py` | matrix→symbol マッピング単体テスト |
+
+### `create_td_cases` の方針
+
+- テンプレ Case Set を clone し、`orbit_case` / symbols を差し替える
+- **解析時間 / Output**: `orbit_catalog.orbit_period_s` から算出
+  - End time (`timend`) = **3 × period**
+  - Thermal Output Increment (`OUTPUT`) = **period / 100**
+  - period が無いときだけ `case_matrix.duration_s` / `sample_interval_s` にフォールバック
+- 既存 Case の timing だけ直す: `--patch-timing`（例: `--cases 22-25 --patch-timing`）
+- **出力先は常に `UserDirectory=<group>`**（例: `transient/`）。未設定だと DWG 直下に落ちる
+- **既定で case_matrix から symbols を適用**（`--no-symbols-from-matrix` でオフ）
+- `*_heat_w = 0` は `INT_HEAT_*` を書かず、テンプレ定格 W を残す（OFF は `IS_COMPO_*=0`）
+- 光学 override は太陽面 `Opt_{sun_face}` のみ（他面の `Opt_MY=Black` 等はモデル既定）
 
 ## 次のステップ
 

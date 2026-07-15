@@ -19,13 +19,13 @@ TD解析で定義した熱環境・軌道・コンポーネント条件を、Fem
 - `case_schema.yaml`: `case_matrix` の列名、単位、必須/任意、許容値を定義する。
 - `thermal_optical_properties.yaml`: `case_matrix.xlsx` の `Opt_MX`、`Opt_MY`、`Opt_MZ`、`Opt_PX`、`Opt_PY`、`Opt_PZ` で参照する熱光学特性名と、太陽吸収率・赤外放射率の対応表。
 - `temperature_probe_sets.yaml`: TD mapper出力から代表温度点を抽出するためのプローブセット定義。デフォルトでは各面の中央、4頂点、4辺中点を使う。
-- `orbit_catalog.xlsx`: TDで使う軌道条件の一覧。既存衛星プロジェクトの軌道表を英語列名で管理する。
+- `orbit_catalog.xlsx`: TD Orbit の正本一覧。シート `orbit_catalog` は **いま `case_matrix` が参照している軌道だけ**。未使用の旧行は `orbit_catalog_archive` に退避する。
 - `../inputs/data_symbols_TD/`: TDからExcel出力したシンボル時系列。日照/蝕の履歴は各ケースの `LOGIC_SUN` 列を正本とする。
 - `../inputs/spacecraft_models/`: 衛星寸法、パネル厚み、材料物性などの構造モデル定義。
 
 ## Basic Policy
 
-ケース設計の正本は `case_matrix.xlsx` とし、軌道条件の正本は `orbit_catalog.xlsx` とする。
+ケース設計の正本は `case_matrix.xlsx` とし、軌道条件の正本は `orbit_catalog.xlsx`（シート `orbit_catalog`）とする。
 
 Pythonスクリプトや自動処理も、原則としてこの2つのExcelファイルを直接読み込む。Excelで編集した内容を解析に反映するには、Excelファイルを保存してから解析スクリプトを実行する。
 
@@ -83,14 +83,51 @@ case_group=sensitivity, use_for_model=exclude
 
 ## Orbit Metadata
 
-軌道条件は現状TDのOrbit設定が持っているため、ケース表ではTD内の軌道設定を識別できる情報を残す。
+軌道の正本は Thermal Desktop の Orbit オブジェクト名とする。`case_matrix.orbit_case` と `orbit_catalog.td_orbit_name` は同じ文字列で揃える。
 
-- `orbit_case`: 解析ケース間で軌道条件をグループ化するためのラベル。
-- `td_orbit_name`: Thermal Desktop内で使ったOrbitオブジェクト名または軌道設定名。
-- `orbit_source_path`: TLE、軌道暦、TD設定のエクスポートなど、TD外に軌道定義を残した場合の参照先。
-- `epoch_utc`: 軌道と太陽方向を決める基準時刻。
+### 入力（白）とスクリプト記入（灰）
 
-`beta_angle_deg` は、独立に入力する熱条件というより、軌道面と太陽方向から決まる派生メタデータとして扱う。TDから直接出せない場合は空欄でもよく、後でPython側で計算または手入力する。
+人が触るのは意図だけ。TD の Pointing / Additional rotations は入力にしない（灰色列は手編集しない）。
+
+| 種別 | 列 | 意味 |
+|---|---|---|
+| 入力 | `td_orbit_name`, `sun_face`, `constraint_target`, `constraint_face` | Orbit 名・太陽面・第二軸の種類と体軸面 |
+| 入力 | Keplerian / `notes` まで | 軌道面パラメータ・メモ（ここまでが新規行の手入力範囲） |
+| 灰（結果） | `eff_sun_face`, `eff_velocity_face`, `eff_nadir_face` | TD 上の実際の太陽／速度／Nadir 面（確認用） |
+| 灰（TD内部） | `orient_type`, `constraint_type`, `pointing_axis`, `constraint_axis`, `rot*` | GUI/OpenTD の生設定。確認用 |
+
+姿勢の意図は **太陽面 + 第二軸** の2つで決める（第三軸は直交から決まる）。
+
+- `sun_face`: 太陽指向面（`MX`/`MY`/`MZ`/`PX`/`PY`）。`case_matrix.sun_direction_body` と一致。
+- `constraint_target`: 第二軸が追うもの。`velocity` または `nadir`。
+- `constraint_face`: その第二軸に向ける体軸面（例: `velocity`+`MZ` → 速度に `MZ`）。
+- `constraint_type`: **TD の生 enum**（`VELOCITY` / `PLANET`）。`constraint_target` と同じ事実の dump。入力しない。
+- `eff_*_face` / `eff_*_source`: TD dump 後の正味面と由来。入力の確認用。
+
+### 新規軌道の運用
+
+1. **手入力は `notes` 列まで**（白列のみ）。灰色列は空のままでよい。
+2. TD に Orbit を作る／反映する:
+
+```powershell
+python -m src.thermal_desktop.create_td_orbits --names LTAN18_693km_SENTINEL1_MY_SUN --attach-only --dry-run
+python -m src.thermal_desktop.create_td_orbits --names LTAN18_693km_SENTINEL1_MY_SUN --attach-only
+```
+
+3. 開いている TD から姿勢を読み戻して Excel の灰色列を更新する:
+
+```powershell
+python -m src.thermal_desktop.refresh_orbit_catalog_attitude --attach-only --dry-run
+python -m src.thermal_desktop.refresh_orbit_catalog_attitude --attach-only
+```
+
+4. `sun_face` / `constraint_target` / `constraint_face` と `eff_*` が一致しているか確認する。ずれがあれば `notes_attitude` に WARNING が出る。
+
+列順と灰色スタイルだけ直す（TD 不要）:
+
+```powershell
+python -m src.thermal_desktop.refresh_orbit_catalog_attitude --layout-only
+```
 
 軽量モデルで日照/蝕遷移を扱うときは、`orbit_catalog.xlsx` に代表時刻を手入力せず、TDからExcel出力したシンボル時系列を使う。各ケースの履歴は `inputs/data_symbols_TD/{case_id}.xlsx` に置き、`LOGIC_SUN` 列を読む。
 
@@ -101,7 +138,7 @@ LOGIC_SUN = 1: 日照
 
 `orbit_period_s` は軌道周期や軌道位相を扱うためのメタデータとして残すが、蝕入り/蝕明けのタイミングは `LOGIC_SUN` の時系列を正本とする。
 
-軌道条件の詳細は `orbit_catalog.xlsx` に集約し、`case_matrix.xlsx` からは `td_orbit_name` などで参照する。軌道カタログ側は列名・値を英語に寄せ、スクリプトで扱いやすいようにする。
+未使用の旧軌道行は削除せず `orbit_catalog_archive` シートへ移す。
 
 ## Case ID
 
