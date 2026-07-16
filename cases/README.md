@@ -39,9 +39,9 @@ CSVが必要な場合は、確認用・共有用の派生物として必要な�
 
 軽量モデル用に抽出する代表温度点は、`temperature_probe_sets.yaml` にプローブセットとして定義する。デフォルトは `default_surface_9points` とし、各パネル面について中央、4頂点、4辺中点の計9点をFemap mapper座標で指定し、実際の温度は最も近いFemapノードから取得する。
 
-TDとFemapは、TD側で作ったケースセット名を基準にした1ファイル運用を正とする。TDの温度出力、Femapモデル・解析結果、Python解析後のCSV・図は、同じTDケースセット名または同名フォルダ配下に置き、対応するパスを `case_matrix.xlsx` に記録する。
+TDとFemapは、TD側で作ったケースセット名を基準にした1ファイル運用を正とする。TDの温度出力、Femapモデル・解析結果、Python解析後のCSV・図は、同じTDケースセット名または同名フォルダ配下に置く。
 
-これにより、ファイル名やフォルダ名を個別に推測せず、`case_matrix.xlsx` の1行から次を追跡できる状態にする。
+これにより、ファイル名やフォルダ名を個別に推測せず、`case_id` の命名規則から次を追跡できる状態にする。
 
 - TDの出力ファイル
 - Femapに読み込む解析ファイル
@@ -170,7 +170,7 @@ TD mapper用の `output.dat` は、Femap側のケースフォルダ配下にあ�
 
 TDのシンボル出力は `inputs/data_symbols_TD/` に保存する。ここにあるExcelの `LOGIC_SUN` 列が、軌道中の各時刻が日照か蝕かを示す履歴である。
 
-Femap解析は、同じFemap解析ファイルを使い、解析ごとの出力先をTDケースセット名のフォルダに切り替える運用を基本とする。STT/LCTノードの変位・回転をPython LOS解析に渡すExcelは `femap_result_stt_lct_path` に記録し、Femapケースフォルダや `mapper_from_TD` などの周辺出力は `femap_result_other_path` に記録する。
+Femap解析は、同じFemap解析ファイルを使い、解析ごとの出力先をTDケースセット名のフォルダに切り替える運用を基本とする。STT/LCTノードの変位・回転入力Excelは `inputs/data_femap_deformation/{case_id}.xlsx`、Femapケースフォルダや `mapper_from_TD` は `{mapper_root}/{case_id}/` に置く。
 
 ## Directory Convention
 
@@ -192,7 +192,7 @@ results/
     stt_lct_plane_sketch.png
 ```
 
-ケース表では、Femap変形入力や解析結果への対応を `femap_result_stt_lct_path`、`femap_result_other_path`、`python_result_path` に記録する。TD symbol Excelは `inputs/data_symbols_TD/{case_id}.xlsx` の命名規則で管理する。
+ケース表にパス列は持たない。下流成果物は `case_id` から次の規則で解決する。TD symbol Excelは `inputs/data_symbols_TD/{case_id}.xlsx`。
 
 ## Main Output Target
 

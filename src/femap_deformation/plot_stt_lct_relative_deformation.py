@@ -146,23 +146,6 @@ def find_case_matrix_row(case_matrix_path, sheet_name, input_path):
         if len(matches) == 1:
             return matches.iloc[0]
 
-    path_columns = [
-        column
-        for column in (
-            "femap_result_stt_lct_path",
-            "femap_result_other_path",
-            "python_result_path",
-            "td_temperature_path",
-        )
-        if column in case_matrix.columns
-    ]
-    for column in path_columns:
-        matches = case_matrix[
-            case_matrix[column].apply(lambda value: path_matches_case_value(value, input_path))
-        ]
-        if len(matches) == 1:
-            return matches.iloc[0]
-
     return None
 
 

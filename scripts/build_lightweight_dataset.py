@@ -318,9 +318,7 @@ def main() -> None:
         else:
             unresolved_cases.add(case_id)
 
-        los_path = Path(str(case_row.get("python_result_path", "")))
-        if not los_path.is_file():
-            los_path = args.femap_result_dir / case_id / args.los_csv_name
+        los_path = args.femap_result_dir / case_id / args.los_csv_name
         temp_path = args.femap_result_dir / case_id / args.temperature_csv_name
         symbol_path = args.symbol_dir / f"{case_id}.xlsx"
         auto_extract = not args.no_auto_extract_temps
