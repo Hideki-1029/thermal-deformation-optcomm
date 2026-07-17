@@ -1,7 +1,7 @@
 ﻿feature,coef_urad
-b0_MX,16.2
-b0_MY,-8.52
-b0_PX,-7.89e-31
-b0_PY,0
-c_prop,-8.52
-c_pcdu,-8.52
+b0_MX,15.7
+b0_MY,2.8
+b0_PX,-12
+b0_PY,-24
+c_prop,-22.9
+c_pcdu,-10.2
