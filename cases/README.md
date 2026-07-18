@@ -95,6 +95,7 @@ case_group=sensitivity, use_for_model=exclude
 | 入力 | Keplerian / `notes` まで | 軌道面パラメータ・メモ（ここまでが新規行の手入力範囲） |
 | 灰（結果） | `eff_sun_face`, `eff_velocity_face`, `eff_nadir_face` | TD 上の実際の太陽／速度／Nadir 面（確認用） |
 | 灰（TD内部） | `orient_type`, `constraint_type`, `pointing_axis`, `constraint_axis`, `rot*` | GUI/OpenTD の生設定。確認用 |
+| 灰（軌道誤差） | `pat_orbit_error_frame`, `orbit_error_stt_*` | PAT が使う軌道誤差枠／STT 射影の相手モード。`run_orbit_error_stt_frame.py --update-orbit-catalog` で更新 |
 
 姿勢の意図は **太陽面 + 第二軸** の2つで決める（第三軸は直交から決まる）。
 

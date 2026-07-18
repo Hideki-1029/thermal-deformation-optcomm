@@ -31,16 +31,21 @@ def load_orbit_error_timeseries_csv(
                 f"{path} must contain elapsed_time_s or unix_time_s columns"
             )
 
-        required = {time_column, "isl_angle_x_urad", "isl_angle_y_urad"}
-        missing = required.difference(fieldnames)
-        if missing:
-            raise ValueError(f"{path} is missing required columns: {sorted(missing)}")
+        if {"stt_los_angle_x_urad", "stt_los_angle_y_urad"}.issubset(fieldnames):
+            x_column = "stt_los_angle_x_urad"
+            y_column = "stt_los_angle_y_urad"
+        elif {"isl_angle_x_urad", "isl_angle_y_urad"}.issubset(fieldnames):
+            x_column = "isl_angle_x_urad"
+            y_column = "isl_angle_y_urad"
+        else:
+            raise ValueError(
+                f"{path} must contain stt_los_angle_{{x,y}}_urad or "
+                "isl_angle_{x,y}_urad columns"
+            )
 
         for row in reader:
             times_s.append(float(row[time_column]))
-            errors.append(
-                [float(row["isl_angle_x_urad"]), float(row["isl_angle_y_urad"])]
-            )
+            errors.append([float(row[x_column]), float(row[y_column])])
 
     if not times_s:
         raise ValueError(f"No rows found in {path}")

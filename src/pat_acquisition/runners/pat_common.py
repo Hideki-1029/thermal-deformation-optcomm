@@ -28,7 +28,11 @@ if str(SRC_ROOT) not in sys.path:
 if str(PAT_ROOT) not in sys.path:
     sys.path.insert(0, str(PAT_ROOT))
 
-from case_metadata import CaseMetadataPaths, resolve_orbit_period_s  # noqa: E402
+from case_metadata import (  # noqa: E402
+    CaseMetadataPaths,
+    resolve_orbit_case_name,
+    resolve_orbit_period_s,
+)
 from orbit.pat_orbit_error import (  # noqa: E402
     load_orbit_error_timeseries_csv,
     resample_orbit_error_to_times,
@@ -119,11 +123,21 @@ BCASE_PLOT_LABELS = {
 }
 
 
+DEFAULT_ORBIT_ERROR_DIR = (
+    REPO_ROOT / "results" / "orbit" / "sentinel1_tle_vs_pod"
+)
+
+
 @dataclass(frozen=True)
 class OrbitErrorConfig:
     source: str = "sentinel1_tle_vs_pod"
+    # legacy: arbitrary ECEF-Z basis CSV
+    # stt_body: per-orbit STT-frame CSV from run_orbit_error_stt_frame.py
+    frame: str = "stt_body"
     timeseries_csv: Path | None = None
+    stt_csv_dir: Path | None = None
     resample_mode: str = "cyclic"
+    case_metadata_paths: CaseMetadataPaths | None = None
 
 
 @dataclass(frozen=True)
@@ -255,15 +269,34 @@ def build_orbit_error_config(
         args.orbit_error_source,
         "sentinel1_tle_vs_pod",
     )
-    default_csv = (
-        REPO_ROOT / "results/orbit/sentinel1_tle_vs_pod/orbit_prediction_error_timeseries.csv"
-    )
+    frame = str(
+        config_value(
+            yaml_config,
+            "orbit_error",
+            "frame",
+            getattr(args, "orbit_error_frame", None),
+            "stt_body",
+        )
+    ).strip().lower()
+    if frame not in {"legacy", "stt_body"}:
+        raise ValueError(
+            f"orbit_error.frame must be 'legacy' or 'stt_body', got {frame!r}"
+        )
+
+    default_csv = DEFAULT_ORBIT_ERROR_DIR / "orbit_prediction_error_timeseries.csv"
     csv_path = config_path_value(
         yaml_config,
         "orbit_error",
         "timeseries_csv",
         args.orbit_error_csv,
         default_csv,
+    )
+    stt_csv_dir = config_path_value(
+        yaml_config,
+        "orbit_error",
+        "stt_csv_dir",
+        getattr(args, "orbit_error_stt_csv_dir", None),
+        DEFAULT_ORBIT_ERROR_DIR,
     )
     resample_mode = str(
         config_value(
@@ -276,8 +309,11 @@ def build_orbit_error_config(
     )
     return OrbitErrorConfig(
         source=str(source),
+        frame=frame,
         timeseries_csv=csv_path,
+        stt_csv_dir=stt_csv_dir,
         resample_mode=resample_mode,
+        case_metadata_paths=build_case_metadata_paths(yaml_config, args),
     )
 
 
@@ -362,7 +398,14 @@ def add_common_pat_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--drift-amplitude-urad", type=float, default=None)
     parser.add_argument("--drift-period-s", type=float, default=None)
     parser.add_argument("--orbit-error-source", default=None)
+    parser.add_argument(
+        "--orbit-error-frame",
+        default=None,
+        choices=["legacy", "stt_body"],
+        help="Orbit LOS angle frame: legacy (arbitrary) or stt_body (per-orbit STT).",
+    )
     parser.add_argument("--orbit-error-csv", type=Path, default=None)
+    parser.add_argument("--orbit-error-stt-csv-dir", type=Path, default=None)
     parser.add_argument("--orbit-error-resample-mode", default=None)
 
 
@@ -402,6 +445,43 @@ def read_femap_los_csv(path: Path, los_prefix: str) -> tuple[np.ndarray, np.ndar
     return np.asarray(times, dtype=float), np.asarray(theta, dtype=float)
 
 
+def _resolve_orbit_error_csv(
+    case_id: str,
+    orbit_config: OrbitErrorConfig,
+) -> Path:
+    if orbit_config.frame == "stt_body":
+        if orbit_config.case_metadata_paths is None:
+            raise ValueError(
+                "orbit_error.frame=stt_body requires case_metadata paths "
+                "to resolve orbit_case"
+            )
+        if orbit_config.stt_csv_dir is None:
+            raise ValueError("orbit_error.stt_csv_dir is required for frame=stt_body")
+        orbit_case = resolve_orbit_case_name(case_id, orbit_config.case_metadata_paths)
+        path = orbit_config.stt_csv_dir / f"orbit_error_stt_{orbit_case}.csv"
+        if not path.exists():
+            raise FileNotFoundError(
+                "STT-frame orbit error CSV not found: "
+                f"{path}. Run "
+                "python src/orbit/run_orbit_error_stt_frame.py "
+                f"--td-orbit-name {orbit_case} "
+                "(or --all-bcase-orbits) first."
+            )
+        return path
+
+    if orbit_config.timeseries_csv is None:
+        raise ValueError(
+            "orbit_error.timeseries_csv is required when frame=legacy"
+        )
+    if not orbit_config.timeseries_csv.exists():
+        raise FileNotFoundError(
+            "Orbit error timeseries not found: "
+            f"{orbit_config.timeseries_csv}. "
+            "Run src/orbit/run_orbit_prediction_error.py first."
+        )
+    return orbit_config.timeseries_csv
+
+
 def generate_orbit_prediction_error(
     times_s: np.ndarray,
     case_id: str,
@@ -411,19 +491,8 @@ def generate_orbit_prediction_error(
     orbit_config = config.orbit_error
 
     if orbit_config.source == "sentinel1_tle_vs_pod":
-        if orbit_config.timeseries_csv is None:
-            raise ValueError(
-                "orbit_error.timeseries_csv is required when source=sentinel1_tle_vs_pod"
-            )
-        if not orbit_config.timeseries_csv.exists():
-            raise FileNotFoundError(
-                "Orbit error timeseries not found: "
-                f"{orbit_config.timeseries_csv}. "
-                "Run src/orbit/run_orbit_prediction_error.py first."
-            )
-        orbit_times_s, orbit_error_urad, _ = load_orbit_error_timeseries_csv(
-            orbit_config.timeseries_csv
-        )
+        csv_path = _resolve_orbit_error_csv(case_id, orbit_config)
+        orbit_times_s, orbit_error_urad, _ = load_orbit_error_timeseries_csv(csv_path)
         return resample_orbit_error_to_times(
             orbit_times_s,
             orbit_error_urad,

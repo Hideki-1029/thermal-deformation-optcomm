@@ -94,6 +94,24 @@ def _orbit_period_from_catalog_row(row: pd.Series) -> float | None:
     return keplerian_period_s_from_altitude_km(mean_altitude_km)
 
 
+def resolve_orbit_case_name(
+    case_id: str,
+    metadata_paths: CaseMetadataPaths,
+) -> str:
+    """Return ``case_matrix.orbit_case`` (td_orbit_name) for ``case_id``."""
+    case_matrix = _read_excel_table(
+        metadata_paths.case_matrix_xlsx,
+        metadata_paths.case_matrix_sheet,
+    )
+    case_row = _find_case_matrix_row(case_matrix, case_id)
+    if case_row is None:
+        raise ValueError(f"case_id {case_id!r} not found in case_matrix")
+    orbit_case = case_row.get("orbit_case")
+    if pd.isna(orbit_case) or str(orbit_case).strip() == "":
+        raise ValueError(f"case_id {case_id!r} has empty orbit_case in case_matrix")
+    return str(orbit_case).strip()
+
+
 def resolve_orbit_period_s(
     case_id: str,
     metadata_paths: CaseMetadataPaths,

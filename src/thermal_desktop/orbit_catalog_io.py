@@ -60,7 +60,16 @@ TD_INTERNAL_COLS = (
     "notes_attitude",
 )
 
-DERIVED_COLS = RESULT_FACE_COLS + TD_INTERNAL_COLS
+# Orbit-error / PAT wiring (script fills; see run_orbit_error_stt_frame.py)
+ORBIT_ERROR_COLS = (
+    "pat_orbit_error_frame",
+    "orbit_error_stt_frame",
+    "orbit_error_partner_mode",
+    "orbit_error_stt_status",
+    "orbit_error_stt_notes",
+)
+
+DERIVED_COLS = RESULT_FACE_COLS + TD_INTERNAL_COLS + ORBIT_ERROR_COLS
 
 # Preferred left-to-right order for the active sheet
 PREFERRED_COLUMN_ORDER = (
@@ -85,6 +94,7 @@ PREFERRED_COLUMN_ORDER = (
     "notes",
     *RESULT_FACE_COLS,
     *TD_INTERNAL_COLS,
+    *ORBIT_ERROR_COLS,
 )
 
 _DERIVED_FILL = PatternFill(start_color="D9D9D9", end_color="D9D9D9", fill_type="solid")

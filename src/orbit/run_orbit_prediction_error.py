@@ -240,6 +240,84 @@ def plot_results(path: Path, result: OrbitPredictionErrorResult) -> None:
     plt.close(fig)
 
 
+def plot_results_n_orbits(
+    path: Path,
+    result: OrbitPredictionErrorResult,
+    *,
+    orbit_period_s: float = 6050.0,
+    n_orbits: float = 3.0,
+) -> None:
+    """
+    Zoom to the first n_orbits (default 3), matching typical Femap/PAT thermal span.
+
+    X-axis is minutes so it lines up with pat_acquisition_comparison.png.
+    With PAT resample_mode=cyclic and target span << orbit-error window, this is
+    also what gets injected into PAT over those orbits.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    t_max_s = float(n_orbits) * float(orbit_period_s)
+    mask = result.elapsed_time_s <= t_max_s
+    if not np.any(mask):
+        raise ValueError(
+            f"No samples within first {n_orbits} orbits "
+            f"(orbit_period_s={orbit_period_s})"
+        )
+
+    t_min = result.elapsed_time_s[mask] / 60.0
+    fig, axes = plt.subplots(3, 1, figsize=(10, 10), sharex=True)
+
+    axes[0].plot(t_min, result.position_error_norm_m[mask], label="|delta r|")
+    axes[0].plot(
+        t_min,
+        np.abs(result.position_error_rtn_m[mask, 1]),
+        label="|along-track|",
+    )
+    axes[0].set_ylabel("Position error [m]")
+    axes[0].grid(True)
+    axes[0].legend()
+
+    axes[1].plot(
+        t_min, result.isl_angle_error_urad[mask, 0], label="ISL angle x"
+    )
+    axes[1].plot(
+        t_min, result.isl_angle_error_urad[mask, 1], label="ISL angle y"
+    )
+    axes[1].plot(
+        t_min,
+        result.isl_angle_error_norm_urad[mask],
+        label="ISL angle norm",
+        linewidth=2,
+    )
+    axes[1].set_ylabel("ISL angle error [urad]")
+    axes[1].grid(True)
+    axes[1].legend()
+
+    axes[2].plot(t_min, result.tle_age_days[mask], label="TLE age")
+    axes[2].set_xlabel("Time [min]")
+    axes[2].set_ylabel("TLE age [days]")
+    axes[2].grid(True)
+    axes[2].legend()
+
+    for axis in axes:
+        for k in range(1, int(np.floor(n_orbits)) + 1):
+            axis.axvline(
+                k * orbit_period_s / 60.0,
+                color="0.7",
+                linestyle="--",
+                linewidth=0.8,
+                zorder=0,
+            )
+
+    fig.suptitle(
+        "Sentinel-1 TLE vs POEORB — first "
+        f"{n_orbits:g} orbits (Torb={orbit_period_s:.0f} s)\n"
+        "Same window as typical thermal/PAT span; dashed = orbit boundaries"
+    )
+    fig.tight_layout()
+    fig.savefig(path, dpi=200)
+    plt.close(fig)
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
@@ -273,6 +351,15 @@ def main() -> None:
     summary_rows = summarize_by_tle_age(result)
     write_summary_csv(output_dir / "orbit_prediction_error_summary.csv", summary_rows)
     plot_results(output_dir / "orbit_prediction_error.png", result)
+    # Match Femap/PAT thermal default: 3 * orbit_period_s (pat_femap_los_config.yaml).
+    orbit_period_s = float(analysis.get("orbit_period_s", 6050.0))
+    n_orbits = float(analysis.get("plot_n_orbits", 3.0))
+    plot_results_n_orbits(
+        output_dir / "orbit_prediction_error_3orbits.png",
+        result,
+        orbit_period_s=orbit_period_s,
+        n_orbits=n_orbits,
+    )
 
     print(f"POD window: {pod_states[0].utc.isoformat()} -> {pod_states[-1].utc.isoformat()}")
     print(f"TLE age [days]: median={result.tle_age_median_days:.3f}, max={result.tle_age_max_days:.3f}")

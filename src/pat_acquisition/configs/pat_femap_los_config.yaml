@@ -21,7 +21,12 @@ orbit_error:
   # synthetic: legacy fixed Gaussian placeholder
   # sentinel1_tle_vs_pod: TLE-only forward propagation vs Sentinel-1 POEORB
   source: sentinel1_tle_vs_pod
+  # frame:
+  #   stt_body — per-orbit STT x/y from run_orbit_error_stt_frame.py (default)
+  #   legacy   — arbitrary ECEF-Z basis (orbit_prediction_error_timeseries.csv)
+  frame: stt_body
   timeseries_csv: results/orbit/sentinel1_tle_vs_pod/orbit_prediction_error_timeseries.csv
+  stt_csv_dir: results/orbit/sentinel1_tle_vs_pod
   # Map Femap simulation time_s onto the orbit-error window cyclically.
   resample_mode: cyclic
 
