@@ -158,22 +158,25 @@
 - Methologyって何だっけ？★
 - 軌道におけるAKEの予測（prediction）は、"a sequence of multi-disciplinary analysis"で決める
   - このワード、俺の論文で解析の流れ紹介するときも使えそう
+
+ここまでOK
+
 - STOP解析の流れ
-  - 1. Thermal Analysis
+  - Thermal Analysis
     - ESATAN-TMSを用いる
-    - 温度場の勾配・"ambient to orbital"(これなに★)の観点から、最悪ケースを複数選んだ。
+    - 温度場の勾配、"ambient to orbital"(これなに★)の観点から、最悪ケースを複数選んだ。
     - 温度場を出力
-  - 2. Thermo-Elastic Analysis
+  - Thermo-Elastic Analysis
     - NASTRANを用いる
     - FEMAPはCADの名前だから、Solverの名前を書くのが適切ということなのか
     - CTEを適切に設定したOHU Fintite Elementモデル（有限要素モデル）に温度場を適用する
     - OHUのすべてのOpticsとDetectorの重心における、TRANSLATION（並行移動）とTILT=Rotation（回転）を出力する
-  - 3. Optical Analysis 
+  - Optical Analysis 
     - Zemaxを用いる
     - ここまでやったのか偉い。
     - NASTRANから出したすべてのコンポ要素のtranslation, rotationを入力としてZEMAX光学モデルに導入
     - 出力として、OHUのLOSのvariationと、Degrading of MTF ← Degrade of MTFってなに？★
-  - 4. Performance Analysis
+  - Performance Analysis
     - OHUの温度場の関数として、LOS and AKE uncertainty が出力される。
 
 
