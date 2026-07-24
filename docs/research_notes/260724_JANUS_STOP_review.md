@@ -1,22 +1,13 @@
-# 260723 ICSO Paper review and JANUS STOP analysis
+# 260724 JANUS STOP Analysis Review
 
-- 作成: 2026-07-23
-- 目的: 2026/7/23 7/22の光RG発表を終えて改めてICSOの予稿を見た時に気づくこと。
+- 作成: 2026-07-24
+- 目的: 2026/7/24 最近見つけたJANUSのSTOP解析に関する論文について、reviewを行う。in Barcelonaへの飛行機
 - 主な入力:
-  - `docs/research_notes/google_doc/MD/260720_光`
+  - `docs/literature/Structural-Thermal-Optical-Performance (STOP) analysis for the prediction of the Line of Sight stability of JANUS camera on board JUICE ESA mission.pdf`
+
 
 ---
-
-## 1. 予稿の感想
-
-- 熱ひずみLOS誤差のモデルを作るにあたっての衛星モデルに関する説明が薄い
-- てか、熱ひずみのLOS誤差って、内部発熱のモードでそんなに値変わってるのか？
-- バイアス成分で支配的なのって、実は太陽指向面だけで、内部発熱はそこまで変わらなかったりする？
-- 下のJANUSの論文で、「結局大きなLOS誤差は光学系の細かい部分ではなく、大きな構造部材間で生まれていた」という結論は、今回の俺の研究で詳細な光学系の再現をする必要が無い事の理由になるのでは？
-- あとこれｈ論文読みの感想だが、逐次訳をしようとするより、ある程度先まで読んでから帰ってきたほうが、各文章の重要度が明確になってより整理しやすくなるかも
-- 
-
-## 2. 論文読み -Turella, STOP analysis for JANUS -
+## 1. 論文読み -Turella, STOP analysis for JANUS -
 
 ### Abstract
 
@@ -290,10 +281,9 @@ acknowledges support from ASI under ASI-INAF agreement N. 2018-25-HH.0.
 
 
 
-★ 俺がやること：
+## ★俺がやること：
 - このドキュメントの中で理解・訳が明らかに間違っている部分は何か
-- ★を付けた部分について議論を深めたい
-
-
-
+- ★を付けた部分について議論を深めたい  
+  - 特に、本研究の一般性に関しては大丈夫そう。
+- 実際に大気試験した論文も見てみる：次のmdドキュメント
 
