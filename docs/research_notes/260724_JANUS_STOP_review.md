@@ -287,3 +287,6 @@ acknowledges support from ASI under ASI-INAF agreement N. 2018-25-HH.0.
   - 特に、本研究の一般性に関しては大丈夫そう。
 - 実際に大気試験した論文も見てみる：次のmdドキュメント
 
+
+
+
