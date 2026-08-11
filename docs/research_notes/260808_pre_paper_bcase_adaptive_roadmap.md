@@ -365,7 +365,7 @@ Adaptive / 方針:
 - [ ] Toy-3: 非熱混入下の誤学習比較
 - [ ] 論文への載せ方を決断（toy結果 / 設計指針のみ）
 
-### 論文に入れるな（別トラック）
+### 論文に入れる項目（忘れ防止・別トラック）
 
 - [ ] S-TLE vs S-GNSS（RESORB）PAT 結果を Methods/Results に反映  
   → [`260811_gnss_optical_comm_orbit_error.md`](260811_gnss_optical_comm_orbit_error.md) §5.3・§6
