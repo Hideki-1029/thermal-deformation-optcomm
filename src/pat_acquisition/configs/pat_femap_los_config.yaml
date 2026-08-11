@@ -20,6 +20,7 @@ scan:
 orbit_error:
   # synthetic: legacy fixed Gaussian placeholder
   # sentinel1_tle_vs_pod: TLE-only forward propagation vs Sentinel-1 POEORB
+  # sentinel1_resorb_vs_pod: RESORB vs POEORB (GPS-grade); see pat_femap_los_config_resorb.yaml
   source: sentinel1_tle_vs_pod
   # frame:
   #   stt_body — per-orbit STT x/y from run_orbit_error_stt_frame.py (default)

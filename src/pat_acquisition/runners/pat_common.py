@@ -126,6 +126,13 @@ BCASE_PLOT_LABELS = {
 DEFAULT_ORBIT_ERROR_DIR = (
     REPO_ROOT / "results" / "orbit" / "sentinel1_tle_vs_pod"
 )
+DEFAULT_ORBIT_ERROR_DIR_BY_SOURCE = {
+    "sentinel1_tle_vs_pod": DEFAULT_ORBIT_ERROR_DIR,
+    "sentinel1_resorb_vs_pod": (
+        REPO_ROOT / "results" / "orbit" / "sentinel1_resorb_vs_pod"
+    ),
+}
+CSV_ORBIT_ERROR_SOURCES = frozenset(DEFAULT_ORBIT_ERROR_DIR_BY_SOURCE)
 
 
 @dataclass(frozen=True)
@@ -269,6 +276,10 @@ def build_orbit_error_config(
         args.orbit_error_source,
         "sentinel1_tle_vs_pod",
     )
+    source_str = str(source)
+    default_orbit_dir = DEFAULT_ORBIT_ERROR_DIR_BY_SOURCE.get(
+        source_str, DEFAULT_ORBIT_ERROR_DIR
+    )
     frame = str(
         config_value(
             yaml_config,
@@ -283,7 +294,7 @@ def build_orbit_error_config(
             f"orbit_error.frame must be 'legacy' or 'stt_body', got {frame!r}"
         )
 
-    default_csv = DEFAULT_ORBIT_ERROR_DIR / "orbit_prediction_error_timeseries.csv"
+    default_csv = default_orbit_dir / "orbit_prediction_error_timeseries.csv"
     csv_path = config_path_value(
         yaml_config,
         "orbit_error",
@@ -296,7 +307,7 @@ def build_orbit_error_config(
         "orbit_error",
         "stt_csv_dir",
         getattr(args, "orbit_error_stt_csv_dir", None),
-        DEFAULT_ORBIT_ERROR_DIR,
+        default_orbit_dir,
     )
     resample_mode = str(
         config_value(
@@ -308,7 +319,7 @@ def build_orbit_error_config(
         )
     )
     return OrbitErrorConfig(
-        source=str(source),
+        source=source_str,
         frame=frame,
         timeseries_csv=csv_path,
         stt_csv_dir=stt_csv_dir,
@@ -490,7 +501,7 @@ def generate_orbit_prediction_error(
     times_s = np.asarray(times_s, dtype=float)
     orbit_config = config.orbit_error
 
-    if orbit_config.source == "sentinel1_tle_vs_pod":
+    if orbit_config.source in CSV_ORBIT_ERROR_SOURCES:
         csv_path = _resolve_orbit_error_csv(case_id, orbit_config)
         orbit_times_s, orbit_error_urad, _ = load_orbit_error_timeseries_csv(csv_path)
         return resample_orbit_error_to_times(

@@ -24,8 +24,8 @@ def _parse_utc(value: str) -> datetime:
     return datetime.fromisoformat(cleaned).replace(tzinfo=timezone.utc)
 
 
-def load_sentinel1_poeorb(path: Path) -> list[OrbitState]:
-    """Parse a Sentinel-1 AUX_POEORB .EOF file (Earth-fixed position/velocity)."""
+def load_sentinel1_eof(path: Path) -> list[OrbitState]:
+    """Parse a Sentinel-1 AUX_*ORB .EOF file (Earth-fixed position/velocity)."""
     root = ET.parse(path).getroot()
     states: list[OrbitState] = []
 
@@ -63,6 +63,53 @@ def load_sentinel1_poeorb(path: Path) -> list[OrbitState]:
 
     states.sort(key=lambda item: item.utc)
     return states
+
+
+def load_sentinel1_poeorb(path: Path) -> list[OrbitState]:
+    """Parse a Sentinel-1 AUX_POEORB .EOF file (alias of ``load_sentinel1_eof``)."""
+    return load_sentinel1_eof(path)
+
+
+def parse_orbit_key_validity(key: str) -> tuple[datetime, datetime] | None:
+    """Parse validity [start, stop] from an S1 orbit object key / filename."""
+    name = Path(key).name
+    marker = name.split("_V", maxsplit=1)
+    if len(marker) != 2:
+        return None
+    start_stop = marker[1].removesuffix(".EOF").split("_", maxsplit=1)
+    if len(start_stop) != 2:
+        return None
+    try:
+        start_time = datetime.strptime(start_stop[0], "%Y%m%dT%H%M%S").replace(
+            tzinfo=timezone.utc
+        )
+        stop_time = datetime.strptime(start_stop[1], "%Y%m%dT%H%M%S").replace(
+            tzinfo=timezone.utc
+        )
+    except ValueError:
+        return None
+    return start_time, stop_time
+
+
+def find_resorb_keys_covering(
+    t_start: datetime,
+    t_stop: datetime,
+    *,
+    prefix: str = "AUX_RESORB/S1A_",
+) -> list[str]:
+    """List RESORB keys whose validity window overlaps ``[t_start, t_stop]``."""
+    start = t_start.astimezone(timezone.utc)
+    stop = t_stop.astimezone(timezone.utc)
+    keys = list_s1_orbit_keys(prefix=prefix)
+    covering: list[str] = []
+    for key in keys:
+        window = parse_orbit_key_validity(key)
+        if window is None:
+            continue
+        key_start, key_stop = window
+        if key_start <= stop and key_stop >= start:
+            covering.append(key)
+    return sorted(covering)
 
 
 def list_s1_orbit_keys(prefix: str = "AUX_POEORB/S1A_", max_keys: int = 1000) -> list[str]:

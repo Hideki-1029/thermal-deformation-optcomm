@@ -360,7 +360,12 @@ Adaptive / 方針:
 - [x] 役割: 今の初期捕捉は FF、次パス改善が Adaptive
 - [x] 観測: 主は QD/FPM residual、Rxパワーは補助
 - [x] 二層: 速い `δb[mode]` + 条件付き遅い `b_case`、`a` は固定
-- [ ] Toy-1: mode-wise `δb` のみ
+- [ ] **Toy-1: mode-wise `δb` のみ** ← 次
 - [ ] Toy-2: `w_orbit_small` で `b_case` 吸い上げ
 - [ ] Toy-3: 非熱混入下の誤学習比較
 - [ ] 論文への載せ方を決断（toy結果 / 設計指針のみ）
+
+### 論文に入れるな（別トラック）
+
+- [ ] S-TLE vs S-GNSS（RESORB）PAT 結果を Methods/Results に反映  
+  → [`260811_gnss_optical_comm_orbit_error.md`](260811_gnss_optical_comm_orbit_error.md) §5.3・§6

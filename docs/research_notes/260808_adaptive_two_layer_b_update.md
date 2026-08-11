@@ -3,7 +3,8 @@
 - 作成: 2026-08-08
 - 目的: Adaptive における `b` 更新の設計指針だけを固定する
 - 親ノート（ロードマップ全体）: [`260808_pre_paper_bcase_adaptive_roadmap.md`](260808_pre_paper_bcase_adaptive_roadmap.md)
-- 状態: **方針合意済み**（実装・定量は未着手）
+- 状態: **方針合意済み** → **次は Toy-1 実装**（`δb[mode]` のみ）
+- 並行メモ（論文に入れるな）: GNSS級 PAT 結果は [`260811_gnss_optical_comm_orbit_error.md`](260811_gnss_optical_comm_orbit_error.md) §5.3・§6.2
 
 ---
 

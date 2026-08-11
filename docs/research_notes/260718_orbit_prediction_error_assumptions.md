@@ -43,7 +43,8 @@ Sentinel-1 POD（真値） vs 最新 TLE の SGP4 forward
 | 使わない | 未来 TLE の backward 伝搬 |
 | 評価の置き方 | 熱の完全分離ではなく、**同帯域非熱共存下での熱 FF** |
 
-GNSS / RESORB 級はバックアップ（今はやらない）。SEIRIOS 向け改善オプションとして別論。
+GNSS / RESORB 級はバックアップ（今はやらない）。SEIRIOS 向け改善オプションとして別論。  
+論文の GPS級シナリオ妥当性・文献・誤差生成は [`260811_gnss_optical_comm_orbit_error.md`](260811_gnss_optical_comm_orbit_error.md)。
 
 ---
 

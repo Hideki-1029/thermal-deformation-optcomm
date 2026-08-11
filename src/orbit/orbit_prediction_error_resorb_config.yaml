@@ -1,0 +1,31 @@
+# Sentinel-1 RESORB vs POEORB (GPS/GNSS-grade orbit error proxy)
+#
+# Policy (docs/research_notes/260811_gnss_optical_comm_orbit_error.md §5.0):
+# - Truth: AUX_POEORB
+# - Prediction: AUX_RESORB (public restituted orbit; not raw onboard GPS)
+# Same analysis window as TLE baseline for fair comparison.
+
+satellite:
+  norad_cat_id: 39634
+  # Used only so STT attitude helpers can reuse the TLE runner's POD loader.
+  gp_history_parquet: data/orbit/tle/tle_2026.parquet
+  tle_history_path: null
+
+pod:
+  local_poeorb_path: null
+  validity_start_utc: "2026-06-13T22:59:42Z"
+  extra_validity_starts_utc: []
+
+prediction:
+  product: resorb
+  max_gap_s: 120.0
+  local_resorb_dir: null
+
+analysis:
+  isl_range_km: 800.0
+  sample_interval_s: 60.0
+  orbit_period_s: 6050.0
+  plot_n_orbits: 3.0
+
+output:
+  output_dir: results/orbit/sentinel1_resorb_vs_pod

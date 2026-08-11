@@ -66,3 +66,7 @@ when using a different local path.
 - Sentinel-1 AUX_POEORB is treated as truth (typical accuracy < 1 cm 3D).
 - TLE/SGP4 error is mapped to ISL LOS angle assuming an 800 km partner range.
 - Research policy: `docs/research_notes/memo_in_repository.md` section「軌道予測誤差との分離」.
+- GNSS-grade (RESORB vs POEORB): `docs/research_notes/260811_gnss_optical_comm_orbit_error.md`
+  - Runner: `python src/orbit/run_orbit_prediction_error_resorb.py`
+  - Outputs: `results/orbit/sentinel1_resorb_vs_pod/`
+  - PAT: `--config src/pat_acquisition/configs/pat_femap_los_config_resorb.yaml`

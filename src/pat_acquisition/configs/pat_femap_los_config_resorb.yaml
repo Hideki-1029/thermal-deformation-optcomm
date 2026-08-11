@@ -1,0 +1,49 @@
+# PAT config overlay: GPS/GNSS-grade orbit error (RESORB vs POEORB)
+# Default TLE baseline remains pat_femap_los_config.yaml.
+#
+# Usage:
+#   python src/pat_acquisition/models/sunface_deltaT_bcase_los/run_pat.py \
+#     --config src/pat_acquisition/configs/pat_femap_los_config_resorb.yaml
+
+input:
+  input_glob: results/femap_deformation/*/los_angles.csv
+  truth_output_dir: results/pat_acquisition/femap_los_truth
+  fourier_output_dir: results/pat_acquisition/fourier_los_model
+  bcase_output_dir: results/pat_acquisition/sunface_deltaT_bcase_los_model/pat_resorb
+  los_prefix: far_field_los
+
+scan:
+  max_range_urad: 1600.0
+  step_urad: 40.0
+  detect_radius_urad: 25.0
+  dwell_time_s: 0.1
+
+orbit_error:
+  # S-GNSS: AUX_RESORB vs AUX_POEORB (see 260811_gnss_optical_comm_orbit_error.md)
+  source: sentinel1_resorb_vs_pod
+  frame: stt_body
+  timeseries_csv: results/orbit/sentinel1_resorb_vs_pod/orbit_prediction_error_timeseries.csv
+  stt_csv_dir: results/orbit/sentinel1_resorb_vs_pod
+  resample_mode: cyclic
+
+nonthermal_error:
+  seed: 42
+  orbit_prediction_bias_1sigma_urad: 150.0
+  attitude_random_1sigma_urad: 50.0
+  alignment_bias_1sigma_urad: 50.0
+  drift_amplitude_urad: 30.0
+  drift_period_s: 900.0
+
+lightweight_model:
+  train_fraction: 1.0
+  fourier_order: 4
+  include_drift: false
+  ridge_lam: 0.001
+  auto_orbit_period: false
+  orbit_period_s: 6050.0
+
+case_metadata:
+  case_matrix_xlsx: cases/case_matrix.xlsx
+  case_matrix_sheet: case_matrix
+  orbit_catalog_xlsx: cases/orbit_catalog.xlsx
+  orbit_catalog_sheet: orbit_catalog
