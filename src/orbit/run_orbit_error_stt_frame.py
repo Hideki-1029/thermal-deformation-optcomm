@@ -265,54 +265,29 @@ def plot_stt_comparison(
     n_orbits: float,
     title: str,
 ) -> None:
+    """Plot STT-frame LOS only (legacy comparison panels retired)."""
     path.parent.mkdir(parents=True, exist_ok=True)
     t_max = n_orbits * orbit_period_s
     mask = elapsed_time_s <= t_max
     t_min = elapsed_time_s[mask] / 60.0
 
-    fig, axes = plt.subplots(3, 1, figsize=(10, 10), sharex=True)
-    axes[0].plot(t_min, angles["legacy_x"][mask], label="legacy x (arbitrary)")
-    axes[0].plot(t_min, angles["legacy_y"][mask], label="legacy y (arbitrary)")
-    axes[0].plot(
-        t_min, angles["legacy_norm"][mask], label="legacy norm", linewidth=2
-    )
-    axes[0].set_ylabel("Legacy ISL [urad]")
-    axes[0].grid(True)
-    axes[0].legend(loc="upper right", fontsize=8)
+    fig, ax = plt.subplots(1, 1, figsize=(10, 4))
+    ax.plot(t_min, angles["stt_x"][mask], label="STT x")
+    ax.plot(t_min, angles["stt_y"][mask], label="STT y")
+    ax.plot(t_min, angles["stt_norm"][mask], label="STT norm", linewidth=2)
+    ax.set_ylabel("STT-frame LOS [urad]")
+    ax.set_xlabel("Time [min]")
+    ax.grid(True)
+    ax.legend(loc="upper right", fontsize=8)
 
-    axes[1].plot(t_min, angles["stt_x"][mask], label="STT x")
-    axes[1].plot(t_min, angles["stt_y"][mask], label="STT y")
-    axes[1].plot(t_min, angles["stt_norm"][mask], label="STT norm", linewidth=2)
-    axes[1].set_ylabel("STT-frame LOS [urad]")
-    axes[1].grid(True)
-    axes[1].legend(loc="upper right", fontsize=8)
-
-    axes[2].plot(t_min, angles["stt_x"][mask], label="STT x")
-    axes[2].plot(t_min, angles["stt_y"][mask], label="STT y")
-    axes[2].plot(
-        t_min,
-        angles["legacy_norm"][mask],
-        label="legacy norm",
-        linestyle="--",
-        color="0.4",
-    )
-    axes[2].plot(
-        t_min, angles["stt_norm"][mask], label="STT norm", linewidth=2, color="C2"
-    )
-    axes[2].set_ylabel("STT x/y + norms [urad]")
-    axes[2].set_xlabel("Time [min]")
-    axes[2].grid(True)
-    axes[2].legend(loc="upper right", fontsize=8)
-
-    for axis in axes:
-        for k in range(1, int(np.floor(n_orbits)) + 1):
-            axis.axvline(
-                k * orbit_period_s / 60.0,
-                color="0.7",
-                linestyle="--",
-                linewidth=0.8,
-                zorder=0,
-            )
+    for k in range(1, int(np.floor(n_orbits)) + 1):
+        ax.axvline(
+            k * orbit_period_s / 60.0,
+            color="0.7",
+            linestyle="--",
+            linewidth=0.8,
+            zorder=0,
+        )
 
     fig.suptitle(title)
     fig.tight_layout()

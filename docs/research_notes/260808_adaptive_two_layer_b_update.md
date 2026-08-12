@@ -2,9 +2,9 @@
 
 - 作成: 2026-08-08
 - 目的: Adaptive における `b` 更新の設計指針だけを固定する
-- 親ノート（ロードマップ全体）: [`260808_pre_paper_bcase_adaptive_roadmap.md`](260808_pre_paper_bcase_adaptive_roadmap.md)
-- 状態: **方針合意済み** → **次は Toy-1 実装**（`δb[mode]` のみ）
-- 並行メモ（論文に入れる・忘れ防止）: GNSS級 PAT 結果は [`260811_gnss_optical_comm_orbit_error.md`](260811_gnss_optical_comm_orbit_error.md) §5.3・§6
+- 親ノート（ロードマップ全体）: `[260808_pre_paper_bcase_adaptive_roadmap.md](260808_pre_paper_bcase_adaptive_roadmap.md)`
+- 状態: **方針合意済み** → **Toy-1/2 実装あり**（`run_adaptive_pat.py`）
+- 並行メモ（論文に入れる・忘れ防止）: GNSS級 PAT 結果は `[260811_gnss_optical_comm_orbit_error.md](260811_gnss_optical_comm_orbit_error.md)` §5.3・§6
 
 ---
 
@@ -22,12 +22,14 @@ Feedforward が今の初期捕捉を担い、Adaptive は成功パスのあと�
 
 ## 2. 二つの目標（混ぜない）
 
-| | 目標A | 目標B |
-|---|---|---|
-| 更新したいもの | 熱LOSモデルの係数 `b_case` | 次パス用の経験的補正 `δb` |
-| 成功の定義 | 熱モデルが良くなる | 捕捉時間・scan area が下がる |
-| 他誤差の混入 | 困る | ある程度は仕様 |
-| 単独だと弱い点 | 軌道誤差と分離困難 | 一般PATの経験補正に見えやすい |
+
+|         | 目標A                 | 目標B                 |
+| ------- | ------------------- | ------------------- |
+| 更新したいもの | 熱LOSモデルの係数 `b_case` | 次パス用の経験的補正 `δb`     |
+| 成功の定義   | 熱モデルが良くなる           | 捕捉時間・scan area が下がる |
+| 他誤差の混入  | 困る                  | ある程度は仕様             |
+| 単独だと弱い点 | 軌道誤差と分離困難           | 一般PATの経験補正に見えやすい    |
+
 
 二層に分けると両方狙える。
 
@@ -55,12 +57,14 @@ Feedforward が今の初期捕捉を担い、Adaptive は成功パスのあと�
 
 ## 4. 観測量
 
-| 観測 | 役割 |
-|---|---|
-| 自機 QD / FPM スポット残差 | **主観測**（捕捉成立〜精追尾開始直後） |
-| Rx パワー | 補助（ゲート・参考） |
-| 軌道予測誤差の事前信頼度（TLE age 等） | `b_case` 吸い上げの重み |
-| 地上局 Rx / 相手衛星 PAT | 将来の追加チャネル（本線ではない） |
+
+| 観測                      | 役割                    |
+| ----------------------- | --------------------- |
+| 自機 QD / FPM スポット残差      | **主観測**（捕捉成立〜精追尾開始直後） |
+| Rx パワー                  | 補助（ゲート・参考）            |
+| 軌道予測誤差の事前信頼度（TLE age 等） | `b_case` 吸い上げの重み      |
+| 地上局 Rx / 相手衛星 PAT       | 将来の追加チャネル（本線ではない）     |
+
 
 残差の中身:
 
@@ -108,13 +112,15 @@ Pass n+1（同じ mode）:
 
 ### 5.3 各項の意味
 
-| 項 | 意味 |
-|---|---|
-| `γ_fast` | 次パス用。大きめでもよいが過学習しない程度 |
-| `γ_slow` | 熱テーブル用。小さく、複数パス分たまってから |
-| `w_orbit_small` | 軌道予測誤差が小さいと期待できるときの重み |
-| `w_mode` | 同一 mode の反復・サンプル数に応じた信頼度 |
-| `Proj_thermal` | 温度・発熱モードと繰り返し相関する成分だけ残す操作（最初は「同一mode平均」でも可） |
+
+| 項               | 意味                                          |
+| --------------- | ------------------------------------------- |
+| `γ_fast`        | 次パス用。大きめでもよいが過学習しない程度                       |
+| `γ_slow`        | 熱テーブル用。小さく、複数パス分たまってから                      |
+| `w_orbit_small` | 軌道予測誤差が小さいと期待できるときの重み                       |
+| `w_mode`        | 同一 mode の反復・サンプル数に応じた信頼度                    |
+| `Proj_thermal`  | 温度・発熱モードと繰り返し相関する成分だけ残す操作（最初は「同一mode平均」でも可） |
+
 
 ### 5.4 なぜ mode 別か
 
@@ -139,15 +145,107 @@ b_case へ吸い上げる重みを上げる
 
 - TLE age ビン別 RMS（`orbit_prediction_error_summary.csv`）
 - 時系列 `isl_angle_*`（区間ごとの大小の代理）
-- 詳細: [`260718_orbit_prediction_error_assumptions.md`](260718_orbit_prediction_error_assumptions.md)
+- STT 枠の角度時系列（下の観察メモ）
+- 詳細: `[260718_orbit_prediction_error_assumptions.md](260718_orbit_prediction_error_assumptions.md)`
+
+### 6.1 観察メモ（TLE-only → STT LOS、2026-08-11）
+
+図例: `results/orbit/sentinel1_tle_vs_pod/orbit_error_stt_LTAN06_800km_1213COLD_MY_SUN_3orbits.png`  
+（同系列の `orbit_error_stt_*.png` も同様の印象）
+
+見たこと:
+
+- TLE-only の軌道予測誤差を STT–LCT 系の LOS 角に落とすと、**軌道周期でかなり規則的に振れる**
+- `STT norm` はピーク ~400–500 µrad まで上がる一方、**トラフはほぼ 0 µrad まで落ちる**（例: t≈0, 110, 205, 295 min 付近）
+- Legacy ISL 枠の成分は飛びが目立つが、ノルムの包絡は STT と同じ周期構造。ゲートの代理量としては STT 枠の方が読みやすい
+
+ここから出た運用イメージ（以前の議論の再確認）:
+
+```text
+軌道予測誤差が小さいと思われる位相／区間を狙って
+b_case を更新する（＝ w_orbit_small を立てる）
+```
+
+メモ上の位置づけ:
+
+- 「完全分離できた」ではない。あくまで **期待軌道誤差が小さいときの重み上げ**
+- hard な「トラフだけ ON」より、ノルム／位相の関数としての soft `w_orbit_small` の方が §6 本線と一致
+- 代理量の候補: **姿勢＝通信方向の幾何（§6.3 で第一版採用）**、STT `norm(t)`、TLE age（弱い・後回し）、（将来）別状態推定
+- 図の legacy 比較パネルは廃止済み（STT のみ出力）。検算用の legacy 列は CSV に残存
+
+### 6.2 なぜ周期的か／どの向きがメインか（2026-08-12）
+
+**norm が周期的に ~0 近くまで落ちる主因は周回に伴う幾何（射影）**であって、位置誤差そのものが毎周ゼロになるわけではない。
+
+Sentinel-1 TLE vs POD（`orbit_prediction_error_timeseries.csv`）の RTN:
+
+
+| 成分                | RMS    | エネルギー比   |
+| ----------------- | ------ | -------- |
+| **T along-track** | ~780 m | **~91%** |
+| N cross-track     | ~190 m | ~5%      |
+| R radial          | ~160 m | ~4%      |
+
+
+- `|T|/|δr|` 中央値 ~0.94 → **TLE-only では誤差ベクトル ≈ 進行方向がメイン**（時刻ずれ・平均運動誤差が AT に溜まる典型とも一致）
+- 角誤差は `θ ≈ |δr の LOS 垂直成分| / range` だけ見える
+- したがって **位置誤差はだいたい常に AT 大**のまま、LOS に垂直な成分が軌道位相で増減 → STT norm が周期振動し、垂直成分が小さい位相でトラフ〜0
+
+太陽面＝姿勢が決める通信方向ごとの見え方（TLE STT、bcase）:
+
+
+| 太陽面                       | 通信／相手                | LOS と RTN   | AT 主誤差のとき              | STT norm mean | `b_case` 更新の prior   |
+| ------------------------- | -------------------- | ----------- | ---------------------- | ------------- | -------------------- |
+| **MY**（HOT / LTAN18 も同幾何） | ISL along-track      | LOS ∥ ±T    | **T は角に出ない**（残るのは R,N） | ~285 µrad     | **相対的に狙いやすい**        |
+| **PY**                    | ISL anti-along-track | LOS ∥ ∓T    | MY と同型（|θ|）            | ~285          | MY と同じ               |
+| **PX**                    | 地上局・天底               | LOS ∥ −R 付近 | **T がフルに角へ**           | ~694          | TLE 前提では **更新を抑えたい** |
+| **MX**                    | 天頂 proxy             | LOS ∥ +R 付近 | PX と同型                 | ~612          | リンク非現実 → 本線外         |
+
+
+「タイミングは事前にわかるか」の整理:
+
+
+| やりたいこと                               | 判定                       |
+| ------------------------------------ | ------------------------ |
+| MY/PY（ISL ±AT）の残差を優先して `b_case` 更新する | **できる**（姿勢から事前にわかる幾何ゲート） |
+| PX（天底）は TLE 前提で更新を抑える                | **できる**（同上）              |
+| 図の「norm≈0 の時刻」を軌道位相だけで当てる            | **できない**（真の R/N 向きが要る）   |
+
+
+運用に落とすなら前者（**どの姿勢・通信方向のパスか**）で十分。それが §6 の `w_orbit_small` の実務版。  
+注: RESORB/GNSS 級は桁も RTN 異方性も別物。上記の「AT メイン → MY/PY 厚く」は **TLE-only baseline** 向け。
+
+### 6.3 決定（2026-08-12）: `w_orbit_small` はまず幾何だけ
+
+```text
+方針: 軌道予測誤差（の角への見え方）が小さいと思われるポイントで b_case を更新する
+中身: 当面は幾何ゲートのみ（TLE age は掛けない）
+```
+
+
+| `w_orbit_small` | 意味                                               |
+| --------------- | ------------------------------------------------ |
+| 高（例: MY / PY）   | LOS∥±AT → TLE 主誤差が角に出にくいパスの残差を `b_case` へ吸い上げやすい |
+| 低（例: PX）        | 天底 LOS → AT が角にフル → 吸い上げ抑制                       |
+| MX など           | 非現実リンク → 本線外                                     |
+
+
+補足:
+
+- 「ポイント」＝ **周回内の時刻**ではなく、**姿勢・通信方向が決めるパス／mode**（事前にわかる側）
+- TLE age は本データでも誤差との相関が弱く、更新直後に角が悪化する例もある → **第一版では入れない**（後から soft 係数で足せる）
+- soft weight のまま（MY/PY だけ hard ON にしない方が安全、は §6 本線どおり）
 
 言えること / 言いすぎ:
 
-| 言える | 言わない |
-|---|---|
-| 軌道誤差期待値が小さい区間では、残差の軌道成分が平均的に小さい | その区間の残差＝熱そのもの |
-| だから `b_case` 更新の信頼度を上げられる | 同周波数帯でも完全識別できた |
-| soft weight として有効 | hard な分離器 |
+
+| 言える                               | 言わない                |
+| --------------------------------- | ------------------- |
+| 軌道誤差期待値が小さい区間では、残差の軌道成分が平均的に小さい   | その区間の残差＝熱そのもの       |
+| だから `b_case` 更新の信頼度を上げられる         | 同周波数帯でも完全識別できた      |
+| soft weight として有効                 | hard な分離器           |
+| TLE では AT 主＋LOS∥AT のとき角が小さくなる（幾何） | 周回内トラフ時刻を真値なしで予知できる |
+
 
 残る汚染: アライメント、姿勢、相手側誤差など。  
 なので「小さい期間だけON」より、`w_orbit_small` による重みつきゆっくり更新が安全。
@@ -156,11 +254,13 @@ b_case へ吸い上げる重みを上げる
 
 ## 7. 相手衛星・地上局チャネル（将来）
 
-| 情報源 | 期待 | 今すぐ? |
-|---|---|---|
+
+| 情報源                    | 期待             | 今すぐ?                    |
+| ---------------------- | -------------- | ----------------------- |
 | 地上局受信強度・ビーム位置（OSIRIS型） | 自機送信バイアスの別幾何観測 | 将来。Related Work的にも相性が良い |
-| 相手衛星 QD/FPM | 相対ポインティングの向こう側 | 将来。相手熱・相手軌道も混ざる |
-| 双方残差の突合 | 共通/固有成分の整理 | 研究拡張向き |
+| 相手衛星 QD/FPM            | 相対ポインティングの向こう側 | 将来。相手熱・相手軌道も混ざる         |
+| 双方残差の突合                | 共通/固有成分の整理     | 研究拡張向き                  |
+
 
 本線はあくまで **自機 residual + 軌道信頼度ゲート**。  
 追加チャネルは `w_*` を厚くする材料、と見る。
@@ -208,21 +308,39 @@ b_case へ吸い上げる重みを上げる
 
 ## 10. 実装の段階
 
-| 段階 | 内容 | 目標 |
-|---|---|---|
-| Toy-1 | mode-wise `δb` のみ | B |
-| Toy-2 | `w_orbit_small` で `b_case` へ遅い吸い上げ | A+B |
-| Toy-3 | 非熱混入下の誤学習比較 | 主張の防御 |
-| Later | 地上局/相手PATチャネル | 拡張 |
 
-最初の実装は Toy-1 でよい。理想形は Toy-2。
+| 段階    | 内容                                                                     | 目標    |
+| ----- | ---------------------------------------------------------------------- | ----- |
+| Toy-1 | mode-wise `δb` のみ                                                      | B     |
+| Toy-2 | `w_orbit_small`（**幾何のみ**: MY/PY 高・PX 低）で `b_case` へ遅い吸い上げ。TLE age は後回し | A+B   |
+| Toy-3 | 非熱混入下の誤学習比較                                                            | 主張の防御 |
+| Later | 地上局/相手PATチャネル                                                          | 拡張    |
+
+
+### 10.1 実装エントリ（2026-08-12）
+
+```text
+python src/pat_acquisition/models/sunface_deltaT_bcase_los/run_adaptive_pat.py --cases 13,16
+```
+
+
+| ファイル                      | 内容                                                                     |
+| ------------------------- | ---------------------------------------------------------------------- |
+| `.../adaptive.py`         | `δb` / `b_adapt` テーブル、`w_orbit_small` 幾何、軌道ごとの更新                       |
+| `.../run_adaptive_pat.py` | PAT 比較（FF / Toy-1 / Toy-2 × 熱のみ・非熱込み）                                  |
+| 出力                        | `results/pat_acquisition/sunface_deltaT_bcase_los_model/pat_adaptive/` |
+
+
+比較アーム: `bcase_*` / `bcase_delta_b_*`（Toy-1）/ `bcase_delta_b_slow_b_*`（Toy-2）。  
+更新は **1 軌道ごと**（次軌道の FF に効く）。`w_orbit_small` は §6.3 の幾何のみ。
 
 ---
 
 ## 11. 関連
 
-- ロードマップ: [`260808_pre_paper_bcase_adaptive_roadmap.md`](260808_pre_paper_bcase_adaptive_roadmap.md)
-- Adaptive 原点メモ: [`google_doc/MD/260717_Adaptiveモデル/content.md`](google_doc/MD/260717_Adaptiveモデル/content.md)
-- ナラティブ: [`260721_rg_slide_retrospective_and_paper_narrative.md`](260721_rg_slide_retrospective_and_paper_narrative.md) §2.10
-- 軌道誤差前提: [`260718_orbit_prediction_error_assumptions.md`](260718_orbit_prediction_error_assumptions.md)
+- ロードマップ: `[260808_pre_paper_bcase_adaptive_roadmap.md](260808_pre_paper_bcase_adaptive_roadmap.md)`
+- Adaptive 原点メモ: `[google_doc/MD/260717_Adaptiveモデル/content.md](google_doc/MD/260717_Adaptiveモデル/content.md)`
+- ナラティブ: `[260721_rg_slide_retrospective_and_paper_narrative.md](260721_rg_slide_retrospective_and_paper_narrative.md)` §2.10
+- 軌道誤差前提: `[260718_orbit_prediction_error_assumptions.md](260718_orbit_prediction_error_assumptions.md)`
 - 五十里指摘メモ: `google_doc/google_doc_from260415_20260618.md`（軌道予測誤差と同帯域・分離困難）
+
