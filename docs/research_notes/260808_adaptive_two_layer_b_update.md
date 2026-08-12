@@ -334,6 +334,39 @@ python src/pat_acquisition/models/sunface_deltaT_bcase_los/run_adaptive_pat.py -
 比較アーム: `bcase_*` / `bcase_delta_b_*`（Toy-1）/ `bcase_delta_b_slow_b_*`（Toy-2）。  
 更新は **1 軌道ごと**（次軌道の FF に効く）。`w_orbit_small` は §6.3 の幾何のみ。
 
+### 10.2 熱 FF 後の残差 Fourier（2026-08-13）
+
+定数 `δb` は遅い DC 用。熱 FF 後に残る **軌道周期の AC 床**には効きにくい。  
+そこで innovation に軌道位相 Fourier を載せる後段を別レイヤとして置く。
+
+狙う量:
+
+```text
+r(t) = (θ_thermal + e_nonthermal) − θ_ff(t)
+θ_ff = b_case + a·ΔT (+ 必要なら静的軸)
+```
+
+```text
+r̂_x(φ) = c0 + Σ_k [ak cos(kφ) + bk sin(kφ)]   (y も同様)
+φ = 2π t / Torb
+```
+
+意味合い:
+
+- 熱込み Fourier（GEO TMC / 旧 fourier_los）とは別物。こちらは **階層 FF で熱を落としたあとの床**
+- 「軌道誤差を同定した」ではなく「熱 FF 後 innovation の周期成分を運用補正」
+- 解析デモ: 区間フィット → 全時刻に適用。軌道上デモ: 周 n で係数更新 → 周 n+1 の同位相へ
+
+実装: `residual_fourier.py` / `run_residual_fourier_pat.py`
+
+```text
+python src/pat_acquisition/models/sunface_deltaT_bcase_los/run_residual_fourier_pat.py \
+  --cases 13 --fit-mode causal
+# 解析上限: --fit-mode batch
+```
+
+出力: `results/.../pat_residual_fourier/`
+
 ---
 
 ## 11. 関連
