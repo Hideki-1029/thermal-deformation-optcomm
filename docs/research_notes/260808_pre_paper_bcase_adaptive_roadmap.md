@@ -315,7 +315,7 @@ Adaptive (B) … 方針は §2.4 で確定
 | 過渡ON/OFF 1ケース（A2） | できれば | 間に合わなければ Limitations |
 | HOT/被覆の完全一般化 | | ○ |
 | Adaptiveを主定量結果にする | | ✗（しない） |
-| タイトルの `Adaptive Correction` を残すか | 要決断 | `260802` 未決事項 |
+| タイトルの `Adaptive Correction` を残すか | 残さない。正式名称は `260802` §0 | ICSOサイトで題変更できるかは要確認 |
 
 ---
 

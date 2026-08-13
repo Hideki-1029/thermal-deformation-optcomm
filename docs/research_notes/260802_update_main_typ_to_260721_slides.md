@@ -5,8 +5,22 @@
 - 主な基準資料：`papers/seminar/20260721_optcommrg_takamoto_v3_issl.pptx`
 - 目的：2026年7月21日時点の研究成果と、その後の議論・文献調査を基準に、ICSO full paperを全面改稿するための章立てと説明順を固定する。
 - このノートの範囲：章構成、各章の役割、主要主張、図表候補、執筆順を整理する。本文の書き換えはまだ行わない。
+- **2026-08-13 以降：予稿骨子の本線はこのノート。** 旧章立て [`260715_icso_paper_outline.md`](260715_icso_paper_outline.md) は参照用。
 
-## 0. 結論
+## 0. 題（2026-08-13 ノミナル）
+
+**正式名称（英語・カンマなし）:**
+
+`Feedforward Correction of Time-Varying Thermal Bias with On-Orbit Residual Update for Coarse Acquisition in Optical Communication Systems`
+
+和訳（公式和題ではない）: 光通信システムにおける粗捕捉のための、時変熱バイアスのフィードフォワード補正と軌道上残差更新
+
+- 提出アブスト題は `Feedforward and Adaptive Correction of Time-Varying Thermal Bias for Coarse Acquisition in Optical Communication Systems`。Adaptive が時変熱バイアスに係る修飾を切るための題修正であり、テーマ変更ではない。
+- Residual Update の中身は本文で `δb` と熱 FF 後の周期残差（Fourier）。熱 `b_case` のオンライン同定を題で約束しない。
+- `main.typ` は未反映。
+- **要確認:** ICSO / 投稿ポータル上でアブスト採択後に題を変えられるか。あとで公式サイトを見て確認する。変えられなければ PDF 題とポータル題の扱いを事務局に聞く。
+
+## 0.1 結論
 
 現行の`main.typ`は部分修正ではなく、説明順を含めた全面改稿を行う。
 
@@ -993,7 +1007,7 @@ Typstで再作図し、必要ならTD/Femapの小画像を配置する。
 
 ## 6. 改稿前に判断が必要な事項
 
-1. タイトルに`Adaptive Correction`を残すか。
+1. タイトルに`Adaptive Correction`を残すか。→ **残さない。正式名称は §0。** ICSOサイトで題変更できるかは要確認。
 2. JANUS-inspired proportional baselineを追加解析するか。
 3. Fourier baselineを本文に入れるか。
 4. `c_PROP/c_PCDU`のsun×heat交互作用を追加解析するか。

@@ -4,7 +4,9 @@
 - 目的: Adaptive における `b` 更新の設計指針だけを固定する
 - 親ノート（ロードマップ全体）: `[260808_pre_paper_bcase_adaptive_roadmap.md](260808_pre_paper_bcase_adaptive_roadmap.md)`
 - 状態: **方針合意済み** → **Toy-1/2 実装あり**（`run_adaptive_pat.py`）
-- 並行メモ（論文に入れる・忘れ防止）: GNSS級 PAT 結果は `[260811_gnss_optical_comm_orbit_error.md](260811_gnss_optical_comm_orbit_error.md)` §5.3・§6
+- 並行メモ: GNSS級 PAT は `[260811_gnss_optical_comm_orbit_error.md](260811_gnss_optical_comm_orbit_error.md)` §5.3・§6
+- 熱 FF **後段**の残差 Fourier（`b` 更新ではない）: `[260813_post_ff_residual_fourier.md](260813_post_ff_residual_fourier.md)`
+- 熱の真値と事前モデルのずれ: [`260813_thermal_model_mismatch.md`](260813_thermal_model_mismatch.md)
 
 ---
 
@@ -197,7 +199,7 @@ Sentinel-1 TLE vs POD（`orbit_prediction_error_timeseries.csv`）の RTN:
 | 太陽面                       | 通信／相手                | LOS と RTN   | AT 主誤差のとき              | STT norm mean | `b_case` 更新の prior   |
 | ------------------------- | -------------------- | ----------- | ---------------------- | ------------- | -------------------- |
 | **MY**（HOT / LTAN18 も同幾何） | ISL along-track      | LOS ∥ ±T    | **T は角に出ない**（残るのは R,N） | ~285 µrad     | **相対的に狙いやすい**        |
-| **PY**                    | ISL anti-along-track | LOS ∥ ∓T    | MY と同型（|θ|）            | ~285          | MY と同じ               |
+| **PY**                    | ISL anti-along-track | LOS ∥ ∓T    | MY と同型（                | θ             | ）                    |
 | **PX**                    | 地上局・天底               | LOS ∥ −R 付近 | **T がフルに角へ**           | ~694          | TLE 前提では **更新を抑えたい** |
 | **MX**                    | 天頂 proxy             | LOS ∥ +R 付近 | PX と同型                 | ~612          | リンク非現実 → 本線外         |
 
@@ -334,38 +336,41 @@ python src/pat_acquisition/models/sunface_deltaT_bcase_los/run_adaptive_pat.py -
 比較アーム: `bcase_*` / `bcase_delta_b_*`（Toy-1）/ `bcase_delta_b_slow_b_*`（Toy-2）。  
 更新は **1 軌道ごと**（次軌道の FF に効く）。`w_orbit_small` は §6.3 の幾何のみ。
 
-### 10.2 熱 FF 後の残差 Fourier（2026-08-13）
+### 10.1b Toy-1 所見（2026-08-13）: なぜ `δb` が効きにくいか
 
-定数 `δb` は遅い DC 用。熱 FF 後に残る **軌道周期の AC 床**には効きにくい。  
-そこで innovation に軌道位相 Fourier を載せる後段を別レイヤとして置く。
+この理解は以前の版には書いていなかったので、ここに固定する。
 
-狙う量:
-
-```text
-r(t) = (θ_thermal + e_nonthermal) − θ_ff(t)
-θ_ff = b_case + a·ΔT (+ 必要なら静的軸)
-```
+結論は「軌道誤差が大きいから更新できない」ではなく:
 
 ```text
-r̂_x(φ) = c0 + Σ_k [ak cos(kφ) + bk sin(kφ)]   (y も同様)
-φ = 2π t / Torb
+1. 熱 FF（a·ΔT + b_case）のあと、残っている熱 DC はほとんどない
+2. 残差の主役は周期的に変わる非熱（軌道射影の AC成分、時間変化する）なので、定数 δb では振幅が消えない
 ```
 
-意味合い:
+スモーク（`pat_adaptive_smoke`、case13 MY）:
 
-- 熱込み Fourier（GEO TMC / 旧 fourier_los）とは別物。こちらは **階層 FF で熱を落としたあとの床**
-- 「軌道誤差を同定した」ではなく「熱 FF 後 innovation の周期成分を運用補正」
-- 解析デモ: 区間フィット → 全時刻に適用。軌道上デモ: 周 n で係数更新 → 周 n+1 の同位相へ
 
-実装: `residual_fourier.py` / `run_residual_fourier_pat.py`
+| アーム        | mean tacq [s] | 熱残差 mean [µrad]   | scan-center mean [µrad] |
+| ---------- | ------------- | ----------------- | ----------------------- |
+| 熱のみ FF     | 0.10（床）       | ~7                | ~7                      |
+| 熱のみ FF+δb  | 0.10（床）       | ~7                | ~7                      |
+| 非熱込み FF    | 22.7          | ~7                | 312                     |
+| 非熱込み FF+δb | 21.4          | ~54（軌道 DC を吸って悪化） | 303                     |
 
-```text
-python src/pat_acquisition/models/sunface_deltaT_bcase_los/run_residual_fourier_pat.py \
-  --cases 13 --fit-mode causal
-# 解析上限: --fit-mode batch
-```
 
-出力: `results/.../pat_residual_fourier/`
+更新は `δb ← δb + γ · (周平均 r)`。取れるのは DC だけ。軌道誤差成分の角度は 0〜500 µrad で振れるので、定数を足しても spiral 時間はほとんど変わらない。
+
+遅い `b_case` 吸い上げも同じ残差を熱テーブルへ上げる話なので、効きは同様に薄く、そのうえ軌道 DC の誤学習リスクがある（§6 のゲートの理由）。
+
+Adaptive `b` の行き場: 今の（同一 Femap）ケースでは主定量にしない。熱モデル誤差の入れ方・アライメントは別ノート [`260813_thermal_model_mismatch.md`](260813_thermal_model_mismatch.md)。周期床は後段 Fourier。
+
+### 10.2 残差 Fourier は別ノート
+
+熱 FF 後の周期床（主に軌道 AC）を Fourier する話は、`**b_case` / `δb` の Adaptive ではない**。正本を分けた:
+
+`[260813_post_ff_residual_fourier.md](260813_post_ff_residual_fourier.md)`
+
+こちら（260808）は熱テーブルの二層更新だけを扱う。
 
 ---
 
@@ -376,4 +381,6 @@ python src/pat_acquisition/models/sunface_deltaT_bcase_los/run_residual_fourier_
 - ナラティブ: `[260721_rg_slide_retrospective_and_paper_narrative.md](260721_rg_slide_retrospective_and_paper_narrative.md)` §2.10
 - 軌道誤差前提: `[260718_orbit_prediction_error_assumptions.md](260718_orbit_prediction_error_assumptions.md)`
 - 五十里指摘メモ: `google_doc/google_doc_from260415_20260618.md`（軌道予測誤差と同帯域・分離困難）
+- 残差 Fourier（後段・`b` 非更新）: `[260813_post_ff_residual_fourier.md](260813_post_ff_residual_fourier.md)`
+- 熱モデル誤差の入れ方: [`260813_thermal_model_mismatch.md`](260813_thermal_model_mismatch.md)
 

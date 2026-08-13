@@ -5,8 +5,11 @@
 - 前提モデル: `sunface_deltaT_bcase_los`（詳細: [`260714_sunface_deltaT_bcase_los.md`](260714_sunface_deltaT_bcase_los.md)）
 - 根拠: 提出アブスト（`docs/research_notes/MD/ICSO_abstract_submitted/`）、`google_doc` メモ（〜7/12）、進捗振り返り（`260712_research_progress_retrospective.md`）
 - 既存ドラフト: `papers/ICSO/main.typ` / `full_paper_story.md` は Fourier 先行の旧ストーリー。**本ノートの章立てで置き換える**
-- **題名は提出アブストと同一**（ICSO ルール上そのまま出す必要がありそう）:
-  `Feedforward and Adaptive Correction of Time-Varying Thermal Bias for Coarse Acquisition in Optical Communication Systems`
+- **2026-08-13 以降、予稿骨子の本線は [`260802_update_main_typ_to_260721_slides.md`](260802_update_main_typ_to_260721_slides.md)。** 正式名称もそちら §0。本ノートは旧章立て。
+- **題（260802 と同一・ノミナル）**:
+  `Feedforward Correction of Time-Varying Thermal Bias with On-Orbit Residual Update for Coarse Acquisition in Optical Communication Systems`
+  - 旧アブスト題: `Feedforward and Adaptive Correction of Time-Varying Thermal Bias for Coarse Acquisition in Optical Communication Systems`
+  - Residual Update の中身は本文で `δb` と熱 FF 後の周期残差（Fourier）。熱 `b_case` のオンライン同定を題で約束しない。
 
 ---
 
