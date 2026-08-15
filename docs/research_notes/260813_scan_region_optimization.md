@@ -15,15 +15,17 @@
 
 Scan **center** は熱 FF でずらす。探索領域そのものは全ケース共通の固定箱。
 
+走査の step / 検出半径 / dwell は 2026-08-16 にビーコン級へ更新した。数字と再計算結果は [`260816_coarse_acquisition_scan_geometry.md`](260816_coarse_acquisition_scan_geometry.md)。本ノートの主題（領域そのものの最適化）は未着手。
+
 ```text
 scan:
   max_range_urad: 1600.0
-  step_urad: 40.0
-  detect_radius_urad: 25.0
+  step_urad: 120.0
+  detect_radius_urad: 150.0
   dwell_time_s: 0.1
 ```
 
-- 矩形スパイラル、常に ±1600 µrad（6561 点、最大 656.1 s）
+- 矩形スパイラル、常に ±1600 µrad（365 点、最大 36.5 s）
 - 補正が効くと中心付近で当たる → **捕捉時間は下がる**
 - 設計上の探索領域は縮んでいない
 - アブストの `required scan area` は独立指標としては未出力（時間で代理）
