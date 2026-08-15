@@ -336,9 +336,9 @@ def build_scan_config(
         max_range_urad=config_value(
             yaml_config, "scan", "max_range_urad", args.max_range_urad, 1600.0
         ),
-        step_urad=config_value(yaml_config, "scan", "step_urad", args.step_urad, 40.0),
+        step_urad=config_value(yaml_config, "scan", "step_urad", args.step_urad, 120.0),
         detect_radius_urad=config_value(
-            yaml_config, "scan", "detect_radius_urad", args.detect_radius_urad, 25.0
+            yaml_config, "scan", "detect_radius_urad", args.detect_radius_urad, 150.0
         ),
         dwell_time_s=config_value(
             yaml_config, "scan", "dwell_time_s", args.dwell_time_s, 0.1

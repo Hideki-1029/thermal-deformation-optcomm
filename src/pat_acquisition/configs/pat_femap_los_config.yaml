@@ -12,9 +12,15 @@ input:
   los_prefix: far_field_los
 
 scan:
+  # Coarse acquisition uses a beacon / coarse-FOV class, not the communication beam.
+  # detect_radius ~ half-width of a 0.3 mrad-class beacon (Shi et al. 2023: 0.313 mrad).
+  # step uses 60% overlap of a 300 µrad beam: (1-0.6)*300 = 120 µrad.
+  # Square-grid coverage: step/sqrt(2) = 85 µrad < detect_radius, so the scan has no holes.
+  # dwell 0.1 s is a representative beacon integration time (Shi uses 0.2 s).
+  # max_range covers ~1.2 mrad thermal peaks plus nonthermal outliers.
   max_range_urad: 1600.0
-  step_urad: 40.0
-  detect_radius_urad: 25.0
+  step_urad: 120.0
+  detect_radius_urad: 150.0
   dwell_time_s: 0.1
 
 orbit_error:

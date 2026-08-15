@@ -282,7 +282,7 @@ python "src/pat_acquisition/models/fourier_los/run_pat.py" `
 
 ## 粗捕捉スキャンの想定
 
-粗捕捉は、scan centerから外側へ広がる矩形スパイラルスキャンとしてモデル化している。各scan点で `dwell_time_s` だけ滞在し、真の目標位置がそのscan点から `detect_radius_urad` 以内に入れば捕捉成功とする。
+粗捕捉は、scan centerから外側へ広がる矩形スパイラルスキャンとしてモデル化している。各scan点で `dwell_time_s` だけ滞在し、真の目標位置がそのscan点から `detect_radius_urad` 以内に入れば捕捉成功とする。既定値はビーコン／粗FOV級（検出半径 150 µrad、step 120 µrad、dwell 0.1 s、最大範囲 ±1600 µrad）であり、通信ビームそのものではなく粗捕捉用の瞬間視野を表す。step は正方格子の穴ができないよう `step/√2 ≤ detect_radius` を満たす。
 
 アクチュエータの詳細な運動方程式はまだ持たない。現段階では有効なPAT指向機構を抽象化している。
 

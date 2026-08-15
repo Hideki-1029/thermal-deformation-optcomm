@@ -8,9 +8,18 @@ import numpy as np
 @dataclass(frozen=True)
 class CoarseAcquisitionConfig:
     max_range_urad: float = 1600.0
-    step_urad: float = 40.0
-    detect_radius_urad: float = 25.0
+    step_urad: float = 120.0
+    detect_radius_urad: float = 150.0
     dwell_time_s: float = 0.1
+
+    def __post_init__(self) -> None:
+        # Farthest point in a square cell is at step/√2 from a scan point.
+        if self.step_urad / np.sqrt(2.0) > self.detect_radius_urad:
+            raise ValueError(
+                "scan has coverage holes: "
+                f"step/sqrt(2)={self.step_urad / np.sqrt(2.0):.1f} µrad "
+                f"> detect_radius={self.detect_radius_urad:.1f} µrad"
+            )
 
 
 def rectangular_spiral_scan(max_range_urad: float, step_urad: float) -> np.ndarray:

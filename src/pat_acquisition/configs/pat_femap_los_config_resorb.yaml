@@ -13,9 +13,10 @@ input:
   los_prefix: far_field_los
 
 scan:
+  # Keep the TLE-baseline coarse-acquisition geometry (see pat_femap_los_config.yaml).
   max_range_urad: 1600.0
-  step_urad: 40.0
-  detect_radius_urad: 25.0
+  step_urad: 120.0
+  detect_radius_urad: 150.0
   dwell_time_s: 0.1
 
 orbit_error:

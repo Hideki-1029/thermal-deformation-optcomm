@@ -1,0 +1,2 @@
+﻿sun_face,dominant_axis,i_prop,i_pcdu,b_emp_urad,a_emp_urad_per_c,train_samples,resid_std_urad,power_mode,case_id,b_pred_insample_urad,b_resid_insample_urad,b_pred_loo_urad,b_resid_loo_urad,a_shared_urad_per_c
+MY,y,1,0,-22.775705068101736,28.60461521681464,101,6.548797006788361,,13_LTAN06_800km_1213COLD_MY_STTLCT_PROP_HEAT_MY_0p5,-22.775705068101733,-3.552713678800501e-15,,,28.60461521681464
