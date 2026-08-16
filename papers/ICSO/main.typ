@@ -1,4 +1,4 @@
-#import "template.typ": spie-paper
+#import "template.typ": spie-paper, spie-table
 
 #let flow-node(title, body, fill: luma(250)) = {
   rect(
@@ -140,7 +140,7 @@ Turella らの STOP (Structural-Thermal-Optical-Performance) 解析では、ESAT
 JANUS の研究と本研究の差分を表 @tbl_janus にまとめる。対象システムは、JANUS が単一光学ヘッド内部のLOSであるのに対し、本研究は衛星バス上に離隔して搭載されたSTTとLCTの相対LOSである。補正量も、校正状態からのLOS/AKE変化ではなく、粗捕捉開始時の scan-center error である。温度入力は、光学ヘッド内の壁間温度差ではなく、衛星バスの太陽面と反対面のパネル温度差と運用フラグである。モデルは、校正基準を前提とする原点通過の比例モデルではなく、未校正のケース差や運用状態依存のDCを明示的に扱う階層モデルである。そして評価出力は、LOSとその不確かさではなく、LOS残差に加えて粗捕捉の捕捉時間と捕捉成功率である。
 
 #figure(
-  table(
+  spie-table(
     columns: (1.1fr, 1.8fr, 2.1fr),
     inset: 4pt,
     [観点], [JANUS @2019-turella-janus-stop @2021-turella-janus], [本研究],
@@ -197,7 +197,7 @@ $<eq_scan>
 熱構造解析は，熱解析，構造応答解析，およびLOS後処理の三段階で構成される．まず Thermal Desktop により，軌道・姿勢（太陽指向面）・機器発熱・表面光学特性を入力として各ケースの温度場時系列を求める．次に，得られた温度分布を構造モデルへマッピングし，Femap/Nastran により熱変形に伴う節点変位・回転（6成分）を計算する．最後に，STT および LCT の代表節点の回転成分から，far-field STT-relative LOS 時系列を抽出する．全解析条件は case matrix で一元管理し，共通の case ID で TD・Femap・後処理を自動実行する構成とした．主な解析条件を表 @tbl_analysis_conditions にまとめる．
 
 #figure(
-  table(
+  spie-table(
     columns: (1fr, 1.6fr),
     inset: 4pt,
     [項目], [設定],
@@ -219,7 +219,7 @@ $<eq_scan>
 太陽指向面，内部発熱，表面光学特性，軌道条件を横断する 21 ケースを解析した（表 @tbl_case_matrix）．太陽指向面は MX/MY/PX/PY の4面とする．PZ/MZ 面は STT/LCT が配置される面であり，本姿勢系ではこれらの面に太陽が入射する条件は生じないため除外した．内部発熱は，STT/LCT のみの最小発熱を基準に，PROP，PCDU を個別または同時に ON にする組合せとし，PROP を半電力（12.5 W）とするケースも加えた．
 
 #figure(
-  table(
+  spie-table(
     columns: (0.9fr, 1.1fr, 1.5fr, 1.2fr, 1.1fr),
     inset: 3pt,
     [Case], [太陽指向面], [内部発熱], [表面特性], [軌道],
@@ -302,7 +302,7 @@ $<eq_predict>
 21ケースに対する共有感度は，MX, MY, PX, PY の順に $+30.6$, $+28.6$, $-28.1$, $-28.7$ µrad/°C であった（表 @tbl_coefficients）．絶対値はおおむね 28--31 µrad/°C に揃い，符号は太陽指向面と支配軸の向きで決まる．この結果は，ケースごとに独立に推定した感度を強制的に揃えたものではなく，独立推定の結果として太陽面ごとに近い値へまとまったことを示している．したがって，本衛星モデル・本LOS定義・本ケース群では，$a$ を太陽面ごとの共有係数として扱うことが妥当である．
 
 #figure(
-  table(
+  spie-table(
     columns: (1.6fr, 1fr, 1fr, 1fr, 1fr),
     inset: 4pt,
     [係数], [MX], [MY], [PX], [PY],
@@ -347,7 +347,7 @@ Level-2 の係数は，$b_0("MX")=+15.7$ µrad，$b_0("MY")=+2.8$ µrad，$b_0("
 走査条件は，通信光ではなくビーコン級の粗い瞬間視野による粗捕捉を想定して設定した（表 @tbl_scan_conditions）．検出半径 150 µrad は 0.3 mrad 級ビーコンの半値幅に対応し，走査ステップ 120 µrad はオーバーラップ 60 % の配置に相当する @2023-shi-thermal．このとき格子対角の半分（$120 / sqrt(2) approx 85$ µrad）が検出半径を下回るため，走査領域に検出の穴は生じない．走査範囲 ±1600 µrad は，最大クラスの熱LOS（PY 系で約 1.2--1.3 mrad）に非熱誤差が重畳した場合も覆う余裕を持つ．なお，以降の捕捉時間の秒数はこの走査条件における proxy であり，たとえば滞在時間を Shi らと同じ 0.2 s とすれば秒数はおおむね2倍になるが，補正方式間の相対比較という本稿の結論は変わらない．
 
 #figure(
-  table(
+  spie-table(
     columns: (1.4fr, 1fr, 1.6fr),
     inset: 4pt,
     [項目], [値], [根拠],
@@ -369,7 +369,7 @@ Level-2 の係数は，$b_0("MX")=+15.7$ µrad，$b_0("MY")=+2.8$ µrad，$b_0("
 比較する補正方式は，補正なし，静的バイアス補正（学習区間の平均LOS），階層 bcase モデル補正（式 @eq_predict），および熱真値補正（理想上限）である．階層 bcase モデルでは，Level-2 の $b$ 予測を leave-one-case-out で行い，評価対象ケース自身の $b$ を直接使わない設定とした．評価は 17 ケース（1213COLD の既定被覆系列，Case 4--6, 8--21）で行った．結果を表 @tbl_pat_results に示す．
 
 #figure(
-  table(
+  spie-table(
     columns: (2.0fr, 1.2fr, 1.2fr, 1.2fr, 1.2fr),
     inset: 4pt,
     [条件], [補正なし], [静的バイアス], [階層 bcase], [熱真値],
@@ -404,7 +404,7 @@ $<eq_resid_fourier>
 この第二層の役割を明確にするため，熱の feedforward を介さずに全誤差へ直接 Fourier 級数を当てはめる方式（いきなり Fourier）と比較した．表 @tbl_residual_update と図 @fig_residual_update に，MY の標準ケース（Case 13，熱LOS 約 150 µrad）と PY の大熱LOSケース（Case 16，約 1.2 mrad）に対する結果を示す．いずれも非熱誤差込み，causal，$K=2$ である．
 
 #figure(
-  table(
+  spie-table(
     columns: (2.2fr, 1.2fr, 1.2fr, 1.2fr),
     inset: 4pt,
     [方式], [全区間], [初周（周0）], [周1以降],

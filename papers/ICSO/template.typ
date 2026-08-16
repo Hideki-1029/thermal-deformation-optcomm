@@ -1,3 +1,20 @@
+// SPIE proceedings style table: horizontal rules only (top / header / bottom),
+// no vertical lines. First `columns.len()` positional args are the header row.
+#let spie-table(columns: (), inset: 4pt, ..cells) = {
+  let cells = cells.pos()
+  let ncol = if type(columns) == int { columns } else { columns.len() }
+  table(
+    columns: columns,
+    inset: inset,
+    stroke: none,
+    table.hline(stroke: 1pt),
+    table.header(..cells.slice(0, ncol)),
+    table.hline(stroke: 0.5pt),
+    ..cells.slice(ncol),
+    table.hline(stroke: 1pt),
+  )
+}
+
 #let spie-paper(
   title: [],
   authors: [],
