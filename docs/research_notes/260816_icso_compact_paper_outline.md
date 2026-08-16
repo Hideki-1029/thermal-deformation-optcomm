@@ -242,3 +242,53 @@
   - 誠実だね。ちょっと自分の研究のいけてない部分を最後に置くと、研究が弱く見えちゃうのが懸念。
 -  
 
+
+#### 問題設定とLOS定義
+- 「。本稿ではこれを far-field STT-relative LOS と呼び、解析出力上は relative_rotation_angle_* に対応する量を主値として用いる。」：
+  - far-field...とrelative_rotate...は、この予稿で出すべき表現かな？もちろん解析のプログラム上は定義すべき重要な量なんだけど、もしこの後そんなに出てこないなら（とくに後者は）説明省いてもいい気がする
+- 「ここで、STT代表点とLCT代表点の相対並進から得られる centerline tilt は、構造変形の診断量としては有用であるが、遠方通信の外向き光軸角度へそのまま加えるべき量ではない。有限距離ターゲットに対しては並進視差が寄与するが、衛星間通信のような遠方リンクでは、並進変位の寄与はターゲット距離で割られる。一方、LCT局所光軸の回転はそのまま遠方指向誤差になる。この理由から、本稿のPAT評価では centerline tilt を足した合成角ではなく、LCT回転からSTT回転を差し引いた相対回転を scan center 補正の対象とする」
+  - ここは、確かにそうなんだけど、ちょっと表現が冗長？本題ではないので、もう少し短めに説明してもいいかもね。上のfar fieldの説明と合わせたりして
+- 図2について、まあこれでも伝わるかもなんだけど、もう少し良い図無いかね（てかそういえばこの図2はどこかで妥協してこの図にしてたね。もしやれるなら、codexに作らせてみるからプロンプト書いてほしいかも）
+
+**図2 差し替え用プロンプト（codex / 画像生成向け）**
+
+```text
+A clean, minimal scientific schematic for a conference paper (SPIE style), white background, vector-like flat illustration, no photorealism.
+
+Subject: a small box-shaped satellite bus drawn in isometric line art (simple wireframe box, thin gray lines). On the top face (+Z), a small cylinder labeled "STT" (star tracker). On the bottom face (-Z), a small telescope tube labeled "LCT" (laser communication terminal).
+
+From the LCT, draw two outgoing rays toward the lower-left: a solid dark-blue arrow labeled "nominal boresight" and a dashed red arrow labeled "deformed boresight", separated by a small angle. Mark the angle between them with a thin arc and label it "theta = theta_LCT - theta_STT (relative LOS error)".
+
+Also show a faint coordinate triad near the STT labeled "attitude reference frame (STT)".
+
+Style constraints: use only dark blue, red, gray, and black. Sans-serif labels, all text in English, large enough to read at 80 mm width. No shading gradients, no background texture, no caption text.
+```
+
+- 現行図（slide 切り抜き）の問題点メモ:
+  - 「ローカル構造座標系」の原点が LCT 付近にあるのに「STT が定義」とあり、誰の座標系か一読で分かりにくい
+  - 名目 boresight と変形後 boresight の色が両方緑系で近い
+  - 式 θ_y = θ_LCT,y − θ_STT,y が主役なのに角度の弧が無く式が浮いている
+  - 左の 3D box 部分は情報量が低い
+- 生成物ができたら `papers/icso/figure/fig_los_definition.png` を差し替えるだけでよい（main.typ 側の参照は変更不要）
+- ラベル日本語版・2パネル構成版が欲しければプロンプト調整する
+
+
+#### 衛星モデルと熱構造解析
+- 細かいが、図も「図 図1」みたいになっているので修正（この章に限らず。先ほど指摘した「表 表1」とかもね）
+- 図3なんだけど、figure/fig_td_tdall_femap.png一つに代替してほしい。こちらの方が見やすい
+- 表3ちょっと見にくいから改善してほしい。一つの項目にこんなに文章あるんじゃ表の意味がない。工夫して見やすくして
+- 「解析対象は、小型衛星を模した箱型バスモデルである（図 図 3）。外形は 0.59 m × 0.60 m × 0.99 m、パネルは厚さ 10 mm の A5052 アルミニウムとする。STT を PZ 面、LCT を MZ 面に配置し、LCT の光軸（boresight）はおおむね -Z 方向を向く。内部機器として、PROP（25 W、PY面）と PCDU（10 W、MY面）を配置し、通信中を想定して STT（1.5 W）と LCT（10 W）は常時 ON とする。PROP/PCDU の ON/OFF はケースごとに切り替える」
+  - この冒頭の内容と表の内容が被っているから、見やすくするために、文章側はなるべくシンプルにして、表側に数値をまとめるようにして。もしモデルと解析条件を分けるべきと考えるなら、4.1では新しく衛星モデルを整理した表を作って。で、なるべく表3と被らないように（わかりやすさいのために多少被る数値があるのはおけ）
+
+
+#### ケース行列と熱LOSの特性
+- 表4のように、21ケースを並べて書いてしまうのは中々分かりやすくて良いけど、ちょっとこちらの解析側にwordよせすぎ。
+  - 例えばcase numは、いまさらrenumberすると分かりにくくなるから一旦今のままでいいけど、1~21までの番号を一番左の列に振ってもいいとは思う（今この表を見ると25ケースやったように見える、実際やってるんだけど）
+  - これは一つ前の表3の話になるけど、既定の表面特性がなんなのか分かりにくい。
+  - ちょっと表3とともにもう少し見やすくしてほしい部分
+- 「。第一に、熱LOS の大きさは太陽指向面に強く依存し、支配軸の生 RMS は MY 系で約 150–265 μrad、PX 系で約 600–670 μrad、MX 系で約 670–730 μrad、PY 系では約 1180–1280 μrad と 1 mrad 級に達した」
+  - 支配軸の説明がない。x or yであること、LOSが大きく変化する軸を支配軸ということなど、支配軸のwordの定義を（もしこれより前で定義してたら教えて）
+
+
+
+#### 階層 sun-face Δ𝑇 モデル
