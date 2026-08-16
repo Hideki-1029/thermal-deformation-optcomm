@@ -14,13 +14,15 @@ Sentinel-1（dawn-dusk SSO、SEIRIOS/LTAN06 条件の代理）を使い、POD �
 
 #### ベースライン：TLE-only（PAT デモに採用）
 
-| 項目 | 内容 |
-|------|------|
-| 真値 | Sentinel-1 `AUX_POEORB`（cm 級、真値相当） |
-| 軌道予測値 | **各捕捉時刻以前で利用可能な最新 TLE** を SGP4 で **forward 伝搬** |
-| 結果（2026-06 POEORB 窓） | ISL LOS 角度誤差 RMS **約 300 urad**（相手機 800 km 想定） |
-| TLE 更新頻度 | 数時間おき（Sentinel-1 実績：2026-06 は中央値 ~5 h、~4 回/日） |
-| 意図 | **GNSS 非搭載の一般小型衛星**を代表する baseline。全 LEO 小型衛星が GNSS を載せられるわけではない（研究室体感 ~半分）。論文適用範囲の一般性を確保する |
+
+| 項目                   | 内容                                                                                         |
+| -------------------- | ------------------------------------------------------------------------------------------ |
+| 真値                   | Sentinel-1 `AUX_POEORB`（cm 級、真値相当）                                                         |
+| 軌道予測値                | **各捕捉時刻以前で利用可能な最新 TLE** を SGP4 で **forward 伝搬**                                            |
+| 結果（2026-06 POEORB 窓） | ISL LOS 角度誤差 RMS **約 300 urad**（相手機 800 km 想定）                                             |
+| TLE 更新頻度             | 数時間おき（Sentinel-1 実績：2026-06 は中央値 ~5 h、~4 回/日）                                              |
+| 意図                   | **GNSS 非搭載の一般小型衛星**を代表する baseline。全 LEO 小型衛星が GNSS を載せられるわけではない（研究室体感 ~半分）。論文適用範囲の一般性を確保する |
+
 
 注意：
 
@@ -31,10 +33,12 @@ Sentinel-1（dawn-dusk SSO、SEIRIOS/LTAN06 条件の代理）を使い、POD �
 
 #### バックアップ（今はやらない）：GNSS ベース準リアルタイム軌道
 
-| 項目 | 内容 |
-|------|------|
-| 真値 | Sentinel-1 POEORB |
+
+| 項目    | 内容                                                                     |
+| ----- | ---------------------------------------------------------------------- |
+| 真値    | Sentinel-1 POEORB                                                      |
 | 軌道予測値 | Sentinel-1 `AUX_RESORB`（sensing 後 ~180 分以内、2D RMS 要求 10 cm 典型 5 cm 未満） |
+
 
 RESORB は衛星 onboard 機能ではなく、** onboard GNSS データ + 地上 POD** で作る準リアルタイム精密軌道。自衛星で RESORB 相当を使うには GNSS 搭載と地上処理が必要（SEIRIOS は GNSS 載せるので将来ケースとして議論可能）。軌道誤差は cm〜dm 級になり、熱ひずみ補正の寄与が相対的に見えやすくなる。
 
@@ -51,6 +55,8 @@ RESORB は衛星 onboard 機能ではなく、** onboard GNSS データ + 地上
 
 ## TD × Femap 解析
 
+
+
 ## 軽量モデルの候補（特に物理モデル）
 
 修士輪講会予稿より：
@@ -60,6 +66,8 @@ RESORB は衛星 onboard 機能ではなく、** onboard GNSS データ + 地上
 よって，熱ひずみの軽量物理モデルを physical thermal deformation modelとする．
 
 ## literature/papers/pdf サマリ
+
+
 
 ### 20260511_mochizuki_lab_seminar.pdf
 
@@ -94,7 +102,7 @@ NASA TBIRDの設計段階に近い論文で、小型衛星のbody pointing能力
 題名: Correction Method for Thermal Deformation Line-of-Sight Errors of Low-Orbit Optical Payloads Under Unstable Illumination Conditions  
 著者: Yao Li, Xin Chen, Guangsen Liu, Peng Rao
 
-低軌道光学ペイロードにおいて、日照条件が短時間で不規則に変化するため、熱変形由来のLOS誤差が高精度指向・測位を悪化させる問題を扱う。星観測データに基づき、太陽ベクトル、衛星位置ベクトル、カメラLOSベクトルの角度関係を補正パラメータとして使うことで、低軌道の不安定な熱環境を表現する。平均絶対LOS誤差を大きく低減しており、軌道幾何を入力にした軽量補正モデルの先行例として本研究に近い。
+低軌道光学ペイロードにおいて、日照条件が短時間で不規則に変化するため、熱変形由来のLOS誤差が高精度指向・測位を悪化させる問題を扱う。星観測データに基づき、太陽ベクトル、衛星位置ベクトル、カメラLOSベクトルの角度関係を補正パラメータとして使うことで、低軌道の不安定な熱環境を表現する。平均絶対LOS誤差を大きく低減しており、軌道幾何を入力にした軽量補正モデルの先行例として本研究に近い。機械学習使用。
 
 ### feed-forward-compensation-of-body-pointing-uncertainties-for-laser-communication-terminals.pdf
 
@@ -161,6 +169,8 @@ DLR/University of StuttgartのFlying Laptop + OSIRISv1を対象に、open-loop p
 
 # 2026/6/25 memo
 
+
+
 ## TD/Femapで最終的に取りたいデータ
 
 PAT性能評価に直接必要なのは、熱ひずみ場そのものではなく、熱変形によってSTT基準系とLCT光軸基準系の間に生じる相対変位・相対回転である。
@@ -193,6 +203,8 @@ PAT補正だけなら、全節点のひずみテンソルを完全に読む必�
 - Femap結果の軽量モデル化: 代表節点の変位時系列が欲しい
 - 物理的原因の説明: 部材ごとのひずみ、応力、温度分布も欲しい
 
+
+
 ## 軽量な熱ひずみモデル
 
 熱ひずみの最も基本的なモデルは `epsilon_thermal = alpha * DeltaT` である。ただし、これだけで直接LCTのLOSずれが出るわけではない。実際のLOSずれには、材料ごとの熱膨張率、部材拘束、接合条件、構体剛性、温度分布、STT/LCTの取付位置が効く。
@@ -221,6 +233,8 @@ theta ~= kappa * L
 - 代表節点変位のPCA、Fourier、回帰モデル
 - TD/Femapによる高忠実度モデル
 
+
+
 ## 先行研究との位置づけ
 
 熱変形によるLOS誤差や、STOP解析、Reduced Order Model、観測衛星のLOS drift補正、光通信での波面・スポット重心補正は先行研究がある。
@@ -230,6 +244,8 @@ theta ~= kappa * L
 新規性の置き方は、「熱ひずみLOS誤差が存在する」ではなく、「熱構造モデル由来の時変LOSバイアスを光通信PATの粗捕捉性能、scan area、acquisition timeに接続し、物理モデルと軌道上観測更新を組み合わせる」ことに置くのが良さそう。
 
 # 2026/7/2 memo
+
+
 
 ## ベースライン衛星構造モデル
 
@@ -264,27 +280,25 @@ TDおよびFemapのshellモデル寸法:
 
 
 
-
 # 2026/7/4 memo
 
+
+
 ## 軽量モデル実装までの方針
+
 TD→Femap→python解析の体制が整ったところで、Case 03~06を用いてPATシミュレータへの接続、軽量モデルの簡易的な構築を試す。以下を手順とする。
 
 1. Femap結果をPAT入力に接続 los_angles.csv の stt_relative_los_angle_x/y_urad を、熱LOSバイアス真値としてPATシミュレータの scan center 誤差に入れる。まずは補正なし/熱補正ありを比較できる状態にする。
+
 →完了。
 stt_relative_los_angle_x/y_uradではなく、STT/LCTの回転成分のみに注目したLOS誤差角算出に切り替え（far fieldみたいなやつ）
 スキャンはスパイラルスキャン。アクチュエータのモデル化はまだしていない。
 ここで、ノートPCのcursorの操作に切り替え。（次の作業のためのプロンプト出力させて引き継ぎ）
 
-2. 熱以外の誤差を足す 軌道予測誤差、姿勢決定/制御誤差、アライメント残差などを簡易モデルで足す。ここは最初から高忠実度にせず、RMSやバイアス、低周波ドリフトで十分だと思います。目的は「熱ひずみが全誤差の中でどれくらい効くか」を見ること。
+1. 熱以外の誤差を足す 軌道予測誤差、姿勢決定/制御誤差、アライメント残差などを簡易モデルで足す。ここは最初から高忠実度にせず、RMSやバイアス、低周波ドリフトで十分だと思います。目的は「熱ひずみが全誤差の中でどれくらい効くか」を見ること。
+2. 捕捉時間・scan areaを見る no correction、static thermal correction、truth thermal correction くらいで比較する。ここで「熱補正がPAT性能指標に意味を持つか」が最初に確認できます。
+3. 軽量モデル用データセットを作る case_matrix.xlsx、orbit_catalog.xlsx、inputs/data_symbols_TD/LOGIC_SUN、代表温度CSV、LOS角CSVを結合して、学習/検証/テスト用の表にする。
+4. 軽量モデル実装 最初は static bias と Fourier、次に代表温度差や日照/蝕・太陽方向を使う簡易physical model。NNは最後でよいです。今はケース数が少ないので、NNより「説明できる低次モデル」の方が研究として扱いやすいです。
+5. 軽量モデル出力をPATへ接続 truth thermal correction の代わりに、軽量モデル予測値を scan center 補正へ入れる。ここで「Femap真値を使った理想補正」と「軽量モデル補正」の差を見る。
+6. adaptiveを足す 最後に、捕捉後の残差で補正するモデルを追加する。これは研究の見せ場になり得ますが、最初に入れると評価軸が混ざるので後回しがよいです。
 
-
-3. 捕捉時間・scan areaを見る no correction、static thermal correction、truth thermal correction くらいで比較する。ここで「熱補正がPAT性能指標に意味を持つか」が最初に確認できます。
-
-4. 軽量モデル用データセットを作る case_matrix.xlsx、orbit_catalog.xlsx、inputs/data_symbols_TD/LOGIC_SUN、代表温度CSV、LOS角CSVを結合して、学習/検証/テスト用の表にする。
-
-5. 軽量モデル実装 最初は static bias と Fourier、次に代表温度差や日照/蝕・太陽方向を使う簡易physical model。NNは最後でよいです。今はケース数が少ないので、NNより「説明できる低次モデル」の方が研究として扱いやすいです。
-
-6. 軽量モデル出力をPATへ接続 truth thermal correction の代わりに、軽量モデル予測値を scan center 補正へ入れる。ここで「Femap真値を使った理想補正」と「軽量モデル補正」の差を見る。
-
-7. adaptiveを足す 最後に、捕捉後の残差で補正するモデルを追加する。これは研究の見せ場になり得ますが、最初に入れると評価軸が混ざるので後回しがよいです。
