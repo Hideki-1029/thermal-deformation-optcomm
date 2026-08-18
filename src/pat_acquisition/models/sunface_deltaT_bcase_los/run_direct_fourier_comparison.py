@@ -45,6 +45,7 @@ from pat_acquisition.models.sunface_deltaT_bcase_los.features import (  # noqa: 
 from pat_acquisition.models.sunface_deltaT_bcase_los.model import (  # noqa: E402
     BCaseConfig,
     predict_bcase_xy,
+    resolve_operational_params,
     run_bcase_pipeline,
 )
 from pat_acquisition.models.sunface_deltaT_bcase_los.residual_fourier import (  # noqa: E402
@@ -160,15 +161,13 @@ def main() -> None:
 
         row = case_lookup.loc[case_id]
         sun_face = str(row["sun_face"])
-        b_loo = float(row["b_pred_loo_urad"])
-        b_urad = (
-            b_loo if np.isfinite(b_loo) else float(row["b_pred_insample_urad"])
-        )
+        b_urad, b_nd_urad, a_urad = resolve_operational_params(row, a_shared, "loo")
         pred_bcase = np.asarray(
             predict_bcase_xy(
                 case_df,
                 b_urad=b_urad,
-                a_urad_per_c=float(a_shared[sun_face]),
+                a_urad_per_c=a_urad,
+                b_nd_urad=b_nd_urad,
                 config=BCaseConfig(
                     ridge_lam=args.ridge_lam,
                     heat_faces=parse_heat_faces(args.heat_faces),

@@ -96,10 +96,11 @@ SUNFACE_MODEL_NAMES = (
     "sunface_correction_with_nonthermal",
 )
 
-# Paper P4 arms: no / static / bcase / truth (+ nonthermal realism).
+# Paper P4 arms: no / bcase / truth (+ nonthermal realism).
+# Static-bias correction was dropped: its train-orbit mean needs on-orbit LOS
+# measurements, so it is unavailable before first acquisition.
 BCASE_MODEL_NAMES = (
     "no_correction",
-    "static_bias_correction",
     "bcase_correction",
     "thermal_truth_correction",
     "thermal_plus_nonthermal_no_correction",
@@ -115,7 +116,6 @@ SUNFACE_PLOT_LABELS = {
 
 BCASE_PLOT_LABELS = {
     "no_correction": "no correction",
-    "static_bias_correction": "static bias",
     "bcase_correction": "bcase",
     "thermal_truth_correction": "thermal truth",
     "thermal_plus_nonthermal_no_correction": "thermal+nonthermal, no corr.",

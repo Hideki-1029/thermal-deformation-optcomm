@@ -1,4 +1,14 @@
-"""Two-level model: LOS ≈ b_case + a(sun)·ΔT,  b_case ≈ b0(sun)+c_p·I_prop+c_c·I_pcdu."""
+"""Two-level model: LOS ≈ b_case + a(sun)·ΔT,  b_case ≈ b0(sun)+c_p·I_prop+c_c·I_pcdu.
+
+Both axes are predicted from pre-launch thermal analysis only:
+
+  dominant axis:     b_dom(sun, flags) + a_shared(sun) · ΔT(t)
+  non-dominant axis: b_nd(sun, flags)   (constant DC)
+
+Heat flags affect the y-axis LOS, so the Level-2 design gates I_prop/I_pcdu
+on sun faces MY/PY for the dominant axis and on MX/PX for the non-dominant
+axis (where the non-dominant component is the y axis).
+"""
 
 from __future__ import annotations
 
@@ -33,6 +43,7 @@ __all__ = [
     "fit_bcase_level2",
     "predict_bcase",
     "predict_bcase_xy",
+    "resolve_operational_params",
     "run_bcase_pipeline",
 ]
 
@@ -41,6 +52,9 @@ __all__ = [
 class BCaseConfig:
     ridge_lam: float = 1e-3
     heat_faces: tuple[str, ...] = DEFAULT_HEAT_FACES
+    # Sun faces where heat flags apply for the non-dominant-axis Level-2.
+    # Flags act on the y-axis LOS, which is non-dominant for MX/PX sun.
+    nd_heat_faces: tuple[str, ...] = ("MX", "PX")
     orbit_period_s: float = 6052.0
     train_orbits: float = 1.0
     # Level-2 uses ordinary least squares (no ridge) unless lam > 0.
@@ -90,6 +104,10 @@ def estimate_case_deltaT_params(
     b_emp = float(coef[0])
     a_emp = float(coef[1])
 
+    # Non-dominant axis: train-orbit DC mean (Level-1 target for b_nd).
+    nd_axis_idx = 1 - axis_idx
+    b_nd_emp = float(np.mean(y_all[train_mask, nd_axis_idx]))
+
     # Also report mean residual with this fit on all times (diagnostics).
     y_hat = b_emp + a_emp * x_all[:, 0]
     resid = y_all[:, axis_idx] - y_hat
@@ -100,6 +118,7 @@ def estimate_case_deltaT_params(
         "i_prop": int(i_prop),
         "i_pcdu": int(i_pcdu),
         "b_emp_urad": b_emp,
+        "b_nd_emp_urad": b_nd_emp,
         "a_emp_urad_per_c": a_emp,
         "train_samples": int(train_mask.sum()),
         "resid_std_urad": float(np.std(resid)),
@@ -112,20 +131,24 @@ def estimate_case_deltaT_params(
 def fit_bcase_level2(
     case_table: pd.DataFrame,
     config: BCaseConfig,
+    *,
+    target_col: str = "b_emp_urad",
+    heat_faces: tuple[str, ...] | None = None,
 ) -> BCaseLevel2Model:
     """Fit Level-2: b_emp ~ design(sun, I_prop, I_pcdu)."""
-    required = {"sun_face", "i_prop", "i_pcdu", "b_emp_urad"}
+    required = {"sun_face", "i_prop", "i_pcdu", target_col}
     missing = required.difference(case_table.columns)
     if missing:
         raise ValueError(f"case_table missing columns: {sorted(missing)}")
 
+    effective_heat_faces = config.heat_faces if heat_faces is None else heat_faces
     x, names = build_bcase_design_matrix(
         case_table["sun_face"],
         case_table["i_prop"],
         case_table["i_pcdu"],
-        heat_faces=config.heat_faces,
+        heat_faces=effective_heat_faces,
     )
-    y = case_table["b_emp_urad"].to_numpy(dtype=float)
+    y = case_table[target_col].to_numpy(dtype=float)
     if config.level2_ridge_lam > 0.0:
         # Regularize only heat coefficients; keep b0_* unpenalized via diag mask.
         xtx = x.T @ x
@@ -140,7 +163,7 @@ def fit_bcase_level2(
     return BCaseLevel2Model(
         feature_names=tuple(names),
         coef=np.asarray(coef, dtype=float),
-        heat_faces=tuple(config.heat_faces),
+        heat_faces=tuple(effective_heat_faces),
     )
 
 
@@ -151,6 +174,35 @@ def predict_bcase(
     i_pcdu: int,
 ) -> float:
     return float(model.predict([sun_face], [i_prop], [i_pcdu])[0])
+
+
+def resolve_operational_params(
+    row: pd.Series,
+    a_shared: dict[str, float],
+    b_mode: str = "loo",
+) -> tuple[float, float, float]:
+    """Per-case (b_dom, b_nd, a) from a pipeline case_table row.
+
+    With ``b_mode="loo"`` the nested leave-one-case-out predictions are used,
+    so all parameters are fully out-of-sample for the case. Falls back to the
+    in-sample fit when LOO was skipped (e.g. too few training cases).
+    """
+    if b_mode == "insample":
+        return (
+            float(row["b_pred_insample_urad"]),
+            float(row["b_nd_pred_insample_urad"]),
+            float(a_shared[str(row["sun_face"])]),
+        )
+    b = float(row["b_pred_loo_urad"])
+    if not np.isfinite(b):
+        b = float(row["b_pred_insample_urad"])
+    b_nd = float(row["b_nd_pred_loo_urad"])
+    if not np.isfinite(b_nd):
+        b_nd = float(row["b_nd_pred_insample_urad"])
+    a = float(row["a_shared_loo_urad_per_c"])
+    if not np.isfinite(a):
+        a = float(a_shared[str(row["sun_face"])])
+    return b, b_nd, a
 
 
 def shared_a_by_sun_face(case_table: pd.DataFrame) -> dict[str, float]:
@@ -185,17 +237,29 @@ def run_bcase_pipeline(
         raise RuntimeError("No cases processed")
 
     level2 = fit_bcase_level2(case_table, config)
+    level2_nd = fit_bcase_level2(
+        case_table, config, target_col="b_nd_emp_urad", heat_faces=config.nd_heat_faces
+    )
     case_table["b_pred_insample_urad"] = level2.predict(
         case_table["sun_face"], case_table["i_prop"], case_table["i_pcdu"]
     )
     case_table["b_resid_insample_urad"] = (
         case_table["b_emp_urad"] - case_table["b_pred_insample_urad"]
     )
+    case_table["b_nd_pred_insample_urad"] = level2_nd.predict(
+        case_table["sun_face"], case_table["i_prop"], case_table["i_pcdu"]
+    )
+    case_table["b_nd_resid_insample_urad"] = (
+        case_table["b_nd_emp_urad"] - case_table["b_nd_pred_insample_urad"]
+    )
 
     a_shared = shared_a_by_sun_face(case_table)
 
-    # Leave-one-case-out for Level-2 b prediction.
+    # Nested leave-one-case-out: Level-2 (both axes) and a_shared are all
+    # refit without the held-out case, so predictions are fully out-of-sample.
     loo_b = np.full(len(case_table), np.nan, dtype=float)
+    loo_b_nd = np.full(len(case_table), np.nan, dtype=float)
+    loo_a = np.full(len(case_table), np.nan, dtype=float)
     for i in range(len(case_table)):
         train = case_table.drop(index=case_table.index[i])
         if train["sun_face"].nunique() < 1 or len(train) < 3:
@@ -206,16 +270,31 @@ def run_bcase_pipeline(
         if (train["sun_face"] == face).sum() < 1:
             continue
         model_i = fit_bcase_level2(train, config)
+        model_nd_i = fit_bcase_level2(
+            train, config, target_col="b_nd_emp_urad", heat_faces=config.nd_heat_faces
+        )
         loo_b[i] = predict_bcase(
             model_i,
             face,
             int(case_table.iloc[i]["i_prop"]),
             int(case_table.iloc[i]["i_pcdu"]),
         )
+        loo_b_nd[i] = predict_bcase(
+            model_nd_i,
+            face,
+            int(case_table.iloc[i]["i_prop"]),
+            int(case_table.iloc[i]["i_pcdu"]),
+        )
+        loo_a[i] = shared_a_by_sun_face(train)[face]
 
     case_table["b_pred_loo_urad"] = loo_b
     case_table["b_resid_loo_urad"] = case_table["b_emp_urad"] - case_table["b_pred_loo_urad"]
+    case_table["b_nd_pred_loo_urad"] = loo_b_nd
+    case_table["b_nd_resid_loo_urad"] = (
+        case_table["b_nd_emp_urad"] - case_table["b_nd_pred_loo_urad"]
+    )
     case_table["a_shared_urad_per_c"] = case_table["sun_face"].map(a_shared)
+    case_table["a_shared_loo_urad_per_c"] = loo_a
 
     coef_table = pd.DataFrame(
         {
@@ -223,11 +302,19 @@ def run_bcase_pipeline(
             "coef_urad": level2.coef,
         }
     )
+    coef_nd_table = pd.DataFrame(
+        {
+            "feature": list(level2_nd.feature_names),
+            "coef_urad": level2_nd.coef,
+        }
+    )
 
     return {
         "case_table": case_table.sort_values("case_id").reset_index(drop=True),
         "level2_model": level2,
         "level2_coef_table": coef_table,
+        "level2_nd_model": level2_nd,
+        "level2_nd_coef_table": coef_nd_table,
         "a_shared": a_shared,
     }
 
@@ -274,13 +361,17 @@ def predict_bcase_xy(
     *,
     b_urad: float,
     a_urad_per_c: float,
+    b_nd_urad: float,
     config: BCaseConfig,
 ) -> dict[str, np.ndarray | str | float]:
     """
     Build 2-axis LOS prediction for PAT:
 
-      dominant: b + a · ΔT(t)
-      other:    train-orbit static mean
+      dominant:     b + a · ΔT(t)
+      non-dominant: b_nd (constant DC from Level-2)
+
+    Both are predicted from case-level information only (sun face, heat
+    flags); no on-orbit LOS measurement is required.
     """
     sun_direction = case_df["case_sun_direction_body"].iloc[0]
     sun_face = normalize_sun_direction(sun_direction)
@@ -288,23 +379,16 @@ def predict_bcase_xy(
     x_all, _, _, _ = build_deltaT_features(
         case_df, sun_direction, DeltaTFeatureConfig(ridge_lam=config.ridge_lam)
     )
-    y_all = extract_targets(case_df)
-    times_s = case_df["time_s"].to_numpy(dtype=float)
-    train_mask = within_case_split_mask(times_s, config.orbit_period_s, config.train_orbits)
-    if not np.any(train_mask):
-        raise ValueError("Empty train split for bcase PAT prediction")
 
-    static_bias = np.mean(y_all[train_mask], axis=0)
-    pred = np.tile(static_bias, (len(case_df), 1))
+    pred = np.full((len(case_df), 2), float(b_nd_urad), dtype=float)
     axis_idx = 0 if dominant_axis == "x" else 1
     pred[:, axis_idx] = b_urad + a_urad_per_c * x_all[:, 0]
-    pred_static = np.tile(static_bias, (len(case_df), 1))
 
     return {
         "bcase": pred,
-        "static_bias": pred_static,
         "sun_face": sun_face,
         "dominant_axis": dominant_axis,
         "b_urad": float(b_urad),
+        "b_nd_urad": float(b_nd_urad),
         "a_urad_per_c": float(a_urad_per_c),
     }

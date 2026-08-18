@@ -144,6 +144,7 @@ def main() -> None:
     )
     case_table: pd.DataFrame = result["case_table"]
     coef_table: pd.DataFrame = result["level2_coef_table"]
+    coef_nd_table: pd.DataFrame = result["level2_nd_coef_table"]
     a_shared: dict[str, float] = result["a_shared"]
 
     # Per-case LOS metrics: oracle (b_emp,a_emp) vs hierarchical (b_pred, a_shared).
@@ -172,11 +173,12 @@ def main() -> None:
         )
         loo_b = float(row.b_pred_loo_urad)
         loo = None
-        if np.isfinite(loo_b):
+        a_loo = float(row.a_shared_loo_urad_per_c)
+        if np.isfinite(loo_b) and np.isfinite(a_loo):
             loo = evaluate_case_timeseries_with_b(
                 case_df,
                 b_urad=loo_b,
-                a_urad_per_c=a_s,
+                a_urad_per_c=a_loo,
                 config=config,
             )
 
@@ -212,6 +214,8 @@ def main() -> None:
     case_display = out_dir / f"{FILE_STEM}_case_table_display.csv"
     coef_path = out_dir / f"{FILE_STEM}_level2_coefficients.csv"
     coef_display = out_dir / f"{FILE_STEM}_level2_coefficients_display.csv"
+    coef_nd_path = out_dir / f"{FILE_STEM}_level2_nd_coefficients.csv"
+    coef_nd_display = out_dir / f"{FILE_STEM}_level2_nd_coefficients_display.csv"
     a_path = out_dir / f"{FILE_STEM}_a_shared.csv"
     metrics_path = out_dir / f"{FILE_STEM}_los_metrics.csv"
     metrics_display = out_dir / f"{FILE_STEM}_los_metrics_display.csv"
@@ -220,6 +224,8 @@ def main() -> None:
     _write_display_csv(case_table, case_display)
     coef_table.to_csv(coef_path, index=False, encoding="utf-8-sig")
     _write_display_csv(coef_table, coef_display)
+    coef_nd_table.to_csv(coef_nd_path, index=False, encoding="utf-8-sig")
+    _write_display_csv(coef_nd_table, coef_nd_display)
     a_shared_df.to_csv(a_path, index=False, encoding="utf-8-sig")
     metrics_df.to_csv(metrics_path, index=False, encoding="utf-8-sig")
     _write_display_csv(metrics_df, metrics_display)
@@ -227,8 +233,11 @@ def main() -> None:
     print(f"Cases: {len(case_table)}")
     print(f"Heat faces (I_prop/I_pcdu active): {', '.join(heat_faces)}")
     print()
-    print("--- Level-2 coefficients [urad] ---")
+    print("--- Level-2 coefficients [urad] (dominant axis b) ---")
     print(coef_table.to_string(index=False, float_format=DISPLAY_FLOAT_FORMAT))
+    print()
+    print("--- Level-2 coefficients [urad] (non-dominant axis b) ---")
+    print(coef_nd_table.to_string(index=False, float_format=DISPLAY_FLOAT_FORMAT))
     print()
     print("--- Shared a by sun face [urad/C] ---")
     print(a_shared_df.to_string(index=False, float_format=DISPLAY_FLOAT_FORMAT))
@@ -242,8 +251,11 @@ def main() -> None:
         "b_emp_urad",
         "b_pred_insample_urad",
         "b_pred_loo_urad",
+        "b_nd_emp_urad",
+        "b_nd_pred_loo_urad",
         "a_emp_urad_per_c",
         "a_shared_urad_per_c",
+        "a_shared_loo_urad_per_c",
     ]
     print(case_table[show_cols].to_string(index=False, float_format=DISPLAY_FLOAT_FORMAT))
     print()
@@ -274,9 +286,25 @@ def main() -> None:
             f"max|d|={np.max(np.abs(loo_resid[loo_ok])):.3g} urad "
             f"(n={int(loo_ok.sum())})"
         )
+    nd_resid = case_table["b_nd_resid_insample_urad"].to_numpy(dtype=float)
+    nd_loo_resid = case_table["b_nd_resid_loo_urad"].to_numpy(dtype=float)
+    nd_loo_ok = np.isfinite(nd_loo_resid)
+    print(
+        f"b_nd_emp - b_nd_pred (in-sample):  "
+        f"RMSE={np.sqrt(np.mean(nd_resid**2)):.3g} urad, "
+        f"max|d|={np.max(np.abs(nd_resid)):.3g} urad"
+    )
+    if np.any(nd_loo_ok):
+        print(
+            f"b_nd_emp - b_nd_pred (LOO):        "
+            f"RMSE={np.sqrt(np.mean(nd_loo_resid[nd_loo_ok]**2)):.3g} urad, "
+            f"max|d|={np.max(np.abs(nd_loo_resid[nd_loo_ok])):.3g} urad "
+            f"(n={int(nd_loo_ok.sum())})"
+        )
     print()
     print(f"Wrote: {case_path}")
     print(f"Wrote: {coef_path}")
+    print(f"Wrote: {coef_nd_path}")
     print(f"Wrote: {a_path}")
     print(f"Wrote: {metrics_path}")
 

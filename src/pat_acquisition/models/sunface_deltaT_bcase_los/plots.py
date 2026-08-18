@@ -397,22 +397,19 @@ def resolve_timeseries_case_ids(
 
 
 def plot_pat_summary(summary_df: pd.DataFrame, out_png: Path) -> None:
-    """P4: cross-case mean acquisition time for no / static / bcase / truth."""
+    """P4: cross-case mean acquisition time for no / bcase / truth."""
     focus = (
         "no_correction",
-        "static_bias_correction",
         "bcase_correction",
         "thermal_truth_correction",
     )
     labels = {
         "no_correction": "no",
-        "static_bias_correction": "static",
         "bcase_correction": "bcase",
         "thermal_truth_correction": "truth",
     }
     colors = {
         "no_correction": "#7f7f7f",
-        "static_bias_correction": "#ff7f0e",
         "bcase_correction": "#1f77b4",
         "thermal_truth_correction": "#2ca02c",
     }
@@ -435,12 +432,11 @@ def plot_pat_summary(summary_df: pd.DataFrame, out_png: Path) -> None:
     )
     case_labels = [_short(c) for c in case_order]
     x = np.arange(len(case_order))
-    width = 0.2
+    width = 0.25
     offsets = {
-        "no_correction": -1.5 * width,
-        "static_bias_correction": -0.5 * width,
-        "bcase_correction": 0.5 * width,
-        "thermal_truth_correction": 1.5 * width,
+        "no_correction": -1.0 * width,
+        "bcase_correction": 0.0 * width,
+        "thermal_truth_correction": 1.0 * width,
     }
 
     fig, ax = plt.subplots(figsize=(max(8.5, 0.55 * len(case_order) + 3), 4.6))

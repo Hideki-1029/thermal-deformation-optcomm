@@ -29,6 +29,7 @@ from pat_acquisition.models.sunface_deltaT_bcase_los.features import (  # noqa: 
 from pat_acquisition.models.sunface_deltaT_bcase_los.model import (  # noqa: E402
     BCaseConfig,
     predict_bcase_xy,
+    resolve_operational_params,
     run_bcase_pipeline,
 )
 from pat_acquisition.models.sunface_deltaT_bcase_los.plots import (  # noqa: E402
@@ -103,15 +104,6 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def _resolve_b_urad(row: pd.Series, b_mode: str) -> float:
-    if b_mode == "insample":
-        return float(row["b_pred_insample_urad"])
-    loo = float(row["b_pred_loo_urad"])
-    if np.isfinite(loo):
-        return loo
-    return float(row["b_pred_insample_urad"])
-
-
 def run_one_case(
     case_id: str,
     case_df: pd.DataFrame,
@@ -132,24 +124,19 @@ def run_one_case(
     zero_error = np.zeros_like(theta_thermal_true)
 
     sun_face = str(row["sun_face"])
-    b_urad = _resolve_b_urad(row, b_mode)
-    a_urad = float(a_shared[sun_face])
+    b_urad, b_nd_urad, a_urad = resolve_operational_params(row, a_shared, b_mode)
     predictions = predict_bcase_xy(
         case_df,
         b_urad=b_urad,
         a_urad_per_c=a_urad,
+        b_nd_urad=b_nd_urad,
         config=bcase_config,
     )
     pred_bcase = np.asarray(predictions["bcase"], dtype=float)
-    pred_static = np.asarray(predictions["static_bias"], dtype=float)
 
     model_specs = {
         "no_correction": {
             "theta_hat": zero_error,
-            "nonthermal": zero_error,
-        },
-        "static_bias_correction": {
-            "theta_hat": pred_static,
             "nonthermal": zero_error,
         },
         "bcase_correction": {
@@ -180,13 +167,12 @@ def run_one_case(
         nonthermal_error,
         results_by_model,
         lightweight_predictions={
-            "static_bias": pred_static,
             "bcase": pred_bcase,
         },
         title=(
             f"PAT with hierarchical bcase "
             f"(sun={sun_face}, b_mode={b_mode}, "
-            f"b={b_urad:.2g}, a={a_urad:.2g})"
+            f"b={b_urad:.2g}, b_nd={b_nd_urad:.2g}, a={a_urad:.2g})"
         ),
         plot_labels=BCASE_PLOT_LABELS,
     )
@@ -283,6 +269,11 @@ def main() -> None:
     ).to_csv(fit_dir / "bcase_pat_a_shared.csv", index=False, encoding="utf-8-sig")
     pipeline["level2_coef_table"].to_csv(
         fit_dir / "bcase_pat_level2_coefficients.csv",
+        index=False,
+        encoding="utf-8-sig",
+    )
+    pipeline["level2_nd_coef_table"].to_csv(
+        fit_dir / "bcase_pat_level2_nd_coefficients.csv",
         index=False,
         encoding="utf-8-sig",
     )

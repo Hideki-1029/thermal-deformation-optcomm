@@ -34,6 +34,7 @@ from pat_acquisition.models.sunface_deltaT_bcase_los.features import (  # noqa: 
 from pat_acquisition.models.sunface_deltaT_bcase_los.model import (  # noqa: E402
     BCaseConfig,
     predict_bcase_xy,
+    resolve_operational_params,
     run_bcase_pipeline,
 )
 import matplotlib.pyplot as plt  # noqa: E402
@@ -187,13 +188,6 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def _resolve_b_urad(row: pd.Series, b_mode: str) -> float:
-    if b_mode == "insample":
-        return float(row["b_pred_insample_urad"])
-    loo = float(row["b_pred_loo_urad"])
-    if np.isfinite(loo):
-        return loo
-    return float(row["b_pred_insample_urad"])
 
 
 def run_one_case(
@@ -218,12 +212,12 @@ def run_one_case(
     zero_error = np.zeros_like(theta_thermal_true)
 
     sun_face = str(row["sun_face"])
-    b_urad = _resolve_b_urad(row, b_mode)
-    a_urad = float(a_shared[sun_face])
+    b_urad, b_nd_urad, a_urad = resolve_operational_params(row, a_shared, b_mode)
     predictions = predict_bcase_xy(
         case_df,
         b_urad=b_urad,
         a_urad_per_c=a_urad,
+        b_nd_urad=b_nd_urad,
         config=bcase_config,
     )
     pred_bcase = np.asarray(predictions["bcase"], dtype=float)
