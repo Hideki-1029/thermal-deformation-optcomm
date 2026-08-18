@@ -22,6 +22,7 @@
   corresponding-email: none,
   abstract: [],
   keywords: (),
+  language: "ja",
   body,
 ) = {
   set document(title: title)
@@ -42,7 +43,7 @@
   set text(
     font: ("Times New Roman", "Yu Mincho", "MS Mincho"),
     size: 10pt,
-    lang: "ja",
+    lang: language,
   )
   set par(justify: true, leading: 12pt, spacing: 0.65em)
   set enum(numbering: "1.")

@@ -2,9 +2,11 @@
 
 ## 現在のファイル
 
-- 仮原稿ソース: `papers/ICSO/main.typ`
+- 日本語原稿ソース: `papers/ICSO/main.typ`
+- 英語投稿候補ソース: `papers/ICSO/main_en.typ`
 - SPIE風Typstテンプレート: `papers/ICSO/template.typ`
-- 仮PDF: `papers/ICSO/main.pdf`
+- 日本語PDF: `papers/ICSO/main.pdf`
+- 英語投稿候補PDF: `papers/ICSO/main_en.pdf`
 - 図フォルダ: `papers/ICSO/figure/`
 - 結果要約:
   - `results/icso/femap_los_summary.csv`
@@ -16,7 +18,7 @@
 
 ただし、SPIE公式のTypstテンプレートではないため、最終提出前には公式Word/PDF sampleと見比べる。フォーマット面で不安が残る場合は、本文をSPIE Word A4 templateへ移植して最終PDFを作る。
 
-現時点では、英語完成稿ではなく、日本語で研究内容・章立て・結果の流れを固めるための作業ファイルとして扱う。
+`main_en.typ` は `main.typ` の数値・論理・主張を保持した英語投稿候補である。最終アップロード時は、paper number を取得後に公式指定の `PaperNumber_FamilyName.pdf` 形式へファイル名を変更する。
 
 ## ビルド手順
 
@@ -30,13 +32,14 @@ SPIE風Typst PDFを作る。
 
 ```powershell
 typst compile --root . papers/ICSO/main.typ papers/ICSO/main.pdf
+typst compile --root . papers/ICSO/main_en.typ papers/ICSO/main_en.pdf
 ```
 
 ## 投稿メタデータ案
 
 Title:
 
-Feedforward and Adaptive Correction of Time-Varying Thermal Bias for Coarse Acquisition in Optical Communication Systems
+Hierarchical prediction and feedforward correction of time-varying thermal line-of-sight bias for coarse acquisition in satellite optical communications
 
 Authors:
 
@@ -49,13 +52,13 @@ Keywords:
 - Thermal deformation
 - Line-of-sight bias
 - Feedforward correction
-- Adaptive correction
 
-## 日本語abstract案
+## Abstractの正本
 
-光通信ではビーム拡がり角が小さいため、Pointing, Acquisition, and Tracking (PAT) の粗捕捉段階における初期指向誤差が捕捉時間と捕捉成功率に大きく影響する。本研究では、熱変形に起因する時変 Line-of-Sight (LOS) バイアスを予測し、粗捕捉時の scan center 補正に用いる手法を検討する。低軌道衛星では、日照・食サイクル、姿勢条件、内部発熱によって衛星構体や光通信端末取付部が熱変形し、スターセンサ基準と光通信端末光軸の間に相対変位・相対回転が生じる。この変形は、光フィードバックが得られる前の粗捕捉段階では初期指向バイアスとして現れる。
+- 日本語: `papers/ICSO/main.typ` の `abstract`
+- 英語: `papers/ICSO/main_en.typ` の `abstract`
 
-本研究では、TD/Femap 代表ケースから STT-relative LOS 角度を作成し、その時系列を軽量モデルによって近似する。軽量モデルとして、static bias、Fourier feedforward、簡易 physical lightweight model を検討し、必要に応じて捕捉後の残差に基づく adaptive correction を加える。さらに、予測された熱 LOS バイアスを PAT シミュレータに接続し、no correction、static bias、feedforward、physical lightweight model、feedforward + adaptive の捕捉時間および必要 scan area を比較する。
+英語abstractは226語で、日本語版と同じ21ケース、16係数モデル、nested leave-one-case-out評価、PAT捕捉結果、代表2ケースの残差Fourier更新を含む。
 
 ## 最終提出前チェック
 
@@ -72,7 +75,7 @@ Keywords:
 
 ## 現時点の限界として書くこと
 
-- Femap結果は代表ケースであり、全ケースの汎化評価ではない。
-- 感度解析は2〜3ケースに絞る。
-- 軽量モデルはまず static / Fourier / 簡易 physical までを主対象にする。
-- adaptive correction は理想化した残差更新として扱い、完全な残差分解は今後の課題にする。
+- 同一箱型構造の数値解析に限定され、地上試験を含まない。
+- 被覆・軌道条件で残差が増える場合があり、連続発熱量は二値フラグでは十分に表現できない。
+- 非熱誤差とスキャンは簡略モデルであり、点間移動、整定、確率的検出を考慮しない。
+- 残差Fourier更新は代表2ケース・密サンプルでの予備評価である。
