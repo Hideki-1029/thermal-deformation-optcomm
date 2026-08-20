@@ -29,7 +29,7 @@
       Thermoelastic deformation changes the outgoing LCT optical axis relative to the STT attitude reference.
     ],
     flow-arrow,
-    flow-node[Coarse acquisition FF][
+    flow-node[Coarse acquisition feedforward][
       The predicted thermal LOS angle is subtracted from the scan center before optical feedback is available.
     ],
   )
@@ -70,7 +70,11 @@
 }
 
 #show: spie-paper.with(
-  title: [Hierarchical Prediction and Feedforward Correction of Time-Varying Thermal Line-of-Sight Bias for Coarse Acquisition in Satellite Optical Communications],
+  title: [
+    Hierarchical Prediction and Feedforward Correction \
+    of Time-Varying Thermal Line-of-Sight Bias \
+    for Coarse Acquisition in Satellite Optical Communications
+  ],
   authors: [
     Hideki Takamoto#super[\*], Kazuki Takashima, Yuki Kusano, Satoshi Ikari, and Ryu Funase
   ],
@@ -79,7 +83,7 @@
   ],
   corresponding-email: [Corresponding author: Hideki Takamoto, email: hidekitakamoto\@g.ecc.u-tokyo.ac.jp],
   abstract: [
-    Thermal pointing bias can increase coarse acquisition search time in satellite optical communications before optical feedback becomes available. This study predicts the relative line-of-sight (LOS) angle between a star tracker reference and a laser communication terminal using the center temperature difference between the sun-facing and opposite panels and operational information, then applies the prediction as feedforward correction of the scan center. Thermoelastic analysis of a satellite with a box structure in low Earth orbit covered 21 cases spanning sun faces, internal dissipation, surface properties, and orbit conditions. The resulting hierarchical sun-face $Delta T$ model has 16 coefficients. Panel temperature difference represents orbital variation, while biases based on sun face and dissipation state represent the DC terms for both axes. Nested leave-one-case-out evaluation excluded the test case from all coefficient estimates and gave a mean RMSE of 5.5 µrad on the dominant axis over subsequent orbits, compared with a median raw LOS angle RMS of 615 µrad. In rectangular scan simulations for 17 cases under the baseline cold orbit and surface conditions, correction reduced the mean acquisition time from 12.1 to 0.10 s with thermal error only. With synthesized nonthermal errors, it reduced the mean from 16.3 to 4.74 s and increased the success rate from 98.3% to 100%. A preliminary study of two cases further showed that applying the previous orbit's observed residual to the next through a Fourier update reduced the periodic residual after feedforward correction.
+    Thermal pointing bias can increase coarse acquisition search time in satellite optical communications before optical feedback becomes available. This study predicts the relative line-of-sight (LOS) angle between a star tracker reference and a laser communication terminal using the center temperature difference between the sun-facing and opposite panels and operational information, then applies the prediction as feedforward correction of the scan center. Thermoelastic analysis of a satellite with a box structure in low Earth orbit covered 21 cases spanning sun faces, internal dissipation, surface properties, and orbit conditions. The resulting hierarchical sun-face $Delta T$ model has 16 coefficients. Panel temperature difference represents orbital variation, while biases based on sun face and dissipation state represent the DC terms for both axes. Nested leave-one-case-out evaluation excluded the test case from all coefficient estimates and gave a median RMSE of 4.9 µrad on the dominant axis over subsequent orbits, compared with a median raw LOS angle RMS of 615 µrad. In rectangular scan simulations for 14 cases under the baseline cold orbit and surface conditions, correction reduced the mean acquisition time from 14.6 to 0.10 s with thermal error only. With synthesized nonthermal errors, it reduced the mean from 19.2 to 5.45 s and increased the success rate from 98% to 100%. A preliminary study of two cases further showed that applying the previous orbit's observed residual to the next through a Fourier update reduced the periodic residual after feedforward correction.
   ],
   keywords: (
     "optical communication",
@@ -91,13 +95,19 @@
   language: "en",
 )
 
+// SPIE LaTeX sample: figures/tables, with captions, at least 0.2 in from body text.
+// Use a bit more than that minimum so tables are not tight against surrounding paragraphs.
+#show figure: set block(above: 0.28in, below: 0.28in)
+#show table: set text(hyphenate: false)
+#show table: set par(justify: false, leading: 0.95em)
+
 = INTRODUCTION
 
 Satellite optical communication provides high antenna gain and wide communication bandwidth, but its small beam divergence makes link establishment strongly dependent on pointing, acquisition, and tracking (PAT) performance @2017-kaushal-survey. During coarse acquisition, before stable optical feedback from the counterpart terminal is available, the spacecraft must scan an uncertainty region that includes orbit prediction error, attitude determination and control error, alignment residuals, terminal mounting error, and structural deformation @2023-riesing-tbird. Because the number of search points and acquisition time increase approximately with the uncertainty area, correcting predictable components before coarse acquisition can directly reduce link establishment time.
 
 Initial pointing error sources differ substantially. With TLE orbit information, orbit prediction error can reach several hundred microradians in the link transverse plane @2017-kaushal-survey. Attitude determination and control error and calibrated alignment residuals can be limited to several tens of microradians in a system based on a star tracker @2023-riesing-tbird. By contrast, thermal pointing shifts can be significant for coarse acquisition, depending on the spacecraft bus, optical design, and operating condition @2023-shi-thermal @2024-badas @2025-cheng-isl-thermal. The analyses below likewise produce approximately 150 µrad to more than 1 mrad of thermal shift in LOS angle, depending on the sun face and internal dissipation, making it potentially one of the largest initial pointing error components.
 
-This study focuses on the thermally induced component for two reasons. First, it can be comparable to or larger than other initial error sources. Second, it is governed by known operating conditions, including eclipse cycles, the sun face, surface optical properties, and internal dissipation, and is therefore not a wholly unknown disturbance @2024-badas. The resulting temperature field deforms the spacecraft and changes the relative attitude between the star tracker (STT), which defines the attitude reference, and the laser communication terminal (LCT), which defines the communication optical axis. Before optical feedback is available, this relative change appears as an offset of the coarse acquisition scan center. The model structure is not restricted to a particular orbit class, but low Earth orbit (LEO) is selected for evaluation because its short period and frequent illumination changes create a demanding thermal environment. Under such unstable illumination, periodic time series fitting has been reported to be difficult for LEO remote sensing @2025-li-thermal-los. Demonstrating predictability in this demanding environment also supports the feasibility of applying the approach to more regular thermal environments.
+This study focuses on the thermally induced component because it can be comparable to or larger than other initial error sources. That component is governed by known operating conditions, including eclipse cycles, the sun face, surface optical properties, and internal dissipation, so it is not a wholly unknown disturbance @2024-badas. The method below therefore predicts it from operating information rather than treating it as an unstructured search error. The resulting temperature field deforms the spacecraft and changes the relative attitude between the star tracker (STT), which defines the attitude reference, and the laser communication terminal (LCT), which defines the communication optical axis. Before optical feedback is available, this relative change appears as an offset of the coarse acquisition scan center. The model structure is not restricted to a particular orbit class, but low Earth orbit (LEO) is selected for evaluation because its short period and frequent illumination changes create a demanding thermal environment. Under such unstable illumination, periodic time series fitting has been reported to be difficult for LEO remote sensing @2025-li-thermal-los. Demonstrating predictability in this demanding environment also supports the feasibility of applying the approach to more regular thermal environments.
 
 Conventional PAT design absorbs initial pointing uncertainty through the scan range and beacon divergence @2017-kaushal-survey @2023-shi-thermal. The corresponding search burden remains, however, and both thermal deformation and orbit prediction error can contain frequencies near the orbital period of approximately 100 min. Separating the thermal contribution from residuals observed after acquisition by frequency alone is therefore difficult. This motivates feedforward correction based on temperature and operating state before coarse acquisition. The central question is how much of the initial pointing error can be removed using information available before acquisition, rather than by retrospective residual separation.
 
@@ -118,17 +128,17 @@ LOS angle correction based on temperature has also been studied for Earth observ
 
 #figure(
   spie-table(
-    columns: (1.5fr, 1.6fr, 2.2fr, 1.2fr),
+    columns: (1.45fr, 1.55fr, 2.2fr, 1.35fr),
     inset: 4pt,
-    [Study], [System/domain], [Treatment of thermal deformation error], [Acquisition evaluation],
-    [Riesing et al. @2023-riesing-tbird], [CubeSat optical PAT], [Not modeled; absorbed by the attitude system], [Yes; in orbit],
-    [Rüddenklau et al. @2026-riiddenklau-ff], [Optical terminal], [Not modeled; FF of attitude/mounting errors], [Yes],
-    [Shi et al. @2023-shi-thermal], [Optical communication structural design], [Reduced through structural design], [Yes],
-    [Zhang et al. @2025-cheng-isl-thermal], [Inter-satellite optical pointing], [Assessment by finite element analysis and design guidance], [Yes; impact on link establishment],
+    [Study], [System/domain], [Treatment of thermal#linebreak()deformation error], [Acquisition#linebreak()evaluation],
+    [Riesing et al. @2023-riesing-tbird], [CubeSat optical PAT], [Not modeled;#linebreak()absorbed by the attitude system], [Yes; in orbit],
+    [Rüddenklau et al. @2026-riiddenklau-ff], [Optical terminal], [Not modeled;#linebreak()feedforward of#linebreak()attitude and mounting errors], [Yes],
+    [Shi et al. @2023-shi-thermal], [Optical communication#linebreak()structural design], [Reduced through structural design], [Yes],
+    [Zhang et al. @2025-cheng-isl-thermal], [Inter-satellite#linebreak()optical pointing], [Assessment by finite element analysis#linebreak()and design guidance], [Yes; impact on#linebreak()link establishment],
     [Hu et al. @2022-hu-thermal-motion], [GEO Earth observation], [Compensated by a periodic model], [No],
-    [Li et al. @2025-li-thermal-los], [LEO Earth observation], [Learned and corrected by a neural network], [No],
-    [Turella et al. @2019-turella-janus-stop @2021-turella-janus], [Camera for deep space], [Proportional model based on temperature difference], [No],
-    [*This study*], [*Optical communication spacecraft bus evaluated in LEO*], [*Prediction and correction by a hierarchical sun-face $Delta T$ model*], [*Yes*],
+    [Li et al. @2025-li-thermal-los], [LEO Earth observation], [Learned and corrected#linebreak()by a neural network], [No],
+    [Turella et al. @2019-turella-janus-stop @2021-turella-janus], [Camera for deep space], [Proportional model based on#linebreak()temperature difference], [No],
+    [*This study*], [*Optical communication#linebreak()spacecraft bus#linebreak()evaluated in LEO*], [*Prediction and correction by a#linebreak()hierarchical sun-face $Delta T$ model*], [*Yes*],
   ),
   caption: [Representative prior studies and the position of this work. Optical communication studies do not predict thermal deformation error, whereas studies of Earth observation and optical instruments do not connect thermal correction to acquisition performance.],
 )<tbl_related_overview>
@@ -172,11 +182,11 @@ The analysis uses a bus with a box structure representative of a small satellite
     columns: (1fr, 2.2fr),
     inset: 4pt,
     [Item], [Setting],
-    [Structure], [Bus with a box structure, 0.59 m × 0.60 m × 0.99 m],
+    [Structure], [Bus with a box structure, 0.6 m × 0.6 m × 1.0 m],
     [Panel thickness], [10 mm],
-    [Panel material], [A5052 aluminum: Young's modulus 70.3 GPa, Poisson's ratio 0.33, coefficient of thermal expansion $2.38 times 10^(-5)$ /°C, and reference temperature 23.9 °C],
+    [Panel material], [A5052 aluminum: Young's modulus 70.3 GPa, Poisson's ratio 0.33,#linebreak()coefficient of thermal expansion $2.38 times 10^(-5)$ /K,#linebreak()and reference temperature 24 °C],
     [Attitude reference (STT)], [Mounted on PZ; 1.5 W dissipation, always ON],
-    [Communication terminal (LCT)], [Mounted on MZ; 10 W dissipation, always ON; boresight approximately along -Z],
+    [Communication terminal (LCT)], [Mounted on MZ; 10 W dissipation, always ON;#linebreak()boresight approximately along #box[−Z]],
     [Internal units], [PROP: 25 W on PY; PCDU: 10 W on MY. ON/OFF states vary by case],
   ),
   caption: [Configuration of the spacecraft model with a box structure.],
@@ -184,21 +194,21 @@ The analysis uses a bus with a box structure representative of a small satellite
 
 == Analysis procedure
 
-The thermoelastic analysis consists of thermal analysis, structural response analysis, and LOS angle post-processing. Thermal Desktop first computes a periodic-steady-state temperature field for each case, which is mapped to the structural model through TD Mapper Nastran temperature cards. Femap/Nastran then computes the six components of nodal displacement and rotation due to thermal deformation. The relative LOS angle time series is extracted from the rotations of the representative STT and LCT nodes at their centers. All conditions are managed by a case matrix and a common case identifier. The primary settings are listed in @tbl_analysis_conditions.
+The thermoelastic analysis consists of thermal analysis, structural response analysis, and LOS angle post-processing. Thermal Desktop first computes a periodic-steady-state temperature field for each case, which is mapped to the structural model through TD Mapper Nastran temperature cards. Femap/Nastran then computes the six components of nodal displacement and rotation due to thermal deformation. The relative LOS angle time series is extracted from the rotations of the representative STT and LCT nodes at their centers. These nodal rotations are used as a proxy for equipment attitude; a least-squares rigid-body fit over the mounting-interface nodes was not applied and remains a future accuracy check. All conditions are managed by a case matrix and a common case identifier. The primary settings are listed in @tbl_analysis_conditions.
 
 #figure(
   spie-table(
     columns: (1fr, 2.2fr),
     inset: 4pt,
     [Item], [Setting],
-    [Orbit], [Baseline: COLD case at LTAN06 and 800 km altitude, representing a cold mid-December case with $beta=-58.3°$ and eclipses. Comparisons: HOT, continuously illuminated; and an LTAN18 orbit at 693 km, similar to Sentinel-1],
+    [Orbit], [Baseline: COLD case at LTAN06 and 800 km altitude, representing a cold #box[mid-December] case with $beta=-58.3°$ and eclipses.#linebreak()Comparisons: HOT, continuously illuminated; and an LTAN18 orbit at 693 km, similar to Sentinel-1],
     [Duration and time step], [18,157 s, approximately three 6,050 s orbits; 60.5 s time step],
-    [Thermal environment], [COLD: solar irradiance 1309 W/m², albedo 0.2, and Earth infrared 189 W/m²; HOT/LTAN18: 1414 W/m², 0.4, and 261 W/m²],
-    [Surface optical properties], [Baseline: neutral sun face with $alpha=epsilon=0.5$, Black MY panel, and Alodine 1000 on the other panels; comparisons: Black sun face and Alodine on all surfaces],
-    [Initial/output thermal condition], [Initial temperature 20 °C. Three orbits are output after Thermal Desktop periodic stabilization; initial transients are excluded from the evaluation],
+    [Thermal environment], [COLD: solar irradiance 1309 W/m², albedo 0.2, and Earth infrared 189 W/m²;#linebreak()HOT/LTAN18: 1414 W/m², 0.4, and 261 W/m²],
+    [Surface optical properties], [Baseline: neutral sun face with $alpha=epsilon=0.5$, Black MY panel,#linebreak()and Alodine 1000 on the other panels;#linebreak()comparisons: Black sun face and Alodine on all surfaces],
+    [Initial/output thermal condition], [Initial temperature 20 °C. Three orbits are output after Thermal Desktop periodic stabilization;#linebreak()initial transients are excluded from the evaluation],
     [Temperature mapping], [A temperature map is exported by TD Mapper and imported into Femap as Nastran temperature cards],
     [Structural solution and constraints], [Shell elements with a 3--2--1 minimal constraint at reference points near the STT mounting location],
-    [LOS angle output], [Relative LOS angle components $(x,y)$ from rotations of the representative STT/LCT nodes at their centers],
+    [LOS angle output], [Relative LOS angle components $(x,y)$ from rotations of the representative STT and LCT nodes at their centers],
   ),
   caption: [Primary Thermal Desktop/Femap thermoelastic analysis settings. A neutral sun face is used in the baseline to compare sun face dependence without conflating coating differences.],
 )<tbl_analysis_conditions>
@@ -207,7 +217,7 @@ In the deformation budget of a representative case, the mean centerline tilt bet
 
 = CASE MATRIX AND THERMAL LOS ANGLE CHARACTERISTICS
 
-Twenty-one cases span sun faces, internal dissipation, surface optical properties, and orbit conditions (@tbl_case_matrix). The sun face is selected from MX, MY, PX, and PY. PZ and MZ, on which the STT and LCT are mounted, are excluded because they are not illuminated in the attitude family considered. The minimum dissipation configuration includes only the continuously operating STT and LCT; PROP and PCDU are then added separately or together, and one case uses half PROP power, 12.5 W.
+Twenty-one cases span sun faces, internal dissipation, surface optical properties, and orbit conditions (@tbl_case_matrix). The evaluated identifiers are 04--06 and 08--25. Cases 01--03 and 07 are MZ sun-face or setup analyses and are omitted because PZ and MZ, on which the STT and LCT are mounted, are not illuminated in the attitude family considered. The sun face is selected from MX, MY, PX, and PY. The minimum dissipation configuration includes only the continuously operating STT and LCT; PROP and PCDU are then added separately or together, and one case uses half PROP power, 12.5 W. The PROP-only, PCDU-only, and no-additional-dissipation combinations for the four sun faces are split across Cases 13--21, Case 06, and Cases 23--24.
 
 #figure(
   spie-table(
@@ -217,12 +227,12 @@ Twenty-one cases span sun faces, internal dissipation, surface optical propertie
     [04--06, 08--09], [Sun face and baseline dissipation], [MX/MY/PX/PY; all units dissipating or STT/LCT only],
     [10], [Orbital thermal environment], [MY, all units dissipating, HOT with continuous illumination],
     [11--12], [Surface optical properties], [MY; Black sun face or Alodine on all surfaces],
-    [13--21], [Dissipation mode], [Four sun faces; PROP only, PCDU only, or no additional dissipation],
+    [13--21], [Dissipation mode], [Partial 4-face set of PROP only, PCDU only,#linebreak()or no additional dissipation],
     [22], [Continuous dissipation level], [MY; PROP at half power, 12.5 W, plus PCDU],
     [23--24], [MX dissipation mode], [MX; PROP only or PCDU only],
     [25], [Orbit condition], [MY, all units dissipating, LTAN18 and 693 km],
   ),
-  caption: [Validation matrix of 21 cases. Unless noted otherwise, the COLD orbit and baseline surfaces are used. Additional dissipation excludes the continuously operating STT and LCT.],
+  caption: [Validation matrix of 21 cases, numbered 04--06 and 08--25. Unless noted otherwise, the COLD orbit and baseline surfaces are used. Additional dissipation excludes the continuously operating STT and LCT. Cases 13--21 cover nine of the twelve PROP-only / PCDU-only / no-additional combinations; the remaining three are Case 06 and Cases 23--24. Cases 01--03 and 07 are MZ sun-face or setup runs and are excluded because PZ and MZ are not illuminated in this attitude family.],
 )<tbl_case_matrix>
 
 @fig_observation shows the panel temperatures and relative LOS angle for representative Case 04, with MY facing the Sun and all units dissipating. Both temperature and thermal LOS angle vary at the orbital period, and the MY panel temperature follows the y component of the LOS angle closely. This observation motivates the panel temperature difference $Delta T$ used below.
@@ -255,7 +265,7 @@ The relative LOS angle $bold(theta)_"th"$ is the vector with two components defi
 $
 theta_"dom"(t) approx b_"case" + a("sun") Delta T(t),
 $<eq_level1>
-where $a("sun")$ is the sensitivity for each sun face in µrad/°C and $b_"case"$ is the case DC bias in microradians. The bias is required because the LOS angle need not be zero at $Delta T=0$ and because mounting and local dissipation leave residual terms.
+where $a("sun")$ is the sensitivity for each sun face in µrad/K and $b_"case"$ is the case DC bias in microradians. The bias is required because the LOS angle need not be zero at $Delta T=0$ and because mounting and local dissipation leave residual terms.
 
 The non-dominant axis has only several microradians RMS variation about its case mean and is therefore modeled without a time-varying term; only its constant case DC bias $b_"nd"$ is corrected. That bias nevertheless depends systematically on the sun face and is non-negligible: approximately $-600$ µrad for MX/PX and $+20$ µrad for MY/PY in this model. Setting it to zero severely degrades coarse acquisition performance, so $b_"nd"$ is predicted by the same Level 2 framework as the dominant axis bias.
 
@@ -278,16 +288,16 @@ The fixed model contains 16 scalar coefficients: four $a$ coefficients, eight $b
 
 The coefficients are identified in two stages. First, @eq_level1 is fitted to the first orbit of each case to estimate empirical $a_"emp"$ and $b_"emp"$ values; for the non-dominant axis, the training orbit mean is used as the empirical $b_"nd"$. Second, @eq_level2 is fitted by ordinary least squares across cases. Generalization is evaluated by nested leave-one-case-out (nested LOO): the test case is removed from the Level 2 bias fit, from the calculation of $a_"shared"$, and from the non-dominant axis $b_"nd"$ fit. Thus, no coefficient specific to the evaluated case is known in advance.
 
-Across the 21 cases, the shared sensitivities for MX, MY, PX, and PY were $+30.6$, $+28.6$, $-28.1$, and $-28.7$ µrad/°C, respectively (@tbl_coefficients). Their magnitudes cluster at approximately 28--31 µrad/°C, and their signs follow the sun face and dominant axis direction. The coefficients were not forced to agree; the independently estimated values clustered by sun face, supporting their use as shared coefficients for this spacecraft model, LOS angle definition, and case set.
+Across the 21 cases, the shared sensitivities for MX, MY, PX, and PY were $+30.6$, $+28.6$, $-28.1$, and $-28.7$ µrad/K, respectively (@tbl_coefficients). Their magnitudes cluster at approximately 28--31 µrad/K, and their signs follow the sun face and dominant axis direction. The coefficients were not forced to agree; the independently estimated values clustered by sun face, supporting their use as shared coefficients for this spacecraft model, LOS angle definition, and case set.
 
 #figure(
   spie-table(
     columns: (1.6fr, 1fr, 1fr, 1fr, 1fr),
     inset: 4pt,
     [Coefficient], [MX], [MY], [PX], [PY],
-    [Shared sensitivity $a_"shared"$ [µrad/°C]], [$+30.6$], [$+28.6$], [$-28.1$], [$-28.7$],
-    [Baseline bias $b_0$, dominant axis [µrad]], [$+15.7$], [$+2.8$], [$-12.0$], [$-24.0$],
-    [Baseline bias $b_0$, non-dominant axis [µrad]], [$-594$], [$+16.6$], [$-596$], [$+25.1$],
+    [Shared sensitivity $a_"shared"$ #linebreak() [µrad/K]], [$+30.6$], [$+28.6$], [$-28.1$], [$-28.7$],
+    [Baseline bias $b_0$, #linebreak()dominant axis [µrad]], [$+15.7$], [$+2.8$], [$-12.0$], [$-24.0$],
+    [Baseline bias $b_0$, #linebreak()non-dominant axis [µrad]], [$-594$], [$+16.6$], [$-596$], [$+25.1$],
   ),
   caption: [Identified coefficients of the hierarchical sun-face $Delta T$ model. The dissipation flag coefficients were $c_"prop"=-22.9$ µrad and $c_"pcdu"=-10.2$ µrad for the dominant axis and $c_"prop"=-131$ µrad and $c_"pcdu"=+22.1$ µrad for the non-dominant axis. The flag terms apply only to MY/PY cases on the dominant axis and MX/PX cases on the non-dominant axis.],
 )<tbl_coefficients>
@@ -301,15 +311,15 @@ The dissipation coefficients represent the DC residual after the panel temperatu
     image("figure/p3_a_emp_by_sunface.png", width: 100%),
     image("figure/p3_b_emp_vs_b_pred.png", width: 100%),
   ),
-  caption: [Behavior of the hierarchical sun-face $Delta T$ model across conditions. Left: independently estimated $a_"emp"$ values cluster by sun face and support a shared sensitivity. Right: empirical $b_"emp"$ versus Level 2 $b_"pred"$ on the dominant axis. The dominant axis bias RMSE is approximately 3.1 µrad for the fitted cases and 3.8 µrad under leave-one-case-out; on the non-dominant axis, it is approximately 3.1 µrad.],
+  caption: [Behavior of the hierarchical sun-face $Delta T$ model across conditions. Left: independently estimated $a_"emp"$ values cluster by sun face and support a shared sensitivity. Right: empirical $b_"emp"$ versus Level 2 $b_"pred"$ on the dominant axis. The dominant-axis bias RMSE over the 21 cases is 3.1 µrad in-sample and 3.8 µrad under leave-one-case-out. The nested LOO RMSE of the non-dominant-axis bias is 3.1 µrad.],
 )<fig_p3>
 
 #figure(
   image("figure/p2_bcase_true_vs_pred_case08.png", width: 95%),
-  caption: [Example prediction for a case with PY facing the Sun. The model follows the large orbital thermal LOS angle variation using $b_"pred" + a_"shared" Delta T(t)$.],
+  caption: [Example prediction for Case 08, with PY facing the Sun and all units dissipating. The raw dominant-axis RMS is 1250 µrad and the test RMSE is 3.9 µrad. The model follows the orbital thermal LOS angle variation using $b_"pred" + a_"shared" Delta T(t)$.],
 )<fig_ts>
 
-For the standard COLD orbit and baseline surfaces, the dominant axis test RMSE was generally 3--7 µrad. In the PY case with all dissipating units operating, for example, the raw RMS was approximately 1250 µrad and the RMSE after model correction approximately 4 µrad. For MX, a raw RMS of approximately 670--730 µrad was reduced to approximately 3 µrad; for PX, approximately 600--670 µrad was reduced to 5--6 µrad. The MY dissipation series had a smaller raw RMS of approximately 150--260 µrad and an RMSE after model correction of 6--7 µrad, close to the Level 1 time-varying residual floor. Across all 21 cases, the nested LOO dominant axis test RMSE had a median of approximately 4.9 µrad and a mean of approximately 5.5 µrad, one to two orders of magnitude below the median raw RMS of approximately 615 µrad. The LTAN18/693 km case similar to Sentinel-1 also had a small test RMSE of approximately 1.2 µrad, indicating that the model structure remained effective under the different orbit condition.
+For the standard COLD orbit and baseline surfaces, the dominant axis test RMSE was generally 3--7 µrad. In Case 08, with PY facing the Sun and all units dissipating, the raw RMS was 1250 µrad and the RMSE after model correction 3.9 µrad. For MX, a raw RMS of approximately 670--730 µrad was reduced to approximately 3 µrad; for PX, approximately 600--670 µrad was reduced to 5--6 µrad. The MY dissipation series had a smaller raw RMS of approximately 150--260 µrad and an RMSE after model correction of 6--7 µrad, close to the Level 1 time-varying residual floor. Across all 21 cases, the nested LOO dominant axis test RMSE had a median of approximately 4.9 µrad and a mean of approximately 5.5 µrad, one to two orders of magnitude below the median raw RMS of approximately 615 µrad. The LTAN18/693 km case similar to Sentinel-1 also had a small test RMSE of approximately 1.2 µrad, indicating that the model structure remained effective under the different orbit condition.
 
 The limitations are also clear. A Black coating increased the residual variation to approximately 13 µrad, and the HOT orbit left a DC offset of several microradians. In the case with PROP at half power, the ON/OFF flag assigned the same input as PROP at full power and could not represent continuous dissipation, increasing the nested LOO residual to approximately 16 µrad. The main result is therefore the reduction by one to two orders of magnitude obtained with 16 fixed coefficients, centered on the standard COLD conditions. Explicit treatment of coating, orbit, and continuous dissipation remains future work.
 
@@ -324,15 +334,15 @@ To evaluate communication system effects, the thermal LOS angle prediction is co
 
 == Scan conditions
 
-The scan conditions in @tbl_scan_conditions represent coarse acquisition with a beacon instantaneous field of view rather than the narrow communication beam. A detection radius of 150 µrad is half the width of the approximately 0.3 mrad beacon field, and a 120 µrad step provides 60% overlap @2023-shi-thermal. Half the grid diagonal, $120 / sqrt(2) approx 85$ µrad, is smaller than the detection radius, so the scan region has no coverage holes. A range of ±1600 µrad allows margin for the largest thermal LOS angle, approximately 1.2--1.3 mrad for PY, combined with nonthermal error. These times are proxies: a 0.2 s dwell as in Shi et al. would double all times but preserve their relative ordering.
+The scan conditions in @tbl_scan_conditions represent coarse acquisition with a beacon instantaneous field of view rather than the narrow communication beam. @fig_scan_geometry shows a local excerpt of the rectangular spiral. A detection radius of 150 µrad is half the width of the approximately 0.3 mrad beacon field, and a 120 µrad step provides 60% overlap @2023-shi-thermal. Half the grid diagonal, $120 / sqrt(2) approx 85$ µrad, is smaller than the detection radius, so the scan region has no coverage holes. A range of ±1600 µrad allows margin for the largest thermal LOS angle, approximately 1.2--1.3 mrad for PY, combined with nonthermal error. These times are proxies: a 0.2 s dwell as in Shi et al. would double all times but preserve their relative ordering.
 
 #figure(
   spie-table(
     columns: (1.4fr, 1fr, 1.6fr),
     inset: 4pt,
     [Item], [Value], [Basis],
-    [Scan range], [±1600 µrad], [Covers the approximately 1.3 mrad maximum thermal LOS angle plus nonthermal error],
-    [Scan step], [120 µrad], [60% overlap for an approximately 0.3 mrad beacon field],
+    [Scan range], [±1600 µrad], [Covers the approximately 1.3 mrad maximum#linebreak()thermal LOS angle plus nonthermal error],
+    [Scan step], [120 µrad], [60% overlap for an approximately 0.3 mrad#linebreak()beacon field],
     [Detection radius], [150 µrad], [Beacon coarse field of view @2023-shi-thermal],
     [Dwell time], [0.1 s/point], [Representative beacon integration time],
     [Number of points], [729, or 27×27], [Maximum full scan time of 72.9 s],
@@ -340,36 +350,43 @@ The scan conditions in @tbl_scan_conditions represent coarse acquisition with a 
   caption: [Coarse acquisition scan conditions. A rectangular spiral is assumed; slew and settling between scan points and stochastic received power variation are neglected.],
 )<tbl_scan_conditions>
 
+#figure(
+  image("figure/fig_rectangular_scan.png", width: 58%),
+  caption: [Local excerpt of the rectangular spiral used for coarse acquisition. Adjacent points are 120 µrad apart, and the dashed circle is the 150 µrad detection radius. The evaluation uses a 27×27 grid over ±1600 µrad.],
+)<fig_scan_geometry>
+
 == Nonthermal error model
 
 A synthesized nonthermal error represents a more operationally representative condition. The latest Sentinel-1 TLE is propagated with SGP4; its position error relative to a precise orbit ephemeris (POEORB) is projected onto the link transverse plane, converted to angular error in the STT/body x--y frame, and mapped periodically onto the evaluation interval. The model also includes a constant alignment residual with $1 sigma=50$ µrad, random attitude determination and control error with $1 sigma=50$ µrad, and low-frequency drift of 30 µrad amplitude and 900 s period. Rather than reproducing a specific spacecraft error budget, this synthesis represents coexisting errors on a small LEO satellite without GNSS. Both the thermal LOS angle and orbit prediction error vary at frequencies near the orbital period of approximately 100 min, so frequency separation after observation cannot isolate the thermal component. This motivates feedforward correction based on temperature and operational state.
 
 == Results
 
-We compare no correction, correction by the hierarchical sun-face $Delta T$ model in @eq_predict, and thermal truth correction as an ideal upper bound. Nested LOO excludes the evaluated case from the shared sensitivity and both Level 2 axis bias estimates. We evaluate 17 COLD cases with baseline surfaces, Cases 4--6 and 8--21.
+We compare no correction, correction by the hierarchical sun-face $Delta T$ model in @eq_predict, and thermal truth correction as an ideal upper bound. Nested LOO excludes the evaluated case from the shared sensitivity and both Level 2 axis bias estimates. We evaluate 14 COLD cases with baseline surfaces, Cases 4--6, 8--9, and 13--21. For each case, acquisition is scored at every output epoch of the three-orbit series after Thermal Desktop periodic stabilization, 301 samples at 60.5 s. Reported times and success rates are means of the 14 case means. The synthesized nonthermal error uses one fixed seed per case and is not a Monte Carlo ensemble.
 
 #figure(
   spie-table(
     columns: (2.0fr, 1.4fr, 1.4fr, 1.4fr),
     inset: 4pt,
-    [Condition], [No correction], [Hierarchical sun-face $Delta T$ model], [Thermal truth],
-    [Thermal only: mean acquisition time], [12.1 s], [0.10 s], [0.10 s],
-    [Thermal only: success rate], [100%], [100%], [100%],
-    [With nonthermal error: mean acquisition time], [16.3 s], [4.74 s], [--],
-    [With nonthermal error: success rate], [98.3%], [100%], [--],
+    [Condition], [No correction], [Hierarchical#linebreak()sun-face $Delta T$ model], [Thermal truth],
+    [Thermal only:#linebreak()mean acquisition time], [14.6 s], [0.10 s], [0.10 s],
+    [Thermal only:#linebreak()success rate], [100%], [100%], [100%],
+    [With nonthermal error:#linebreak()mean acquisition time], [19.2 s], [5.45 s], [--],
+    [With nonthermal error:#linebreak()success rate], [98%], [100%], [--],
   ),
-  caption: [Mean coarse acquisition performance over 17 cases. With thermal error only, correction by the hierarchical sun-face $Delta T$ model requires one scan point, one dwell of 0.1 s, and matches the ideal thermal truth upper bound. With nonthermal error, it reduces the mean acquisition time from 16.3 to 4.74 s, approximately 71%, and increases the success rate from 98.3% to 100%.],
+  caption: [Mean coarse acquisition performance over 14 COLD baseline-surface cases (Cases 4--6, 8--9, and 13--21). Each case mean uses 301 epochs over three orbits after periodic thermal stabilization. Nonthermal error is one seed per case, not a Monte Carlo ensemble. With thermal error only, correction by the hierarchical sun-face $Delta T$ model requires one scan point, one dwell of 0.1 s, and matches the ideal thermal truth upper bound. With nonthermal error, it reduces the mean acquisition time from 19.2 to 5.45 s, approximately 72%, and increases the success rate from 98% to 100%.],
 )<tbl_pat_results>
 
-With thermal error only, the hierarchical sun-face $Delta T$ model yields a mean acquisition time of 0.10 s, matching thermal truth correction because acquisition occurs at the first scan point. The mean thermal residual across the two axes after correction is 9.0 µrad, well below the 150 µrad detection radius. The model removes the case DC term through $b_"pred"$ and the orbital variation through $a Delta T(t)$.
+With thermal error only, the hierarchical sun-face $Delta T$ model yields a mean acquisition time of 0.10 s, matching thermal truth correction because acquisition occurs at the first scan point. The mean thermal residual across the two axes after correction is 9.3 µrad, well below the 150 µrad detection radius. The model removes the case DC term through $b_"pred"$ and the orbital variation through $a Delta T(t)$.
 
-With nonthermal error, correction reduces the mean acquisition time from 16.3 to 4.74 s. The mean initial error after correction is 421 µrad and is almost entirely dominated by nonthermal error. The role of the method is therefore not to eliminate total pointing error, but to remove the large time-varying thermal bias and reduce the search burden to the nonthermal error level.
+With nonthermal error, correction reduces the mean acquisition time from 19.2 to 5.45 s. The mean initial error after correction is 448 µrad and is almost entirely dominated by nonthermal error. The role of the method is therefore not to eliminate total pointing error, but to remove the large time-varying thermal bias and reduce the search burden to the nonthermal error level.
 
 The improvement varies by sun face. It is small for MY, whose thermal LOS angle is 150--260 µrad, while the large orbit prediction error for PX/MX, whose thermal LOS angle is 0.6--0.9 mrad, determines the floor after correction. For PY, whose thermal LOS angle is approximately 1.2 mrad, the acquisition time and success rate improve from 37.3--39.5 s and 88--97% to 1.3--1.8 s and 100%, respectively. The benefit is thus largest under the most severe thermal deformation conditions.
 
 == Preliminary residual update
 
-The primary feedforward (FF) method uses only temperature and operational information available before acquisition. As a supplementary study, the residual on the dominant axis after acquisition, $r(t)=theta_"dom"(t)+e_"nth"(t)-hat(theta)_"dom"(t)$, is represented by a Fourier series in orbital phase $phi=2 pi t \/ T_"orb"$, and coefficients identified during orbit $n$ are applied to orbit $n+1$. This is not re-identification of the thermal model, but a preliminary operational correction of periodic error remaining after FF:
+The primary feedforward (FF) method uses only temperature and operational information available before acquisition. This subsection is a numerical experiment: it asks whether a periodic residual remaining after FF can be carried to the next orbit if a residual time series is available after acquisition. The assumed observable is the total pointing residual on a receiver sensor after successful acquisition, not an isolated thermal component.
+
+As a supplementary study, the residual on the dominant axis after acquisition, $r(t)=theta_"dom"(t)+e_"nth"(t)-hat(theta)_"dom"(t)$, is represented by a Fourier series in orbital phase $phi=2 pi t \/ T_"orb"$, and coefficients identified during orbit $n$ are applied to orbit $n+1$. This is not re-identification of the thermal model, but a preliminary operational correction of periodic error remaining after FF:
 $
 hat(r)(phi) = c_0 + sum_(k=1)^(K) [ a_k cos(k phi) + b_k sin(k phi) ].
 $<eq_resid_fourier>
@@ -379,20 +396,20 @@ The $K=2$ coefficients are estimated by ridge regression, with no update applied
   spie-table(
     columns: (2.2fr, 1.2fr, 1.2fr, 1.2fr),
     inset: 4pt,
-    [Method], [All data], [First orbit, orbit 0], [Orbit 1 onward],
+    [Method], [All data], [First orbit,#linebreak()orbit 0], [Orbit 1 onward],
     [*Case 13 (MY)*], [], [], [],
     [FF only], [1.64 s], [1.60 s], [1.66 s],
-    [Direct Fourier fitting of total error], [1.39 s], [3.37 s], [0.39 s],
+    [Direct Fourier fitting#linebreak()of total error], [1.39 s], [3.37 s], [0.39 s],
     [FF + residual Fourier], [0.79 s], [1.60 s], [0.38 s],
     [*Case 16 (PY)*], [], [], [],
     [FF only], [1.55 s], [1.47 s], [1.59 s],
-    [Direct Fourier fitting of total error], [13.2 s, 98.7% success], [39.5 s], [0.38 s],
+    [Direct Fourier fitting#linebreak()of total error], [13.2 s,#linebreak()98.7% success], [39.5 s], [0.38 s],
     [FF + residual Fourier], [0.76 s], [1.47 s], [0.40 s],
   ),
   caption: [Comparison of residual updates with nonthermal error, causal fitting, and $K=2$. Direct Fourier fitting of total error reaches the floor from orbit 1 onward but is uncorrected in the first orbit; for the large thermal LOS angle of PY, its acquisition time in the first orbit exceeds the requirement of approximately 30 s. FF + residual Fourier preserves FF performance from the first orbit and reduces the floor to approximately 0.4 s from orbit 1 onward.],
 )<tbl_residual_update>
 
-From orbit 1 onward, both Fourier approaches reach approximately 0.4 s. Direct Fourier fitting of total error, however, is uncorrected in the first orbit and requires 39.5 s for Case 16, whose thermal LOS angle is approximately 1 mrad. Combining FF with the residual update preserves FF performance in the first orbit and reduces the periodic floor in subsequent orbits. A separate update of only the constant residual component reduced the DC residual but left the AC floor at the orbital period, improving Case 13 from 1.66 to 1.35 s from orbit 1 onward, compared with 0.38 s for residual Fourier. This difference provides the quantitative basis for using a periodic model in the second layer. Nevertheless, this evaluation uses only two cases, with all samples at intervals of 60.5 s, residuals at failed acquisition points, and periodically mapped orbit error. Performance with sparse observations available only after successful acquisitions has not been demonstrated.
+From orbit 1 onward, both Fourier approaches reach approximately 0.4 s. Direct Fourier fitting of total error, however, is uncorrected in the first orbit and requires 39.5 s for Case 16, whose thermal LOS angle is approximately 1 mrad. Combining FF with the residual update preserves FF performance in the first orbit and reduces the periodic floor in subsequent orbits. A separate update of only the constant residual component reduced the DC residual but left the AC floor at the orbital period, improving Case 13 from 1.66 to 1.35 s from orbit 1 onward, compared with 0.38 s for residual Fourier. This difference provides the quantitative basis for using a periodic model in the second layer. Nevertheless, this evaluation uses only two cases, with all samples at intervals of 60.5 s, residuals at failed acquisition points, and periodically mapped orbit error. It does not implement a specific receiver sensor or sparse sampling. Hardware realization of the residual observation, and performance with samples available only after successful acquisitions, remain future work.
 
 Operationally, coarse acquisition for a particular counterpart and orbit is often effectively a first encounter. The FF prediction by the hierarchical sun-face $Delta T$ model can be applied immediately from temperature and operating state without residual learning. After successful acquisitions have accumulated residual observations, recurrent components can be carried to later opportunities. This ordering avoids a burdensome first acquisition while permitting a lower recurrent residual floor.
 
@@ -400,11 +417,11 @@ Operationally, coarse acquisition for a particular counterpart and orbit is ofte
 
 The temperature difference between the panel facing the Sun and the opposite panel represents structural bending during an orbit, while the bias that remains constant within each case represents DC differences among conditions caused by local dissipation and related effects. This separation represents the thermal LOS angle across multiple sun faces and dissipation modes with 16 coefficients. The contribution is not the first-order temperature model itself, but its application to the STT--LCT relative LOS angle at the spacecraft bus level, coefficient sharing across conditions, and connection to coarse acquisition time.
 
-The shared sensitivity is an empirical coefficient specific to the present structure, placement, LOS angle definition, and case set, and must be re-identified for another configuration. In operation, $Delta T$ is assumed to be obtained from temperature sensors at the centers of the panel facing the Sun and the opposite panel. With a sensitivity of approximately 30 µrad/°C, an error of 0.1 °C in the temperature difference corresponds to approximately 3 µrad. Sensor placement, delay, and quantization nevertheless require future error analysis. Orbit, attitude, and alignment errors also leave a floor of several hundred microradians after thermal correction, so the method is intended to reduce the search region in conjunction with treatment of those errors.
+The shared sensitivity is an empirical coefficient specific to the present structure, placement, LOS angle definition, and case set, and must be re-identified for another configuration. In operation, $Delta T$ is assumed to be obtained from temperature sensors at the centers of the panel facing the Sun and the opposite panel. With a sensitivity of approximately 30 #box[µrad/K], an error of 0.1 K in the temperature difference corresponds to approximately 3 µrad. Sensor placement, delay, and quantization nevertheless require future error analysis. Orbit, attitude, and alignment errors also leave a floor of several hundred microradians after thermal correction, so the method is intended to reduce the search region in conjunction with treatment of those errors.
 
 The evaluation is limited to numerical analysis of one box structure and includes no ground test. Residuals increase for some coating and orbit conditions, and both the nonthermal error and scan models are simplified. Slew and settling between scan points and probabilistic detection are neglected. The residual Fourier update remains a preliminary evaluation of two cases with dense sampling.
 
-In conclusion, the mean nested LOO RMSE on the dominant axis is 5.5 µrad, compared with a median raw LOS angle RMS of 615 µrad. Across 17 cases, the mean acquisition time is reduced from 12.1 to 0.10 s with thermal error only and from 16.3 to 4.74 s with nonthermal error. Future work will incorporate coating, orbit, and continuous dissipation into Level 2, validate the coefficients by ground testing, and extend the residual update to sparse successful observations and all cases.
+In conclusion, the median nested LOO RMSE on the dominant axis is 4.9 µrad, compared with a median raw LOS angle RMS of 615 µrad. Across 14 COLD baseline-surface cases, the mean acquisition time is reduced from 14.6 to 0.10 s with thermal error only and from 19.2 to 5.45 s with nonthermal error. Thus, under the evaluated conditions, feedforward correction reduces the predictable thermal component until nonthermal errors govern the residual search burden, contributing to faster satellite optical link establishment before optical feedback is available. Future work will incorporate coating, orbit, and continuous dissipation into Level 2, validate the coefficients by ground testing, and extend the residual update to sparse successful observations and all cases.
 
 #bibliography(
   "bibliography.bib",

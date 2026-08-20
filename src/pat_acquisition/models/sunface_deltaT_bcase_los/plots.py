@@ -91,7 +91,7 @@ def plot_a_emp_by_sunface(
 
     ax.set_xticks(range(len(FACE_ORDER)))
     ax.set_xticklabels(FACE_ORDER)
-    ax.set_ylabel(r"$a$ [µrad/°C]")
+    ax.set_ylabel(r"$a$ [µrad/K]")
     ax.set_xlabel("Sun face")
     ax.set_title(r"Cross-case $a_\mathrm{emp}$ and shared $a$ (median)")
     ax.grid(True, axis="y", alpha=0.3)
@@ -159,7 +159,7 @@ def plot_b_emp_vs_b_pred(case_table: pd.DataFrame, out_png: Path) -> None:
             ax.text(
                 0.04,
                 0.96,
-                f"RMSE = {rmse:.2g} µrad",
+                f"RMSE = {rmse:.1f} µrad",
                 transform=ax.transAxes,
                 va="top",
                 fontsize=9,
@@ -283,7 +283,7 @@ def plot_hierarchical_timeseries(
 
     fig.suptitle(
         f"{case_tag} hierarchical bcase  |  sun={sun_face}  |  "
-        f"raw RMS={raw_rms:.0f}, peak={raw_peak:.0f} → test RMSE={rmse_test:.2g} µrad"
+        f"raw RMS={raw_rms:.0f}, peak={raw_peak:.0f} → test RMSE={rmse_test:.1f} µrad"
     )
     fig.tight_layout()
     out_png.parent.mkdir(parents=True, exist_ok=True)

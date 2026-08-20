@@ -45,7 +45,8 @@
     size: 10pt,
     lang: language,
   )
-  set par(justify: true, leading: 12pt, spacing: 0.65em)
+  // Keep paragraph boundaries on the same vertical rhythm as wrapped lines.
+  set par(justify: true, leading: 12pt, spacing: 12pt)
   set enum(numbering: "1.")
   set list(indent: 1.2em)
   set math.equation(numbering: "(1)")
