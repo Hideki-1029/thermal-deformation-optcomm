@@ -1,0 +1,104 @@
+slides: 37
+
+--- slide 1 | notes=43 chars
+  latin: Acquisition Bias Coarse Communication Correction Feedforward ICSO Optical Systems Thermal Time-Varying
+
+--- slide 2 | notes=57 chars
+  latin: Femap Fourier feedforward mock
+
+--- slide 3 | notes=92 chars
+  latin: mrad
+
+--- slide 4 | notes=73 chars
+  latin: mrad
+
+--- slide 5 | notes=42 chars
+  latin: JANUS
+
+--- slide 6 | notes=104 chars
+  latin: Desktop Femap PCDU PROP Thermal
+
+--- slide 7 | notes=41 chars
+  latin: Alodine Black Desktop LTAN Sentinel- Thermal
+
+--- slide 8 | notes=48 chars
+  latin: Desktop Femap Thermal
+
+--- slide 9 | notes=93 chars
+
+--- slide 10 | notes=51 chars
+  latin: Alodine Black LTAN PCDU PROP
+
+--- slide 11 | notes=77 chars
+  latin: Case
+
+--- slide 12 | notes=72 chars
+  latin: Femap Fourier
+
+--- slide 13 | notes=81 chars
+
+--- slide 14 | notes=58 chars
+  latin: leave-one-case-out nested
+
+--- slide 15 | notes=106 chars
+  latin: RMSE test
+
+--- slide 16 | notes=20 chars
+  latin: Case RMSE test
+
+--- slide 17 | notes=126 chars
+
+--- slide 18 | notes=50 chars
+  latin: GNSS POEORB Sentinel-
+
+--- slide 19 | notes=56 chars
+  latin: COLD
+
+--- slide 20 | notes=76 chars
+  latin: mrad
+
+--- slide 21 | notes=91 chars
+  latin: Case Fourier feedforward
+
+--- slide 22 | notes=64 chars
+  latin: Black Desktop Femap Fourier Thermal
+
+--- slide 23 | notes=4 chars
+  latin: ICSO RMSE
+
+--- slide 24 | notes=19 chars
+
+--- slide 25 | notes=19 chars
+  latin: Alodine Black COLD LTAN PCDU PROP
+
+--- slide 26 | notes=30 chars
+
+--- slide 27 | notes=39 chars
+  latin: POEORB Sentinel-
+
+--- slide 28 | notes=34 chars
+
+--- slide 29 | notes=18 chars
+
+--- slide 30 | notes=54 chars
+  latin: Black COLD PROP
+
+--- slide 31 | notes=33 chars
+  latin: RMSE Tattach Tref b_case
+
+--- slide 32 | notes=86 chars
+
+--- slide 33 | notes=40 chars
+  latin: JANUS Riesing TBIRD Turella
+
+--- slide 34 | notes=58 chars
+  latin: Desktop Femap Thermal
+
+--- slide 35 | notes=55 chars
+  latin: body pointing
+
+--- slide 36 | notes=47 chars
+  latin: Case Fourier causal
+
+--- slide 37 | notes=172 chars
+  latin: COLD

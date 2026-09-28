@@ -1,6 +1,7 @@
 # ICSO 2026 口頭発表　本編13枚の構成ノート
 
 - 作成: 2026-09-02
+- 改訂: 2026-09-12（先行研究の位置づけを本編前半に追加し、表示情報を整理）
 - 発表: ICSO 2026, Paper 293, oral, session *PAT and Receiver Technologies*
 - 日時: 2026-10-15（セッション枠 16:20–17:40、持ち時間 **15分発表 + 5分質疑**）
 - 画面: 16:9、英語、MS PowerPoint または PDF。テンプレは光RG `20260721_optcommrg_takamoto_v3_issl.pptx` の ISSL 形式を流用
@@ -16,16 +17,16 @@
 - 1枚1メッセージ。タイトルはその場で図と数字が支える結論形（英語）
 - 聴衆は PAT／受信機。STOP の操作説明より、初期指向誤差と捕捉時間
 - 主結果は階層 sun-face ΔT モデルによる **捕捉前 feedforward**。残差 Fourier は予備なので本編に入れない
-- 関連研究の表は本編に置かない。JANUS の一次関係はモデル枚で1文
+- 関連研究の専用スライド／全文献表は本編に置かない。ただし Slide 2 の下部で、**既存の光通信PAT／既存の温度ベースLOS補正／本研究**の位置づけを30秒で明示する。詳細表は裏 B8
 - 数字は提出稿。光RGの 124.6 s / 156.9 s、走査 40/25 µrad、単位 °C は使わない
 - Constant-bias only は未計算。取れ次第、裏 B7 か本編11の横に足す。構成は空けておく
 
-時間配分の目安（合計約15分）:
+時間配分の目安（台本上 **13分30秒**。遷移・図示・言い直しを含めて14分以内をリハーサル目標とし、残りをバッファにする）:
 
 | 枚 | 役割 | 目安 |
 |---|---|---|
 | 1 | 題 | 15 s |
-| 2–3 | 問題とLOS定義 | 1 min 45 s |
+| 2–3 | 問題・位置づけ・LOS定義 | 2 min 15 s |
 | 4–5 | 解析と観察 | 2 min |
 | 6–8 | モデルと予測精度 | 3 min 45 s |
 | 9–11 | PAT | 3 min 30 s |
@@ -58,13 +59,21 @@
 ### Slide 2 — Problem
 
 - **Title**: Thermal LOS bias can dominate the coarse-acquisition scan before optical feedback is available
-- **On slide**: 光RG v3 の問題図を英語化して流用してよい（Uncertainty region → 熱LOS → 予測を scan center から引く）。熱LOSのオーダー **150 µrad to >1 mrad**。他誤差の目安を小さく横に置く:
+- **On slide**: 上部80%は光RG v3 の問題図を英語化して流用してよい（Uncertainty region → 熱LOS → 予測を scan center から引く）。熱LOSのオーダー **150 µrad to >1 mrad**。他誤差の目安を小さく横に置く:
   - 軌道予測（TLE）: 数百 µrad
   - STT 姿勢・較正済みアライメント: 数十 µrad
   - 熱: 太陽面と発熱次第で上記以上になり得る
-- **Say**: 粗捕捉では相手光のFBがまだない。不確定域の面積が点数と時間を決める。熱は既知の運用条件（食、太陽面、被覆、内部発熱）に支配されるので、未知外乱として掃く必要はない。構造を変えず、予測できる熱成分だけを運用で落とす
-- **Do not**: PAT全体の教科書、トラッキング、ビーコン設計の詳細
-- **Source**: Introduction。図は論文 Figure 1 と同趣旨。光RG slide 4 の図が近い
+- 下部20%に、文献名の羅列ではなく次の3行の **positioning strip** を置く。小さな2列（Thermal LOS prediction / Acquisition evaluation）でもよい:
+  - Optical communication / PAT: thermal error is mainly absorbed or reduced; acquisition is evaluated
+  - EO / JANUS thermal correction: temperature-based LOS correction is demonstrated; acquisition is not evaluated
+  - **This work: bus-relative STT–LCT prediction + coarse-acquisition evaluation**
+- 引用は各行末かスライド脚注に代表例だけを小さく置く。光通信: Kaushal / Shi / Zhang、温度補正: Hu / Li / Turella。著者名は口頭では読まない
+- **Say**: 粗捕捉では相手光のFBがまだなく、不確定域の面積が点数と時間を決める。熱は既知の運用条件（食、太陽面、被覆、内部発熱）に支配されるので、未知外乱としてすべて掃く必要はない。位置づけは次の3文で30秒以内:
+  1. *Temperature-based LOS correction itself is not new; it has been studied for Earth-observation and deep-space optical instruments.*
+  2. *Representative optical-communication studies have mainly absorbed or reduced pointing uncertainty through PAT and structural design.*
+  3. *This work connects the two by predicting bus-level STT–LCT thermal LOS and applying it to coarse-acquisition feedforward.*
+- **Do not**: PAT全体の教科書、トラッキング、ビーコン設計の詳細、個別論文の逐次紹介、論文の関連研究表をそのまま縮小
+- **Source**: Introduction、Related Work and Positioning、Table 1。図は論文 Figure 1 と同趣旨。光RG slide 4 の図が近い
 
 ---
 
@@ -88,11 +97,10 @@
 - **On slide**: 衛星メッシュ／温度場の1枚（論文 Figure 3）。右に最小スペックのみ:
   - 外形 0.6 m × 0.6 m × 1.0 m、A5052、基準温度 24 °C
   - STT on PZ、LCT on MZ、boresight ≈ −Z
-  - PROP 25 W on PY、PCDU 10 W on MY（ケースで ON/OFF）
-  - 評価ID: 04–06, 08–25。01–03, 07 は MZ／セットアップで評価外
+  - 21 conditions: sun face（MX/MY/PX/PY）× dissipation × surface/orbit variants
   - 流れの1行: Thermal Desktop 温度場 → Femap 回転 → 相対LOS
-- **Say**: 特定機の設計審査ではなく、同一構造で条件を横断する評価。太陽面 MX/MY/PX/PY、発熱、被覆、COLD/HOT/LTAN18。ケース表は裏
-- **Do not**: 軌道パラメータの全表、API／case_matrix の自動化、材料定数の全部
+- **Say**: 特定機の設計審査ではなく、同一構造で条件を横断する評価。内部発熱の代表は PROP 25 W on PY、PCDU 10 W on MY。太陽面、発熱、被覆、COLD/HOT/LTAN18を変える。評価IDと除外ケースは読まず、聞かれたら裏 B1
+- **Do not**: 評価IDの列挙、除外ケースの説明、軌道パラメータの全表、API／case_matrix の自動化、材料定数の全部
 - **Source**: §4–5、Tables 2–4、Figure 3
 
 ---
@@ -100,11 +108,11 @@
 ### Slide 5 — Observations
 
 - **Title**: Thermal LOS varies at the orbital period; the dominant axis and DC offset follow the sun face
-- **On slide**: Case 04（MY、全発熱）の温度とLOS時系列（論文 Figure 4）。観察は3点、短く:
+- **On slide**: Case 04（MY、全発熱）の温度とLOS時系列（論文 Figure 4）。観察は3点、短く。太陽面別の4レンジは文章で並べず、図中ラベルまたは最小の模式図で示す:
   1. 温度と熱LOSは同じ軌道周期
-  2. 支配軸は MY/PY で y、MX/PX で x。生RMSは MY 150–265、PX 600–670、MX 670–730、PY 1180–1280 µrad
+  2. 支配軸は MY/PY で y、MX/PX で x。生RMSの全体幅を **150–1280 µrad** と大きく示す
   3. 被覆は振幅と残差床、内部発熱はケース間の平均バイアス
-- **Say**: だからモデルは、太陽面を陽に持ち、軌道内の時変とケース間DCを分けなければならない。次の階層はその最小形
+- **Say**: MYは比較的小さく、PYは最大級。必要なら口頭で MY 150–265 µrad、PY 1180–1280 µrad だけを補足し、4面のレンジを全部は読まない。だからモデルは、太陽面を陽に持ち、軌道内の時変とケース間DCを分けなければならない。次の階層はその最小形
 - **Do not**: この枚で \(a\Delta T+b\) を先に出す。観察が先
 - **Source**: §5、Figure 4
 
@@ -113,19 +121,22 @@
 ### Slide 6 — Hierarchical model
 
 - **Title**: Orbital variation is \(a(\mathrm{sun})\,\Delta T\); the DC term is predicted from sun face and dissipation
-- **On slide**: 論文 Figure 5 の3箱。式は2段まで:
-  \[
-  \Delta T(t)=T_\mathrm{sunface}(t)-T_\mathrm{opposite}(t)
-  \]
+- **On slide**: 論文 Figure 5 の3箱を主役にし、**orbital variation** と **case-dependent DC** の分離が一目で分かる配置にする。3式を同じ強さで並べない:
+  - 中央に最も大きく置く主式:
   \[
   \theta_\mathrm{dom}(t)\approx b_\mathrm{case}+a(\mathrm{sun})\,\Delta T(t)
   \]
+  - \(\Delta T\) の定義は入力箱の中に小さく置く:
+  \[
+  \Delta T(t)=T_\mathrm{sunface}(t)-T_\mathrm{opposite}(t)
+  \]
+  - DCモデルは下段の小さな箱に置く:
   \[
   b_\mathrm{case}\approx b_0(\mathrm{sun})+c_\mathrm{prop}I_\mathrm{prop}+c_\mathrm{pcdu}I_\mathrm{pcdu}
   \]
-  固定16係数（\(a\) 4、\(b_0\) 8、発熱フラグ 4）。非支配軸は時変項なし、DC \(b_\mathrm{nd}\) のみ（MX/PX で約 −600 µrad）
-- **Say**: TD/Femap を毎回オンボードでは回せない。入力はパネル中心温度差と運用フラグ。JANUS 等で温度差とLOSの一次関係自体は既報。新規性は分離したSTT–LCTのバス相対LOS、条件横断のDC、粗捕捉への接続。係数値の他構造への普遍性は主張しない
-- **Do not**: Level-1/2 の学習フローチャート全体、取付点温度を足した失敗例（裏でも可）
+  - 固定16係数は隅に小さく置く。非支配軸のDCと約 −600 µrad は必要なら口頭または裏へ
+- **Say**: TD/Femap を毎回オンボードでは回せないので、入力をパネル中心温度差と運用フラグへ落とす。Slide 2 で位置づけたとおり、温度差とLOSの一次関係自体は既報。ここで見せる新規性は、分離したSTT–LCTのバス相対LOS、条件横断のDC、粗捕捉への接続。係数値の他構造への普遍性は主張しない
+- **Do not**: 3式を同じ大きさで見せる、Level-1/2 の学習フローチャート全体、取付点温度を足した失敗例（裏でも可）
 - **Source**: §6、Eqs. 3–6、Figure 5
 
 ---
@@ -235,6 +246,7 @@
 | B5 | Attitude extraction | 代表節点回転は代理。取付面LS剛体フィットは今後 | 高嶋FBと同じ |
 | B6 | Hard cases | Black ≈13 µrad、HOT のDC、半電力 ≈16 µrad | 被覆・HOT は？ |
 | B7 | Constant-bias only | 未計算。ΔT=0 のPAT列。取れ次第ここか本編11 | 改善の大半はDCでは？ |
+| B8 | Prior work and positioning | 論文 Table 1 を再利用。光通信PAT／衛星バス熱変形／EO・深宇宙の温度補正／本研究を、thermal prediction と acquisition evaluation の2軸で比較 | 何が新しい？／JANUS、Shi、Zhangとの差は？ |
 
 ---
 
@@ -252,6 +264,7 @@
 | 目的スライド | 今日レビューしてほしい | 置かない |
 | 軌道誤差 | 本編3枚 | 裏 B3 の1枚 |
 | 残差／Adaptive | 本編の議論点 | 裏 B4、本編12で「予備」とだけ |
+| 関連研究 | 本編での整理が曖昧 | **Slide 2で30秒のpositioning strip、詳細は裏B8** |
 
 ---
 
@@ -259,11 +272,13 @@
 
 - 新規 pptx を切る。v3 を英語化して削らない（旧数字が残る）
 - テンプレ・章区切りスライドの青帯は使ってよいが、本編13に区切り専用枚は入れない（時間を食う）
+- Slide 2 は問題図＋誤差オーダー＋下部positioning stripまで。表が読めないほど詰まる場合は、文献名を脚注へ落とし、3行の役割対比を優先する
 - 図は提出稿 `papers/icso/figure/` を優先。ログタイトル付き matplotlib はスライド用にトリムする
 - スライド提出は会議側 2026-10-19 まで。会場PCは Windows、16:9、標準フォント
 
 ## 5. 次の作業
 
 1. 本ノートの Title 文面を1枚ずつ確定する（長すぎるタイトルは口頭用に短くしてよい。主張は変えない）
-2. 英語本編13枚の pptx を新規作成
-3. 余裕があれば Constant-bias を回して B7 を埋める
+2. Slide 2 のpositioning stripを先に試作し、通常表示で3行が読めるか確認する
+3. 英語本編13枚の pptx を新規作成
+4. 余裕があれば Constant-bias を回して B7 を埋める

@@ -1,0 +1,691 @@
+### LAYOUT SHAPES
+
+[0] タイトル スライド
+   <PLACEHOLDER (14)> 'Title 1' (10.58,8.03,13.60,2.32) マスター タイトルの書式設定
+   <PLACEHOLDER (14)> 'Subtitle 2' (10.58,10.71,13.60,2.57) マスター サブタイトルの書式設定
+   <PLACEHOLDER (14)> 'Date Placeholder 3' (0.39,13.94,6.00,0.80) 2026/8/16
+   <PLACEHOLDER (14)> 'Footer Placeholder 4' (8.83,13.90,9.00,0.80) 
+   <PLACEHOLDER (14)> 'Slide Number Placeholder 5' (20.28,13.90,6.00,0.80) ‹#›
+   <PLACEHOLDER (14)> 'テキスト プレースホルダー 8' (18.03,6.85,6.15,0.76) マスター テキストの書式設定
+   <PLACEHOLDER (14)> 'テキスト プレースホルダー 8' (10.58,6.85,6.15,0.76) マスター テキストの書式設定
+   <PLACEHOLDER (14)> 'テキスト プレースホルダー 8' (18.03,5.92,6.15,0.76) マスター テキストの書式設定
+
+[1] セクション見出し
+   <PLACEHOLDER (14)> 'Title 1' (10.62,4.59,5.43,1.96) マスター タイトルの書式設定
+   <PLACEHOLDER (14)> 'Text Placeholder 2' (1.83,8.45,23.00,3.28) マスター テキストの書式設定
+   <PLACEHOLDER (14)> 'Date Placeholder 3' (0.39,13.94,6.00,0.80) 2026/8/16
+   <PLACEHOLDER (14)> 'Footer Placeholder 4' (8.83,13.90,9.00,0.80) 
+   <PLACEHOLDER (14)> 'Slide Number Placeholder 5' (20.28,13.90,6.00,0.80) ‹#›
+   <LINE (9)> '直線コネクタ 8' (12.31,7.50,2.05,0.00) 
+
+[2] タイトルとコンテンツ
+   <PLACEHOLDER (14)> 'Title 1' (1.68,1.49,24.39,1.70) マスター タイトルの書式設定
+   <PLACEHOLDER (14)> 'Content Placeholder 2' (0.89,3.39,25.18,10.12) マスター テキストの書式設定 | 第 2 レベル | 第 3 レベル | 第 4 レベル | 第 5 レベル
+   <PLACEHOLDER (14)> 'Date Placeholder 3' (0.39,13.94,6.00,0.80) 2026/8/16
+   <PLACEHOLDER (14)> 'Footer Placeholder 4' (8.83,13.90,9.00,0.80) 
+   <PLACEHOLDER (14)> 'Slide Number Placeholder 5' (20.28,13.90,6.00,0.80) ‹#›
+   <PLACEHOLDER (14)> 'テキスト プレースホルダー 7' (0.60,0.26,17.41,0.81) マスター テキストの書式設定
+   <AUTO_SHAPE (1)> '正方形/長方形 8' (0.89,1.49,0.45,1.70) 
+
+[3] 1_タイトルとコンテンツ
+   <PLACEHOLDER (14)> 'Date Placeholder 3' (0.39,13.94,6.00,0.80) 2026/8/16
+   <PLACEHOLDER (14)> 'Footer Placeholder 4' (8.83,13.90,9.00,0.80) 
+   <PLACEHOLDER (14)> 'Slide Number Placeholder 5' (20.28,13.90,6.00,0.80) ‹#›
+   <PLACEHOLDER (14)> 'テキスト プレースホルダー 7' (0.60,0.26,17.41,0.81) マスター テキストの書式設定
+   <PLACEHOLDER (14)> 'Content Placeholder 2' (0.60,3.48,12.43,10.16) マスター テキストの書式設定 | 第 2 レベル | 第 3 レベル | 第 4 レベル | 第 5 レベル
+   <PLACEHOLDER (14)> 'Content Placeholder 3' (13.64,3.48,12.43,10.16) マスター テキストの書式設定 | 第 2 レベル | 第 3 レベル | 第 4 レベル | 第 5 レベル
+   <PLACEHOLDER (14)> 'Title 1' (1.68,1.49,24.39,1.70) マスター タイトルの書式設定
+   <AUTO_SHAPE (1)> '正方形/長方形 10' (0.89,1.49,0.45,1.70) 
+
+[4] 5_タイトルとコンテンツ
+   <PLACEHOLDER (14)> 'Date Placeholder 3' (0.39,13.94,6.00,0.80) 2026/8/16
+   <PLACEHOLDER (14)> 'Footer Placeholder 4' (8.83,13.90,9.00,0.80) 
+   <PLACEHOLDER (14)> 'Slide Number Placeholder 5' (20.28,13.90,6.00,0.80) ‹#›
+   <PLACEHOLDER (14)> 'テキスト プレースホルダー 7' (0.60,0.26,17.41,0.81) マスター テキストの書式設定
+   <PLACEHOLDER (14)> 'Content Placeholder 2' (0.60,4.48,12.43,9.16) マスター テキストの書式設定 | 第 2 レベル | 第 3 レベル | 第 4 レベル | 第 5 レベル
+   <PLACEHOLDER (14)> 'Content Placeholder 3' (13.64,4.48,12.43,9.16) マスター テキストの書式設定 | 第 2 レベル | 第 3 レベル | 第 4 レベル | 第 5 レベル
+   <PLACEHOLDER (14)> 'テキスト プレースホルダー 10' (0.55,3.51,12.52,0.99) マスター テキストの書式設定
+   <PLACEHOLDER (14)> 'テキスト プレースホルダー 10' (13.59,3.51,12.52,0.99) マスター テキストの書式設定
+   <PLACEHOLDER (14)> 'Title 1' (1.68,1.49,24.39,1.70) マスター タイトルの書式設定
+   <AUTO_SHAPE (1)> '正方形/長方形 12' (0.89,1.49,0.45,1.70) 
+
+[5] 6_タイトルとコンテンツ
+   <PLACEHOLDER (14)> 'Date Placeholder 3' (0.39,13.94,6.00,0.80) 2026/8/16
+   <PLACEHOLDER (14)> 'Footer Placeholder 4' (8.83,13.90,9.00,0.80) 
+   <PLACEHOLDER (14)> 'Slide Number Placeholder 5' (20.28,13.90,6.00,0.80) ‹#›
+   <PLACEHOLDER (14)> 'テキスト プレースホルダー 7' (0.60,0.26,17.41,0.81) マスター テキストの書式設定
+   <PLACEHOLDER (14)> 'Content Placeholder 2' (0.60,3.50,8.15,10.16) マスター テキストの書式設定 | 第 2 レベル | 第 3 レベル | 第 4 レベル | 第 5 レベル
+   <PLACEHOLDER (14)> 'Content Placeholder 2' (9.26,3.50,8.15,10.16) マスター テキストの書式設定 | 第 2 レベル | 第 3 レベル | 第 4 レベル | 第 5 レベル
+   <PLACEHOLDER (14)> 'Content Placeholder 2' (17.92,3.50,8.15,10.16) マスター テキストの書式設定 | 第 2 レベル | 第 3 レベル | 第 4 レベル | 第 5 レベル
+   <PLACEHOLDER (14)> 'Title 1' (1.68,1.49,24.39,1.70) マスター タイトルの書式設定
+   <AUTO_SHAPE (1)> '正方形/長方形 10' (0.89,1.49,0.45,1.70) 
+
+[6] 2_タイトルとコンテンツ
+   <PLACEHOLDER (14)> 'Date Placeholder 3' (0.39,13.94,6.00,0.80) 2026/8/16
+   <PLACEHOLDER (14)> 'Footer Placeholder 4' (8.83,13.90,9.00,0.80) 
+   <PLACEHOLDER (14)> 'Slide Number Placeholder 5' (20.28,13.90,6.00,0.80) ‹#›
+   <PLACEHOLDER (14)> 'テキスト プレースホルダー 7' (0.60,0.26,17.41,0.81) マスター テキストの書式設定
+   <PLACEHOLDER (14)> 'Content Placeholder 2' (0.60,4.51,8.15,9.15) マスター テキストの書式設定 | 第 2 レベル | 第 3 レベル | 第 4 レベル | 第 5 レベル
+   <PLACEHOLDER (14)> 'テキスト プレースホルダー 10' (0.55,3.54,8.28,0.99) マスター テキストの書式設定
+   <PLACEHOLDER (14)> 'Content Placeholder 2' (9.24,4.51,8.15,9.15) マスター テキストの書式設定 | 第 2 レベル | 第 3 レベル | 第 4 レベル | 第 5 レベル
+   <PLACEHOLDER (14)> 'テキスト プレースホルダー 10' (9.19,3.54,8.28,0.99) マスター テキストの書式設定
+   <PLACEHOLDER (14)> 'Content Placeholder 2' (17.88,4.51,8.15,9.15) マスター テキストの書式設定 | 第 2 レベル | 第 3 レベル | 第 4 レベル | 第 5 レベル
+   <PLACEHOLDER (14)> 'テキスト プレースホルダー 10' (17.83,3.54,8.28,0.99) マスター テキストの書式設定
+   <PLACEHOLDER (14)> 'Title 1' (1.68,1.49,24.39,1.70) マスター タイトルの書式設定
+   <AUTO_SHAPE (1)> '正方形/長方形 9' (0.89,1.49,0.45,1.70) 
+
+[7] 3_タイトルとコンテンツ
+   <PLACEHOLDER (14)> 'Date Placeholder 3' (0.39,13.94,6.00,0.80) 2026/8/16
+   <PLACEHOLDER (14)> 'Footer Placeholder 4' (8.83,13.90,9.00,0.80) 
+   <PLACEHOLDER (14)> 'Slide Number Placeholder 5' (20.28,13.90,6.00,0.80) ‹#›
+   <PLACEHOLDER (14)> 'テキスト プレースホルダー 7' (0.60,0.26,17.41,0.81) マスター テキストの書式設定
+   <PLACEHOLDER (14)> 'Content Placeholder 2' (0.60,3.59,12.43,4.71) マスター テキストの書式設定 | 第 2 レベル | 第 3 レベル | 第 4 レベル | 第 5 レベル
+   <PLACEHOLDER (14)> 'Content Placeholder 2' (13.64,3.59,12.43,4.71) マスター テキストの書式設定 | 第 2 レベル | 第 3 レベル | 第 4 レベル | 第 5 レベル
+   <PLACEHOLDER (14)> 'Content Placeholder 2' (0.60,8.95,12.43,4.71) マスター テキストの書式設定 | 第 2 レベル | 第 3 レベル | 第 4 レベル | 第 5 レベル
+   <PLACEHOLDER (14)> 'Content Placeholder 2' (13.64,8.95,12.43,4.71) マスター テキストの書式設定 | 第 2 レベル | 第 3 レベル | 第 4 レベル | 第 5 レベル
+   <PLACEHOLDER (14)> 'Title 1' (1.68,1.49,24.39,1.70) マスター タイトルの書式設定
+   <AUTO_SHAPE (1)> '正方形/長方形 9' (0.89,1.49,0.45,1.70) 
+
+[8] 7_タイトルとコンテンツ
+   <PLACEHOLDER (14)> 'Date Placeholder 3' (0.39,13.94,6.00,0.80) 2026/8/16
+   <PLACEHOLDER (14)> 'Footer Placeholder 4' (8.83,13.90,9.00,0.80) 
+   <PLACEHOLDER (14)> 'Slide Number Placeholder 5' (20.28,13.90,6.00,0.80) ‹#›
+   <PLACEHOLDER (14)> 'テキスト プレースホルダー 7' (0.60,0.26,17.41,0.81) マスター テキストの書式設定
+   <PLACEHOLDER (14)> 'Content Placeholder 2' (0.60,4.44,12.43,3.86) マスター テキストの書式設定 | 第 2 レベル | 第 3 レベル | 第 4 レベル | 第 5 レベル
+   <PLACEHOLDER (14)> 'テキスト プレースホルダー 10' (0.55,3.47,12.52,0.99) マスター テキストの書式設定
+   <PLACEHOLDER (14)> 'Content Placeholder 2' (13.64,4.44,12.43,3.86) マスター テキストの書式設定 | 第 2 レベル | 第 3 レベル | 第 4 レベル | 第 5 レベル
+   <PLACEHOLDER (14)> 'テキスト プレースホルダー 10' (13.60,3.47,12.52,0.99) マスター テキストの書式設定
+   <PLACEHOLDER (14)> 'Content Placeholder 2' (0.60,9.80,12.43,3.86) マスター テキストの書式設定 | 第 2 レベル | 第 3 レベル | 第 4 レベル | 第 5 レベル
+   <PLACEHOLDER (14)> 'テキスト プレースホルダー 10' (0.55,8.83,12.52,0.99) マスター テキストの書式設定
+   <PLACEHOLDER (14)> 'Content Placeholder 2' (13.64,9.80,12.43,3.86) マスター テキストの書式設定 | 第 2 レベル | 第 3 レベル | 第 4 レベル | 第 5 レベル
+   <PLACEHOLDER (14)> 'テキスト プレースホルダー 10' (13.60,8.83,12.52,0.99) マスター テキストの書式設定
+   <PLACEHOLDER (14)> 'Title 1' (1.68,1.49,24.39,1.70) マスター タイトルの書式設定
+   <AUTO_SHAPE (1)> '正方形/長方形 9' (0.89,1.49,0.45,1.70) 
+
+[9] 1_セクション見出し
+   <PLACEHOLDER (14)> 'Text Placeholder 2' (1.83,5.86,23.00,3.28) マスター テキストの書式設定
+   <PLACEHOLDER (14)> 'Date Placeholder 3' (0.39,13.94,6.00,0.80) 2026/8/16
+   <PLACEHOLDER (14)> 'Footer Placeholder 4' (8.83,13.90,9.00,0.80) 
+   <PLACEHOLDER (14)> 'Slide Number Placeholder 5' (20.28,13.90,6.00,0.80) ‹#›
+
+[10] 4_タイトルとコンテンツ
+   <PLACEHOLDER (14)> 'Content Placeholder 2' (0.60,1.52,25.47,11.99) マスター テキストの書式設定 | 第 2 レベル | 第 3 レベル | 第 4 レベル | 第 5 レベル
+   <PLACEHOLDER (14)> 'Date Placeholder 3' (0.39,13.94,6.00,0.80) 2026/8/16
+   <PLACEHOLDER (14)> 'Footer Placeholder 4' (8.83,13.90,9.00,0.80) 
+   <PLACEHOLDER (14)> 'Slide Number Placeholder 5' (20.28,13.90,6.00,0.80) ‹#›
+   <PLACEHOLDER (14)> 'テキスト プレースホルダー 7' (0.60,0.26,17.41,0.81) マスター テキストの書式設定
+
+[11] ユーザー設定レイアウト
+   <PLACEHOLDER (14)> '日付プレースホルダー 2' (0.39,13.94,6.00,0.80) 2026/8/16
+   <PLACEHOLDER (14)> 'フッター プレースホルダー 3' (8.83,13.90,9.00,0.80) 
+   <PLACEHOLDER (14)> 'スライド番号プレースホルダー 4' (20.28,13.90,6.00,0.80) ‹#›
+
+
+### RUN FORMATTING (selected slides)
+
+=== Slide 1 (layout タイトル スライド)
+  'タイトル 1': 'Feedforward and Adaptive Correction of' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'タイトル 1': 'Time-Varying Thermal Bias for Coarse Acq' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'タイトル 1': 'in Optical Communication Systems' font=Yu Gothic sz=32.0 bold=True color=082B52
+  '字幕 2': 'Hideki Takamoto (The University of Tokyo' font=Yu Gothic sz=28.0 bold=True color=232B34
+  'テキスト プレースホルダー 3': '2026/07/21' font=Yu Gothic sz=22.0 bold=False color=666F79
+  'テキスト プレースホルダー 5': 'Optical Communication Research Group' font=Yu Gothic sz=22.0 bold=False color=666F79
+  'TextBox 7': '熱ひずみ予測と適応補正による光通信粗捕捉性能向上の検討' font=Yu Gothic sz=32.0 bold=True color=1B74AA
+
+=== Slide 4 (layout タイトルとコンテンツ)
+  'タイトル 1': 'やりたいこと：' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'タイトル 1': '熱ひずみ' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'タイトル 1': 'による' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'タイトル 1': '粗捕捉開始時の' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'タイトル 1': ' scan-center error ' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'タイトル 1': 'を運用側で改善' font=Yu Gothic sz=32.0 bold=None color=082B52
+  'スライド番号プレースホルダー 3': '4' font=Yu Gothic sz=18.0 bold=False color=666F79
+  'テキスト プレースホルダー 4': 'Background' font=Yu Gothic sz=20.0 bold=False color=666F79
+     SHAPE 'Rounded Rectangle 5' fill=F4F6F8 line=1B74AA w=25400
+  'TextBox 6': '光フィードバック前' font=Yu Gothic sz=27.0 bold=True color=1B74AA
+  'TextBox 7': '姿勢・軌道・熱LOSを含む\n不確定領域を探索' font=Yu Gothic sz=26.0 bold=False color=232B34
+     SHAPE 'Rounded Rectangle 9' fill=F4F6F8 line=EC9427 w=25400
+  'TextBox 10': '日照・蝕／機器発熱' font=Yu Gothic sz=27.0 bold=True color=EC9427
+  'TextBox 11': '温度場' font=Yu Gothic sz=26.0 bold=False color=232B34
+  'TextBox 11': ' → ' font=Yu Gothic sz=26.0 bold=False color=232B34
+  'TextBox 11': '差動膨張' font=Yu Gothic sz=26.0 bold=False color=232B34
+  'TextBox 11': ' →\n' font=Yu Gothic sz=26.0 bold=False color=232B34
+  'TextBox 11': '衛星筐体のねじれ' font=Yu Gothic sz=26.0 bold=None color=232B34
+  'TextBox 12': '10²–10³ µrad' font=Yu Gothic sz=29.0 bold=True color=D03B46
+  'TextBox 12': 'の' font=Yu Gothic sz=29.0 bold=True color=D03B46
+  'TextBox 12': 'LOS' font=Yu Gothic sz=29.0 bold=True color=D03B46
+  'TextBox 12': '誤差' font=Yu Gothic sz=29.0 bold=True color=D03B46
+     SHAPE 'Rounded Rectangle 14' fill=F4F6F8 line=239571 w=25400
+  'TextBox 15': '予測' font=Yu Gothic sz=27.0 bold=True color=239571
+  'TextBox 15': 'FeedForward' font=Yu Gothic sz=27.0 bold=True color=239571
+  'TextBox 15': '補正' font=Yu Gothic sz=27.0 bold=True color=239571
+  'TextBox 16': '熱LOSをscan centerから引き\n探索域・捕捉時間を低減' font=Yu Gothic sz=26.0 bold=False color=232B34
+  'TextBox 17': '衛星' font=Yu Gothic sz=31.0 bold=True color=082B52
+  'TextBox 17': '/LCT' font=Yu Gothic sz=31.0 bold=True color=082B52
+  'TextBox 17': 'の' font=Yu Gothic sz=31.0 bold=True color=082B52
+  'TextBox 17': '構造を変更せず' font=Yu Gothic sz=31.0 bold=True color=082B52
+  'TextBox 17': '、' font=Yu Gothic sz=31.0 bold=True color=082B52
+  'TextBox 17': '粗捕捉開始時の' font=Yu Gothic sz=31.0 bold=True color=082B52
+  'TextBox 17': 'LOS' font=Yu Gothic sz=31.0 bold=True color=082B52
+  'TextBox 17': '誤差の中で' font=Yu Gothic sz=31.0 bold=True color=082B52
+  'TextBox 17': '予測可能な熱成分だけを運用側で除去する' font=Yu Gothic sz=31.0 bold=True color=082B52
+
+=== Slide 5 (layout タイトルとコンテンツ)
+  'タイトル 1': '進捗：' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'タイトル 1': '2' font=Yu Gothic sz=32.0 bold=None color=082B52
+  'タイトル 1': 'か月' font=Yu Gothic sz=32.0 bold=None color=082B52
+  'タイトル 1': 'で' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'タイトル 1': '熱LOS真値生成・軽量モデル構築・PAT統合評価' font=None sz=32.0 bold=None color=None
+  'タイトル 1': 'まで' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'タイトル 1': '進んだ' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'テキスト プレースホルダー 3': 'Progress since 7/6' font=Yu Gothic sz=20.0 bold=False color=666F79
+  'スライド番号プレースホルダー 4': '5' font=Yu Gothic sz=18.0 bold=False color=666F79
+  'TextBox 5': '5' font=Yu Gothic sz=28.0 bold=True color=666F79
+  'TextBox 5': '/' font=Yu Gothic sz=28.0 bold=True color=666F79
+  'TextBox 5': '26' font=Yu Gothic sz=28.0 bold=True color=666F79
+  'TextBox 5': ' 輪講発表' font=Yu Gothic sz=28.0 bold=True color=666F79
+  'TextBox 6': '7/21' font=Yu Gothic sz=28.0 bold=True color=1B74AA
+  'TextBox 6': ' 本日' font=Yu Gothic sz=28.0 bold=True color=1B74AA
+     SHAPE 'Rectangle 7' fill=F4F6F8 line=B8D5E2 w=16510
+     SHAPE 'Rectangle 8' fill=EBF6FB line=5BB5D8 w=16510
+  'TextBox 9': '研究構想' font=Yu Gothic sz=26.0 bold=True color=666F79
+  'TextBox 9': '•' font=Yu Gothic sz=26.0 bold=True color=666F79
+  'TextBox 9': '評価枠組みの提案' font=Yu Gothic sz=26.0 bold=True color=666F79
+  'TextBox 9': '•' font=Yu Gothic sz=26.0 bold=True color=666F79
+  'TextBox 9': '熱ひずみを時間変動LOSバイアスとして定式' font=None sz=28.0 bold=None color=None
+  'TextBox 9': '• ' font=Yu Gothic sz=28.0 bold=True color=666F79
+  'TextBox 9': 'TD/Femapを高精度参照とする解析フローを提案 ' font=None sz=28.0 bold=None color=None
+  'TextBox 9': '• ' font=Yu Gothic sz=28.0 bold=True color=666F79
+  'TextBox 9': '軽量補正モデルの候補を整理' font=None sz=28.0 bold=None color=None
+  'TextBox 9': '• ' font=Yu Gothic sz=28.0 bold=True color=666F79
+  'TextBox 9': 'FF補正＋Adaptive補正の二層構造を構想 ' font=None sz=28.0 bold=None color=None
+  'TextBox 9': '• ' font=Yu Gothic sz=28.0 bold=True color=666F79
+  'TextBox 9': 'mock熱LOS' font=None sz=28.0 bold=None color=None
+  'TextBox 9': 'モデル' font=None sz=28.0 bold=None color=None
+  'TextBox 9': 'による予備PAT評価' font=None sz=28.0 bold=None color=None
+  'TextBox 10': '実データ生成' font=Yu Gothic sz=26.0 bold=True color=1B74AA
+  'TextBox 10': '•' font=Yu Gothic sz=26.0 bold=True color=1B74AA
+  'TextBox 10': 'モデル構築・統合評価' font=Yu Gothic sz=26.0 bold=True color=1B74AA
+  'TextBox 10': '• ' font=Yu Gothic sz=28.0 bold=True color=666F79
+  'TextBox 10': 'TD/Femapにより21ケースの熱LOS真値を生成 ' font=None sz=28.0 bold=None color=None
+  'TextBox 10': '• ' font=Yu Gothic sz=28.0 bold=True color=666F79
+  'TextBox 10': '温度差に基づく階層型熱ひずみ予測モデルを構築 ' font=None sz=28.0 bold=None color=None
+  'TextBox 10': '•' font=Yu Gothic sz=28.0 bold=True color=666F79
+  'TextBox 10': '太陽面・発熱・被覆・軌道を横断して評価 ' font=None sz=28.0 bold=None color=None
+  'TextBox 10': '• ' font=Yu Gothic sz=28.0 bold=True color=666F79
+  'TextBox 10': 'Sentinel-1実軌道誤差を導入 ' font=None sz=28.0 bold=None color=None
+  'TextBox 10': '• ' font=Yu Gothic sz=28.0 bold=True color=666F79
+  'TextBox 10': '熱誤差と非熱誤差を統合したPAT性能評価 ' font=None sz=28.0 bold=None color=None
+  'TextBox 10': '•' font=Yu Gothic sz=28.0 bold=True color=666F79
+  'TextBox 10': ' ' font=Yu Gothic sz=28.0 bold=True color=666F79
+  'TextBox 10': '軌道上更新対象をケースDC成分として再定義' font=None sz=28.0 bold=None color=None
+  'TextBox 12': '現在の問い：同帯域の非熱誤差と共存しても、軽量熱モデルで捕捉性能を改善できるか' font=Yu Gothic sz=32.0 bold=True color=082B52
+
+=== Slide 8 (layout タイトルとコンテンツ)
+  'TextBox 1': 'Thermo-structural analysis' font=Yu Gothic sz=20.0 bold=False color=666F79
+  'TextBox 2': '小型衛星を模した' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': '箱型衛星モデル' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': 'を作成' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 3': '9' font=Yu Gothic sz=18.0 bold=False color=666F79
+  TABLE 'Table 11' hdr_font=Yu Gothic sz=23.0 color=FFFFFF fill?
+     row0 fills=['082B52', '082B52']
+     row1 fills=['FFFFFF', 'EBF6FB']
+     row2 fills=['F4F6F8', 'EBF6FB']
+     row3 fills=['FFFFFF', 'EBF6FB']
+     row4 fills=['F4F6F8', 'EBF6FB']
+     row5 fills=['FFFFFF', 'EBF6FB']
+  'TextBox 12': 'Thermal Desktop' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 12': 'と' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 12': 'Femap' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 12': 'で' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 12': '同じ衛星モデルを作成する' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 6': 'PZ: STT' font=Yu Gothic sz=24.0 bold=True color=FF0000
+  'TextBox 7': 'MZ: LCT' font=Yu Gothic sz=26.0 bold=True color=082B52
+  'TextBox 8': 'MY: PCDU' font=Yu Gothic sz=22.0 bold=True color=EC9427
+  'TextBox 9': 'PY: PROP' font=Yu Gothic sz=22.0 bold=True color=EF25D7
+  'テキスト ボックス 23': 'LOS' font=Yu Gothic sz=26.0 bold=True color=082B52
+  'テキスト ボックス 23': 'boresight ≈ −Z' font=Yu Gothic sz=26.0 bold=True color=082B52
+     SHAPE '矢印: 下 26' fill=7030A0 line=None w=None
+  'テキスト ボックス 31': 'Thermal Desktop' font=None sz=28.0 bold=None color=None
+  'テキスト ボックス 33': 'Femap' font=None sz=28.0 bold=None color=None
+  'テキスト ボックス 35': 'Configuration' font=None sz=28.0 bold=None color=None
+
+=== Slide 9 (layout 5_タイトルとコンテンツ)
+  'TextBox 1': 'Thermo-structural analysis' font=Yu Gothic sz=20.0 bold=False color=666F79
+  'TextBox 2': 'TD' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': 'での解析：軌道・姿勢・コンポ電源・表面特性を入力として、各ケースにおける温度場を' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 3': '1' font=Yu Gothic sz=18.0 bold=False color=666F79
+  'TextBox 3': '0' font=Yu Gothic sz=18.0 bold=False color=666F79
+  TABLE 'Table 4' hdr_font=Yu Gothic sz=23.0 color=FFFFFF fill?
+     row0 fills=['082B52', '082B52']
+     row1 fills=['FFFFFF', 'EBF6FB']
+     row2 fills=['F4F6F8', 'EBF6FB']
+     row3 fills=['FFFFFF', 'EBF6FB']
+     row4 fills=['F4F6F8', 'EBF6FB']
+     row5 fills=['FFFFFF', 'EBF6FB']
+     row6 fills=['F4F6F8', 'EBF6FB']
+     row7 fills=['scheme:bg1', 'EBF6FB']
+     SHAPE 'Rounded Rectangle 5' fill=EBF6FB line=5BB5D8 w=16510
+  'TextBox 6': 'Additional environments' font=Yu Gothic sz=27.0 bold=True color=1B74AA
+  'TextBox 7': '• ' font=Yu Gothic sz=26.0 bold=True color=1B74AA
+  'TextBox 7': '内部のコンポの電源切り替え' font=Yu Gothic sz=26.0 bold=None color=232B34
+  'TextBox 7': '• ' font=Yu Gothic sz=26.0 bold=True color=1B74AA
+  'TextBox 7': '衛星パネルの表面特性：' font=Yu Gothic sz=26.0 bold=None color=232B34
+  'TextBox 7': 'B' font=Yu Gothic sz=26.0 bold=None color=232B34
+  'TextBox 7': 'lack / Alodine / α=ε=0.5' font=Yu Gothic sz=26.0 bold=None color=232B34
+  'TextBox 7': '• ' font=Yu Gothic sz=26.0 bold=True color=1B74AA
+  'TextBox 7': '軌道の種類：' font=Yu Gothic sz=26.0 bold=None color=232B34
+  'TextBox 7': 'L' font=Yu Gothic sz=26.0 bold=None color=232B34
+  'TextBox 7': 'TAN18 / 693 km Sentinel-1 proxy' font=Yu Gothic sz=26.0 bold=None color=232B34
+  'テキスト ボックス 14': 'TD Configuration' font=None sz=28.0 bold=None color=None
+
+=== Slide 11 (layout 6_タイトルとコンテンツ)
+  'TextBox 1': 'Thermo-structural analysis' font=Yu Gothic sz=20.0 bold=False color=666F79
+  'TextBox 2': 'Femap' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': 'での解析：温度場・拘束条件を入力として、各点のひずみ（並進・回転 ' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': '6' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': '成分）を算出する' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 3': '12' font=Yu Gothic sz=18.0 bold=False color=666F79
+  TABLE 'Table 4' hdr_font=Yu Gothic sz=22.0 color=FFFFFF fill?
+     row0 fills=['082B52', '082B52']
+     row1 fills=['FFFFFF', 'EBF6FB']
+     row2 fills=['F4F6F8', 'EBF6FB']
+     row3 fills=['FFFFFF', 'EBF6FB']
+     row4 fills=['F4F6F8', 'EBF6FB']
+     row5 fills=['FFFFFF', 'EBF6FB']
+     row6 fills=['F4F6F8', 'EBF6FB']
+     row7 fills=['FFFFFF', 'EBF6FB']
+  'テキスト ボックス 15': 'Femap Configuration' font=None sz=28.0 bold=None color=None
+  'テキスト ボックス 20': 'TD' font=None sz=32.0 bold=None color=None
+  'テキスト ボックス 20': '：温度場' font=None sz=32.0 bold=None color=None
+
+=== Slide 12 (layout 1_タイトルとコンテンツ)
+  'TextBox 1': 'Thermo-structural analysis' font=Yu Gothic sz=20.0 bold=False color=666F79
+  'TextBox 2': 'LOS真値はSTT基準で見たLCT光軸の相対回転として定義する' font=None sz=32.0 bold=True color=None
+  'TextBox 3': '1' font=Yu Gothic sz=18.0 bold=False color=666F79
+  'TextBox 3': '3' font=Yu Gothic sz=18.0 bold=False color=666F79
+     SHAPE 'Rounded Rectangle 6' fill=EBF6FB line=5BB5D8 w=16510
+  'TextBox 7': 'LOS' font=Yu Gothic sz=28.0 bold=True color=1B74AA
+  'TextBox 7': '誤差 ' font=Yu Gothic sz=28.0 bold=True color=1B74AA
+  'TextBox 7': '採用' font=Yu Gothic sz=28.0 bold=True color=1B74AA
+  'TextBox 7': '指標' font=Yu Gothic sz=28.0 bold=True color=1B74AA
+  'TextBox 7': '：' font=Yu Gothic sz=28.0 bold=True color=1B74AA
+  'TextBox 7': 'far_field_los' font=Yu Gothic sz=28.0 bold=True color=1B74AA
+  'TextBox 8': '• ' font=Yu Gothic sz=24.0 bold=True color=1B74AA
+  'TextBox 8': 'LCT光軸回転' font=Yu Gothic sz=24.0 bold=None color=232B34
+  'TextBox 8': ' − ' font=Yu Gothic sz=24.0 bold=None color=232B34
+  'TextBox 8': 'STT姿勢基準回転' font=Yu Gothic sz=24.0 bold=None color=232B34
+  'TextBox 8': '• ' font=Yu Gothic sz=24.0 bold=True color=1B74AA
+  'TextBox 8': 'STT' font=Yu Gothic sz=24.0 bold=None color=232B34
+  'TextBox 8': 'は姿勢系の標準であるとしてそこからの誤差' font=Yu Gothic sz=24.0 bold=None color=232B34
+  'TextBox 8': '• ' font=Yu Gothic sz=24.0 bold=True color=1B74AA
+  'TextBox 8': '遠方通信のscan' font=Yu Gothic sz=24.0 bold=None color=232B34
+  'TextBox 8': ' center' font=Yu Gothic sz=24.0 bold=None color=232B34
+  'TextBox 8': '誤差に直接対応' font=Yu Gothic sz=24.0 bold=None color=232B34
+  'TextBox 8': '• ' font=Yu Gothic sz=24.0 bold=True color=1B74AA
+  'TextBox 8': '代表点間並進' font=Yu Gothic sz=24.0 bold=None color=232B34
+  'TextBox 8': 'による' font=Yu Gothic sz=24.0 bold=None color=232B34
+  'TextBox 8': 'centerline tilt' font=Yu Gothic sz=24.0 bold=None color=232B34
+  'TextBox 8': 'は含めない' font=Yu Gothic sz=24.0 bold=None color=232B34
+  'テキスト ボックス 22': 'STT' font=None sz=32.0 bold=None color=None
+  'テキスト ボックス 24': 'LCT' font=None sz=32.0 bold=None color=None
+  'テキスト ボックス 26': '並進ではなく、遠方通信に効く' font=None sz=32.0 bold=True color=None
+  'テキスト ボックス 26': 'STT/LCT' font=None sz=32.0 bold=True color=None
+  'テキスト ボックス 26': 'の' font=None sz=32.0 bold=True color=None
+  'テキスト ボックス 26': '相対光軸回転を' font=None sz=32.0 bold=True color=None
+  'テキスト ボックス 26': 'LOS' font=None sz=32.0 bold=True color=None
+  'テキスト ボックス 26': '誤差とする' font=None sz=32.0 bold=True color=None
+
+=== Slide 13 (layout 3_タイトルとコンテンツ)
+  'TextBox 1': 'Thermo-structural analysis' font=Yu Gothic sz=20.0 bold=False color=666F79
+  'TextBox 2': '21ケースで太陽' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': '指向' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': '面・' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': '内部' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': '発熱' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': '・' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': '表面特性' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': '・' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': '軌道' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': 'を横断評価する' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 3': '14' font=Yu Gothic sz=18.0 bold=False color=666F79
+  TABLE 'Table 4' hdr_font=Yu Gothic sz=23.0 color=FFFFFF fill?
+     row0 fills=['082B52', '082B52', '082B52']
+     row1 fills=['FFFFFF', 'FFFFFF', 'EBF6FB']
+     row2 fills=['F4F6F8', 'F4F6F8', 'EBF6FB']
+     row3 fills=['FFFFFF', 'FFFFFF', 'EBF6FB']
+     row4 fills=['F4F6F8', 'F4F6F8', 'EBF6FB']
+     row5 fills=['FFFFFF', 'FFFFFF', 'EBF6FB']
+     row6 fills=['F4F6F8', 'F4F6F8', 'EBF6FB']
+  'TextBox 6': '※ Sun face' font=Yu Gothic sz=26.0 bold=True color=D03B46
+  'TextBox 6': 'に関して、' font=Yu Gothic sz=26.0 bold=True color=D03B46
+  'TextBox 6': 'PZ/MZ' font=Yu Gothic sz=26.0 bold=True color=D03B46
+  'TextBox 6': '太陽指向は' font=Yu Gothic sz=26.0 bold=True color=D03B46
+  'TextBox 6': 'LCT/STT' font=Yu Gothic sz=26.0 bold=True color=D03B46
+  'TextBox 6': 'がいる面に太陽が当たることはないので除外' font=Yu Gothic sz=26.0 bold=True color=D03B46
+  'テキスト ボックス 8': 'ケースで振るパラメータ' font=None sz=28.0 bold=None color=None
+  'テキスト ボックス 7': '<case, orbit' font=None sz=28.0 bold=None color=theme
+  'テキスト ボックス 7': 'の記述先' font=None sz=28.0 bold=None color=theme
+  'テキスト ボックス 7': '>' font=None sz=28.0 bold=None color=theme
+  'テキスト ボックス 7': 'Case matrix' font=None sz=28.0 bold=None color=467886
+  'テキスト ボックス 7': 'Orbit matrix' font=None sz=28.0 bold=None color=None
+
+=== Slide 15 (layout タイトルとコンテンツ)
+  'TextBox 1': 'Thermo-structural results' font=Yu Gothic sz=20.0 bold=False color=666F79
+  'TextBox 2': '解析結果：' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': '温度場と熱LOSは同じ軌道周期で変動する' font=None sz=32.0 bold=True color=None
+  'TextBox 3': '16' font=Yu Gothic sz=18.0 bold=False color=666F79
+  'TextBox 8': '各衛星パネル上の' font=Yu Gothic sz=23.0 bold=True color=1B74AA
+  'TextBox 8': 'Temperature' font=Yu Gothic sz=23.0 bold=True color=1B74AA
+  'TextBox 9': 'Case 04 (MY' font=Yu Gothic sz=23.0 bold=True color=239571
+  'TextBox 9': '太陽' font=Yu Gothic sz=23.0 bold=True color=239571
+  'TextBox 9': ')' font=Yu Gothic sz=23.0 bold=True color=239571
+  'TextBox 9': 'における ' font=Yu Gothic sz=23.0 bold=True color=239571
+  'TextBox 9': 'Far-field LOS' font=Yu Gothic sz=23.0 bold=True color=239571
+  'テキスト ボックス 25': '•' font=Yu Gothic sz=32.0 bold=True color=1B74AA
+  'テキスト ボックス 25': ' ' font=Yu Gothic sz=32.0 bold=True color=1B74AA
+  'テキスト ボックス 25': '大きく熱' font=None sz=32.0 bold=True color=FF0000
+  'テキスト ボックス 25': 'LOS' font=None sz=32.0 bold=True color=FF0000
+  'テキスト ボックス 25': 'が出るのは太陽方向（' font=None sz=32.0 bold=True color=FF0000
+  'テキスト ボックス 25': 'Y' font=None sz=32.0 bold=True color=FF0000
+  'テキスト ボックス 25': '軸）' font=None sz=32.0 bold=True color=FF0000
+  'テキスト ボックス 25': '• ' font=Yu Gothic sz=32.0 bold=True color=1B74AA
+  'テキスト ボックス 25': 'さらに、' font=None sz=32.0 bold=True color=FF0000
+  'テキスト ボックス 25': 'LOS' font=None sz=32.0 bold=True color=FF0000
+  'テキスト ボックス 25': '誤差の' font=None sz=32.0 bold=True color=FF0000
+  'テキスト ボックス 25': 'Y' font=None sz=32.0 bold=True color=FF0000
+  'テキスト ボックス 25': '方向の変化と' font=None sz=32.0 bold=True color=FF0000
+  'テキスト ボックス 25': 'MY' font=None sz=32.0 bold=True color=FF0000
+  'テキスト ボックス 25': '面の温度変化が似ていることがわかる' font=None sz=32.0 bold=True color=FF0000
+
+=== Slide 17 (layout タイトルとコンテンツ)
+  'TextBox 1': 'Lightweight LOS model' font=Yu Gothic sz=20.0 bold=False color=666F79
+  'TextBox 2': '軌道上実装には、少数入力で熱LOSを直接予測できるモデルが必要' font=None sz=32.0 bold=True color=None
+  'TextBox 3': '19' font=Yu Gothic sz=18.0 bold=False color=666F79
+     SHAPE 'Rounded Rectangle 4' fill=F4F6F8 line=B8D5E2 w=16510
+  'TextBox 5': 'Required' font=Yu Gothic sz=27.0 bold=True color=082B52
+  'TextBox 6': '• ' font=Yu Gothic sz=25.0 bold=True color=1B74AA
+  'TextBox 6': 'TD/' font=Yu Gothic sz=25.0 bold=None color=232B34
+  'TextBox 6': 'Femapをオンボードで回さない' font=Yu Gothic sz=25.0 bold=None color=232B34
+  'TextBox 6': '軽さ' font=Yu Gothic sz=25.0 bold=None color=232B34
+  'TextBox 6': '• ' font=Yu Gothic sz=25.0 bold=True color=1B74AA
+  'TextBox 6': '少数温度センサ' font=Yu Gothic sz=25.0 bold=None color=232B34
+  'TextBox 6': 'と運用情報だけで計算' font=Yu Gothic sz=25.0 bold=None color=232B34
+  'TextBox 6': '• ' font=Yu Gothic sz=25.0 bold=True color=1B74AA
+  'TextBox 6': 'ケース' font=Yu Gothic sz=25.0 bold=None color=232B34
+  'TextBox 6': '変更に対応' font=Yu Gothic sz=25.0 bold=None color=232B34
+  'TextBox 6': '• ' font=Yu Gothic sz=25.0 bold=True color=1B74AA
+  'TextBox 6': '固定少数係数' font=Yu Gothic sz=25.0 bold=None color=232B34
+  'TextBox 6': '• ' font=Yu Gothic sz=25.0 bold=True color=1B74AA
+  'TextBox 6': 'scan-' font=Yu Gothic sz=25.0 bold=None color=232B34
+  'TextBox 6': 'center補正を直接出力' font=Yu Gothic sz=25.0 bold=None color=232B34
+  'TextBox 6': '• ' font=Yu Gothic sz=25.0 bold=True color=1B74AA
+  'TextBox 6': '係数の物理的解釈が可能' font=Yu Gothic sz=25.0 bold=None color=232B34
+  TABLE 'Table 7' hdr_font=Yu Gothic sz=23.0 color=FFFFFF fill?
+     row0 fills=['082B52', '082B52']
+     row1 fills=['EBF6FB', 'FFFFFF']
+     row2 fills=['EBF6FB', 'F4F6F8']
+     row3 fills=['EBF6FB', 'FFFFFF']
+     row4 fills=['EBF6FB', 'F4F6F8']
+     row5 fills=['EBF6FB', 'F4F6F8']
+     row6 fills=['EBF6FB', 'FFFFFF']
+  'TextBox 8': '→ 試行錯誤の結果、' font=None sz=32.0 bold=True color=None
+  'TextBox 8': '太陽面–反対面温度差 ΔT とケース' font=None sz=32.0 bold=True color=None
+  'TextBox 8': '間差分の寄与' font=None sz=32.0 bold=True color=None
+  'TextBox 8': 'を分離する階層型モデル' font=None sz=32.0 bold=True color=None
+  'TextBox 8': 'を採用' font=None sz=32.0 bold=True color=None
+
+=== Slide 19 (layout タイトルとコンテンツ)
+  'TextBox 1': 'Hierarchical ΔT model' font=Yu Gothic sz=20.0 bold=False color=666F79
+  'TextBox 2': '階層型 熱ひずみ予測モデル（階層' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': '1' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': '）' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 3': '21' font=Yu Gothic sz=18.0 bold=False color=666F79
+     SHAPE 'Rounded Rectangle 4' fill=EBF6FB line=5BB5D8 w=16510
+     SHAPE 'Rounded Rectangle 7' fill=FFFFFF line=1B74AA w=22860
+  'TextBox 9': '太陽指向面ごとの熱感度' font=None sz=28.0 bold=True color=None
+  'TextBox 9': '同じ太陽指向面のケース間で共有' font=None sz=28.0 bold=None color=None
+     SHAPE 'Rounded Rectangle 10' fill=FFFFFF line=EC9427 w=22860
+  'TextBox 12': 'ケース依存のDCオフセット' font=None sz=28.0 bold=True color=None
+  'TextBox 12': '発熱・被覆・軌道条件による平均差を吸収' font=None sz=28.0 bold=None color=None
+  'TextBox 12': '階層' font=Yu Gothic sz=28.0 bold=False color=232B34
+  'TextBox 12': '2' font=Yu Gothic sz=28.0 bold=None color=232B34
+  'TextBox 12': 'でさらに分解' font=Yu Gothic sz=28.0 bold=None color=232B34
+     SHAPE 'Rounded Rectangle 13' fill=FFFFFF line=239571 w=22860
+  'TextBox 14': 'dominant axis' font=Yu Gothic sz=36.0 bold=True color=239571
+  'TextBox 15': '太陽指向面から予測軸を選択' font=None sz=28.0 bold=True color=None
+  'TextBox 15': 'MX/PX → X軸，MY/PY → Y軸' font=None sz=28.0 bold=None color=None
+  'TextBox 15': '非支配軸はstatic biasで扱う' font=None sz=28.0 bold=None color=None
+  'テキスト ボックス 21': '時間変動は面間温度差で、ケースごとの差はDCオフセットで表す' font=None sz=32.0 bold=True color=None
+
+=== Slide 21 (layout タイトルとコンテンツ)
+  'TextBox 1': 'Hierarchical ΔT model' font=Yu Gothic sz=20.0 bold=False color=666F79
+  'TextBox 2': 'パラメータの決め方：' font=+mn-ea sz=32.0 bold=True color=None
+  'TextBox 2': 'Level 1で軌道内感度を推定し、Level 2でケース間DCを学習する' font=+mn-ea sz=32.0 bold=True color=None
+  'TextBox 3': '23' font=Yu Gothic sz=18.0 bold=False color=666F79
+  'TextBox 5': 'Pre-case fitting' font=Yu Gothic sz=21.0 bold=True color=FFFFFF
+  'TextBox 11': 'Median aemp\nper face' font=Yu Gothic sz=21.0 bold=True color=FFFFFF
+  'TextBox 14': 'Shared Sensitivity' font=Yu Gothic sz=21.0 bold=True color=FFFFFF
+  'TextBox 17': 'Case-DC model' font=Yu Gothic sz=21.0 bold=True color=FFFFFF
+     SHAPE 'Rounded Rectangle 19' fill=FDEFF0 line=D03B46 w=16510
+  'TextBox 20': '本評価は同一衛星構造内の条件横断性を対象とし、別衛星構造への汎化は未評価' font=None sz=28.0 bold=True color=theme
+     SHAPE 'Rounded Rectangle 7' fill=FFFFFF line=1B74AA w=22860
+  'TextBox 8': 'Shared Sensitivity' font=+mn-ea sz=32.0 bold=True color=0070C0
+     SHAPE 'Rounded Rectangle 10' fill=FFFFFF line=EC9427 w=22860
+     SHAPE 'Rounded Rectangle 13' fill=FFFFFF line=239571 w=22860
+  'TextBox 14': 'Level1: Pre-case fitting' font=Yu Gothic sz=32.0 bold=True color=00B050
+
+=== Slide 22 (layout タイトルとコンテンツ)
+  'TextBox 1': 'Hierarchical ΔT model' font=Yu Gothic sz=20.0 bold=False color=666F79
+  'TextBox 3': '24' font=Yu Gothic sz=18.0 bold=False color=666F79
+     SHAPE 'Rectangle 4' fill=None line=B8D5E2 w=12700
+     SHAPE 'Rounded Rectangle 7' fill=EAF8F1 line=239571 w=16510
+  'TextBox 8': '同一太陽指向面ではケース別感度が狭く分布し、感度の大きさは約28–31 µrad' font=None sz=28.0 bold=None color=None
+  'TextBox 8': '℃ ' font=None sz=28.0 bold=None color=None
+  'TextBox 8': 'で安定した。' font=None sz=28.0 bold=None color=None
+  'TextBox 8': '太陽指向面に応じて符号・支配軸は系統的に変化する。' font=None sz=28.0 bold=None color=None
+  'TextBox 8': '→ 同一基本構造では、' font=None sz=28.0 bold=True color=None
+  'TextBox 8': '事前解析・事前試験等で' font=None sz=28.0 bold=True color=None
+  'TextBox 8': '共有感度を事前固定できる可能性' font=None sz=28.0 bold=True color=None
+
+=== Slide 25 (layout タイトルとコンテンツ)
+  'TextBox 1': 'Hierarchical ΔT model' font=Yu Gothic sz=20.0 bold=False color=666F79
+  'TextBox 2': '結果' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': '<' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': '統合' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': '>' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': '：' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': '生LOS数百µradに対し、LOO' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': ' test残差は平均約5.5 µ' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': 'radとなる' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 3': '27' font=Yu Gothic sz=18.0 bold=False color=666F79
+     SHAPE 'Rectangle 4' fill=None line=B8D5E2 w=12700
+     SHAPE 'Rounded Rectangle 6' fill=FFFFFF line=1B74AA w=22860
+  'TextBox 7': '615 µrad' font=Yu Gothic sz=34.0 bold=True color=1B74AA
+  'TextBox 8': 'median raw RMS' font=Yu Gothic sz=19.0 bold=False color=666F79
+     SHAPE 'Rounded Rectangle 9' fill=FFFFFF line=239571 w=22860
+  'TextBox 10': '5.5 µrad' font=Yu Gothic sz=34.0 bold=True color=239571
+  'TextBox 11': 'mean LOO test RMSE' font=Yu Gothic sz=19.0 bold=False color=666F79
+     SHAPE 'Rounded Rectangle 12' fill=FFFFFF line=EC9427 w=22860
+  'TextBox 13': '1–2 orders' font=Yu Gothic sz=34.0 bold=True color=EC9427
+  'TextBox 14': 'thermal reduction' font=Yu Gothic sz=19.0 bold=False color=666F79
+  'TextBox 15': 'raw RMSとprediction RMSEは異なる統計量：オーダー比較として' font=Yu Gothic sz=23.0 bold=False color=666F79
+
+=== Slide 29 (layout タイトルとコンテンツ)
+  'TextBox 1': 'PAT evaluation' font=Yu Gothic sz=20.0 bold=False color=666F79
+  'TextBox 2': 'PAT' font=None sz=32.0 bold=True color=None
+  'TextBox 2': '評価：' font=None sz=32.0 bold=True color=None
+  'TextBox 2': '真の指向誤差から予測熱LOSを差し引き、その残差をスキャン中心誤差として捕捉時間' font=None sz=32.0 bold=True color=None
+  'TextBox 3': '31' font=Yu Gothic sz=18.0 bold=False color=666F79
+     SHAPE 'Rounded Rectangle 4' fill=EBF6FB line=5BB5D8 w=16510
+     SHAPE 'Rectangle 6' fill=082B52 line=082B52 w=16510
+  'TextBox 7': 'Thermal LOS\ntruth' font=Yu Gothic sz=21.0 bold=True color=FFFFFF
+     SHAPE 'Rectangle 9' fill=1B74AA line=1B74AA w=16510
+  'TextBox 10': 'Mode' font=Yu Gothic sz=21.0 bold=True color=FFFFFF
+  'TextBox 10': 'l-' font=Yu Gothic sz=21.0 bold=True color=FFFFFF
+  'TextBox 10': 'predict' font=Yu Gothic sz=21.0 bold=True color=FFFFFF
+  'TextBox 10': 'ed' font=Yu Gothic sz=21.0 bold=True color=FFFFFF
+  'TextBox 10': 'Thermal LOS' font=Yu Gothic sz=21.0 bold=True color=FFFFFF
+     SHAPE 'Rectangle 12' fill=239571 line=239571 w=16510
+  'TextBox 13': 'Scan-center\nresidual' font=Yu Gothic sz=21.0 bold=True color=FFFFFF
+     SHAPE 'Rectangle 15' fill=EC9427 line=EC9427 w=16510
+  'TextBox 16': 'Rectangular\nspiral' font=Yu Gothic sz=21.0 bold=True color=FFFFFF
+  'TextBox 16': ' scan' font=Yu Gothic sz=21.0 bold=True color=FFFFFF
+     SHAPE 'Rectangle 18' fill=5D4084 line=5D4084 w=16510
+  'TextBox 19': 'Acquisition\n' font=Yu Gothic sz=21.0 bold=True color=FFFFFF
+  'TextBox 19': 'success / ' font=Yu Gothic sz=21.0 bold=True color=FFFFFF
+  'TextBox 19': 'time' font=Yu Gothic sz=21.0 bold=True color=FFFFFF
+  TABLE 'Table 20' hdr_font=None sz=20.0 color=None fill?
+     row0 fills=['082B52', '082B52']
+     row1 fills=['EBF6FB', 'FFFFFF']
+     row2 fills=['EBF6FB', 'F4F6F8']
+     row3 fills=['EBF6FB', 'FFFFFF']
+     row4 fills=['EBF6FB', 'F4F6F8']
+     row5 fills=['EBF6FB', 'scheme:bg1']
+  'テキスト ボックス 22': '軌道予測・姿勢決定などの' font=None sz=None bold=None color=None
+  'テキスト ボックス 22': '非熱誤差' font=None sz=None bold=None color=None
+  'テキスト ボックス 26': '熱' font=None sz=None bold=None color=None
+  'テキスト ボックス 26': 'LOS' font=None sz=None bold=None color=None
+  'テキスト ボックス 26': '真値' font=None sz=None bold=None color=None
+  'テキスト ボックス 28': '軽量モデルによる予測熱LOS' font=None sz=None bold=None color=None
+  'テキスト ボックス 30': 'スキャン中心誤差' font=None sz=None bold=None color=None
+  'テキスト ボックス 44': 'PAT' font=None sz=28.0 bold=None color=None
+  'テキスト ボックス 44': '評価の流れ' font=None sz=28.0 bold=None color=None
+  'テキスト ボックス 46': '残差計算式' font=None sz=28.0 bold=None color=None
+  'テキスト ボックス 51': '比較する評価条件 一覧' font=None sz=28.0 bold=None color=None
+     SHAPE 'Rectangle 9' fill=1B74AA line=1B74AA w=16510
+  'TextBox 10': 'Mode' font=Yu Gothic sz=21.0 bold=True color=FFFFFF
+  'TextBox 10': 'l-' font=Yu Gothic sz=21.0 bold=True color=FFFFFF
+  'TextBox 10': 'predict' font=Yu Gothic sz=21.0 bold=True color=FFFFFF
+  'TextBox 10': 'ed' font=Yu Gothic sz=21.0 bold=True color=FFFFFF
+  'TextBox 10': 'Thermal LOS' font=Yu Gothic sz=21.0 bold=True color=FFFFFF
+  'テキスト ボックス 64': '→ ' font=None sz=24.0 bold=True color=theme
+  'テキスト ボックス 64': 'LOS予測精度ではなく、残差が粗捕捉時間' font=None sz=24.0 bold=True color=theme
+  'テキスト ボックス 64': '・成功率' font=None sz=24.0 bold=True color=theme
+  'テキスト ボックス 64': 'に与える影響を評価' font=None sz=24.0 bold=True color=theme
+
+=== Slide 30 (layout タイトルとコンテンツ)
+  'TextBox 1': 'PAT simulation conditions' font=Yu Gothic sz=20.0 bold=False color=666F79
+  'TextBox 2': '粗捕捉は矩形スパイラルの離散走査として簡略化する' font=None sz=32.0 bold=True color=None
+  'TextBox 3': '32' font=Yu Gothic sz=18.0 bold=False color=666F79
+     SHAPE 'Rounded Rectangle 4' fill=F4F6F8 line=B8D5E2 w=16510
+     SHAPE 'Oval 15' fill=1B74AA line=None w=None
+     SHAPE 'Oval 16' fill=1B74AA line=None w=None
+     SHAPE 'Oval 17' fill=1B74AA line=None w=None
+     SHAPE 'Oval 18' fill=1B74AA line=None w=None
+     SHAPE 'Oval 19' fill=1B74AA line=None w=None
+     SHAPE 'Oval 20' fill=1B74AA line=None w=None
+     SHAPE 'Oval 21' fill=1B74AA line=None w=None
+     SHAPE 'Oval 22' fill=1B74AA line=None w=None
+     SHAPE 'Oval 23' fill=1B74AA line=None w=None
+     SHAPE 'Oval 24' fill=1B74AA line=None w=None
+     SHAPE 'Oval 25' fill=1B74AA line=None w=None
+     SHAPE 'Oval 26' fill=FEF5E6 line=EC9427 w=None
+  TABLE 'Table 27' hdr_font=None sz=24.0 color=None fill?
+     row0 fills=['082B52', '082B52']
+     row1 fills=['FFFFFF', 'EBF6FB']
+     row2 fills=['F4F6F8', 'EBF6FB']
+     row3 fills=['FFFFFF', 'EBF6FB']
+     row4 fills=['F4F6F8', 'EBF6FB']
+     row5 fills=['FFFFFF', 'EBF6FB']
+     row6 fills=['F4F6F8', 'EBF6FB']
+     SHAPE 'Rounded Rectangle 28' fill=FDEFF0 line=D03B46 w=16510
+  'TextBox 29': '簡略化：点間移動・整定時間・受光強度の確率変動は考慮しない' font=None sz=24.0 bold=True color=theme
+  'TextBox 29': '各走査点を独立な捕捉機会として評価する' font=None sz=24.0 bold=True color=theme
+  'テキスト ボックス 31': '真の指向誤差が検出半径内に入った最初の走査点を捕捉時刻とする' font=None sz=28.0 bold=True color=None
+  'テキスト ボックス 33': '※' font=None sz=None bold=None color=None
+  'テキスト ボックス 33': '妥当な' font=None sz=None bold=None color=None
+  'テキスト ボックス 33': '検出半径またはstep' font=None sz=None bold=None color=None
+  'テキスト ボックス 33': 'は' font=None sz=None bold=None color=None
+  'テキスト ボックス 33': '後で再検討する' font=None sz=None bold=None color=None
+
+=== Slide 31 (layout タイトルとコンテンツ)
+  'TextBox 1': 'PAT simulation conditions' font=Yu Gothic sz=20.0 bold=False color=666F79
+  'TextBox 2': '非熱誤差' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': '：' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': '軌道・アライメント・姿勢・ドリフトを合成する' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 3': '33' font=Yu Gothic sz=18.0 bold=False color=666F79
+     SHAPE 'Rounded Rectangle 4' fill=EBF6FB line=5BB5D8 w=16510
+  TABLE 'Table 6' hdr_font=Yu Gothic sz=21.0 color=FFFFFF fill?
+     row0 fills=['082B52', '082B52', '082B52', '082B52']
+     row1 fills=['EBF6FB', 'FFFFFF', 'FFFFFF', 'FFFFFF']
+     row2 fills=['EBF6FB', 'F4F6F8', 'F4F6F8', 'F4F6F8']
+     row3 fills=['EBF6FB', 'FFFFFF', 'FFFFFF', 'FFFFFF']
+     row4 fills=['EBF6FB', 'F4F6F8', 'F4F6F8', 'F4F6F8']
+  'TextBox 7': '特定衛星の誤差バジェット再現ではなく、GNSS非搭載LEO小型衛星の共存シナリオ' font=Yu Gothic sz=27.0 bold=True color=D03B46
+
+=== Slide 35 (layout タイトルとコンテンツ)
+  'TextBox 1': 'PAT results' font=Yu Gothic sz=20.0 bold=False color=666F79
+  'TextBox 2': '結果' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': '1' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': '：' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': '熱のみでは階層モデルがthermal-truth上界にほぼ到達する' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 3': '37' font=Yu Gothic sz=18.0 bold=False color=666F79
+  'TextBox 4': 'No correction' font=Yu Gothic sz=21.0 bold=False color=232B34
+     SHAPE 'Rectangle 5' fill=F4F6F8 line=F4F6F8 w=16510
+     SHAPE 'Rectangle 6' fill=D03B46 line=D03B46 w=16510
+  'TextBox 7': '124.6 s' font=Yu Gothic sz=20.0 bold=True color=D03B46
+  'TextBox 8': 'Static bias' font=Yu Gothic sz=21.0 bold=False color=232B34
+     SHAPE 'Rectangle 9' fill=F4F6F8 line=F4F6F8 w=16510
+     SHAPE 'Rectangle 10' fill=EC9427 line=EC9427 w=16510
+  'TextBox 11': '4.78 s' font=Yu Gothic sz=20.0 bold=True color=EC9427
+  'TextBox 12': 'Hierarchical bcase' font=Yu Gothic sz=21.0 bold=False color=232B34
+     SHAPE 'Rectangle 13' fill=F4F6F8 line=F4F6F8 w=16510
+     SHAPE 'Rectangle 14' fill=239571 line=239571 w=16510
+  'TextBox 15': '0.116 s' font=Yu Gothic sz=20.0 bold=True color=239571
+  'TextBox 16': 'Thermal truth' font=Yu Gothic sz=21.0 bold=False color=232B34
+     SHAPE 'Rectangle 17' fill=F4F6F8 line=F4F6F8 w=16510
+     SHAPE 'Rectangle 18' fill=1B74AA line=1B74AA w=16510
+  'TextBox 19': '0.1 s' font=Yu Gothic sz=20.0 bold=True color=1B74AA
+  TABLE 'Table 20' hdr_font=Yu Gothic sz=20.0 color=FFFFFF fill?
+     row0 fills=['082B52', '082B52', '082B52']
+     row1 fills=['FFFFFF', 'FFFFFF', 'EBF6FB']
+     row2 fills=['F4F6F8', 'F4F6F8', 'EBF6FB']
+     row3 fills=['FFFFFF', 'FFFFFF', 'EBF6FB']
+     row4 fills=['F4F6F8', 'F4F6F8', 'EBF6FB']
+     SHAPE 'Rounded Rectangle 21' fill=FFFFFF line=239571 w=22860
+  'TextBox 22': '8.8 µrad' font=Yu Gothic sz=34.0 bold=True color=239571
+  'TextBox 23': 'mean thermal residual' font=Yu Gothic sz=19.0 bold=False color=666F79
+  'TextBox 24': '熱モデル自体の能力を見る理想条件。主結果は非熱込み。' font=Yu Gothic sz=25.0 bold=False color=666F79
+
+=== Slide 36 (layout タイトルとコンテンツ)
+  'TextBox 1': 'PAT results' font=Yu Gothic sz=20.0 bold=False color=666F79
+  'TextBox 2': '結果' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': '2' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': '：' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 2': '非熱込みでも平均捕捉時間156.9→59.6 s、成功率94.0→97.1%とな' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 3': '38' font=Yu Gothic sz=18.0 bold=False color=666F79
+  'TextBox 4': 'No thermal correction' font=Yu Gothic sz=21.0 bold=False color=232B34
+     SHAPE 'Rectangle 5' fill=F4F6F8 line=F4F6F8 w=16510
+     SHAPE 'Rectangle 6' fill=D03B46 line=D03B46 w=16510
+  'TextBox 7': '156.9 s' font=Yu Gothic sz=20.0 bold=True color=D03B46
+  'TextBox 8': 'Hierarchical bcase FF' font=Yu Gothic sz=21.0 bold=False color=232B34
+     SHAPE 'Rectangle 9' fill=F4F6F8 line=F4F6F8 w=16510
+     SHAPE 'Rectangle 10' fill=239571 line=239571 w=16510
+  'TextBox 11': '59.6 s' font=Yu Gothic sz=20.0 bold=True color=239571
+     SHAPE 'Rounded Rectangle 12' fill=FFFFFF line=239571 w=22860
+  'TextBox 13': '−62%' font=Yu Gothic sz=34.0 bold=True color=239571
+  'TextBox 14': 'mean acquisition time' font=Yu Gothic sz=19.0 bold=False color=666F79
+     SHAPE 'Rounded Rectangle 15' fill=FFFFFF line=1B74AA w=22860
+  'TextBox 16': '+3.1 pt' font=Yu Gothic sz=34.0 bold=True color=1B74AA
+  'TextBox 17': 'success rate' font=Yu Gothic sz=19.0 bold=False color=666F79
+  TABLE 'Table 18' hdr_font=Yu Gothic sz=21.0 color=FFFFFF fill?
+     row0 fills=['082B52', '082B52', '082B52']
+     row1 fills=['FFFFFF', 'FFFFFF', 'EBF6FB']
+     row2 fills=['F4F6F8', 'F4F6F8', 'EBF6FB']
+     row3 fills=['FFFFFF', 'FFFFFF', 'EBF6FB']
+     row4 fills=['F4F6F8', 'F4F6F8', 'EBF6FB']
+  'TextBox 19': '補正後は非熱、特に軌道予測誤差が性能を支配する' font=Yu Gothic sz=28.0 bold=True color=082B52
+
+=== Slide 44 (layout タイトルとコンテンツ)
+  'TextBox 1': 'Appendix' font=Yu Gothic sz=20.0 bold=False color=666F79
+  'TextBox 2': '関連研究の位置づけ' font=Yu Gothic sz=32.0 bold=True color=082B52
+  'TextBox 3': 'A1' font=Yu Gothic sz=18.0 bold=False color=666F79
+  TABLE 'Table 4' hdr_font=Yu Gothic sz=23.0 color=FFFFFF fill?
+     row0 fills=['5D4084', '5D4084']
+     row1 fills=['FFFFFF', 'EBF6FB']
+     row2 fills=['F4F6F8', 'EBF6FB']
+     row3 fills=['FFFFFF', 'EBF6FB']
+     row4 fills=['F4F6F8', 'EBF6FB']
+     row5 fills=['FFFFFF', 'EBF6FB']
+     row6 fills=['F4F6F8', 'EBF6FB']

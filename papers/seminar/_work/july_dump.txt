@@ -1,0 +1,1247 @@
+SLIDE SIZE: 26.66 x 15.00 in
+LAYOUTS:
+  [0] タイトル スライド
+  [1] セクション見出し
+  [2] タイトルとコンテンツ
+  [3] 1_タイトルとコンテンツ
+  [4] 5_タイトルとコンテンツ
+  [5] 6_タイトルとコンテンツ
+  [6] 2_タイトルとコンテンツ
+  [7] 3_タイトルとコンテンツ
+  [8] 7_タイトルとコンテンツ
+  [9] 1_セクション見出し
+  [10] 4_タイトルとコンテンツ
+  [11] ユーザー設定レイアウト
+N SLIDES: 54
+
+=== Slide 1 | layout=タイトル スライド | shapes=7
+  <PLACEHOLDER (14)> name='タイトル 1' pos=(10.58,8.03) size=(13.60,2.32)
+      TEXT: Feedforward and Adaptive Correction of | Time-Varying Thermal Bias for Coarse Acquisition | in Optical Communication Systems
+  <PLACEHOLDER (14)> name='字幕 2' pos=(10.58,13.08) size=(9.36,0.80)
+      TEXT: Hideki Takamoto (The University of Tokyo)
+  <PLACEHOLDER (14)> name='テキスト プレースホルダー 3' pos=(18.03,8.43) size=(6.15,0.76)
+      TEXT: 2026/07/21
+  <PLACEHOLDER (14)> name='テキスト プレースホルダー 4' pos=(10.58,7.53) size=(6.15,0.76)
+  <PLACEHOLDER (14)> name='テキスト プレースホルダー 5' pos=(18.03,7.70) size=(6.15,0.76)
+      TEXT: Optical Communication Research Group
+  <PLACEHOLDER (14)> name='スライド番号プレースホルダー 6' pos=(20.28,13.90) size=(6.00,0.80)
+      TEXT: 1
+  <TEXT_BOX (17)> name='TextBox 7' pos=(10.58,11.02) size=(12.20,0.60)
+      TEXT: 熱ひずみ予測と適応補正による光通信粗捕捉性能向上の検討
+  NOTES: 7月6日の発表以降の進捗として、階層ΔTモデル、PAT評価、軌道予測誤差の導入を報告する。
+
+=== Slide 2 | layout=セクション見出し | shapes=3
+  <PLACEHOLDER (14)> name='タイトル 1' pos=(10.62,4.59) size=(5.43,1.96)
+      TEXT: 01
+  <PLACEHOLDER (14)> name='テキスト プレースホルダー 2' pos=(1.83,8.45) size=(23.00,3.28)
+      TEXT: Overview
+  <PLACEHOLDER (14)> name='スライド番号プレースホルダー 3' pos=(20.28,13.90) size=(6.00,0.80)
+      TEXT: 2
+  NOTES: 冒頭で前回までの位置づけと今回のゴールを共有する。
+
+=== Slide 3 | layout=タイトルとコンテンツ | shapes=21
+  <PLACEHOLDER (14)> name='タイトル 1' pos=(1.68,1.49) size=(24.39,1.70)
+      TEXT: 本日の目標：熱ひずみ予測モデルをレビューしてもらう
+  <PLACEHOLDER (14)> name='テキスト プレースホルダー 3' pos=(0.60,0.26) size=(17.41,0.81)
+      TEXT: Overview
+  <PLACEHOLDER (14)> name='スライド番号プレースホルダー 4' pos=(20.28,13.90) size=(6.00,0.80)
+      TEXT: 3
+  <TEXT_BOX (17)> name='TextBox 5' pos=(1.25,4.29) size=(1.20,0.55)
+      TEXT: 01
+  <AUTO_SHAPE (1)> name='Rectangle 6' pos=(1.25,4.76) size=(7.35,4.35)
+  <AUTO_SHAPE (1)> name='Rectangle 7' pos=(1.25,4.76) size=(7.35,0.68)
+  <TEXT_BOX (17)> name='TextBox 8' pos=(2.33,5.76) size=(5.19,0.55)
+      TEXT: 階層型 熱ひずみ予測モデル
+  <TEXT_BOX (17)> name='TextBox 9' pos=(2.33,6.86) size=(5.20,1.42)
+      TEXT: 衛星の構造や配置で変わる層 | 軌道・熱環境で変わる層 | の2層に分けてLOS誤差を予測
+  <TEXT_BOX (17)> name='TextBox 10' pos=(9.50,4.29) size=(1.20,0.55)
+      TEXT: 02
+  <AUTO_SHAPE (1)> name='Rectangle 11' pos=(9.50,4.76) size=(7.35,4.35)
+  <AUTO_SHAPE (1)> name='Rectangle 12' pos=(9.50,4.76) size=(7.35,0.68)
+  <TEXT_BOX (17)> name='TextBox 13' pos=(10.29,5.76) size=(5.77,0.55)
+      TEXT: 非熱誤差も含めた捕捉性能評価
+  <TEXT_BOX (17)> name='TextBox 14' pos=(11.62,6.86) size=(3.11,1.42)
+      TEXT: 軌道予測誤差等、 | 非熱誤差込みの | 捕捉性能の評価
+  <TEXT_BOX (17)> name='TextBox 15' pos=(17.75,4.29) size=(1.20,0.55)
+      TEXT: 03
+  <AUTO_SHAPE (1)> name='Rectangle 16' pos=(17.75,4.76) size=(7.35,4.35)
+  <AUTO_SHAPE (1)> name='Rectangle 17' pos=(17.75,4.76) size=(7.35,0.68)
+  <TEXT_BOX (17)> name='TextBox 18' pos=(19.15,5.76) size=(4.55,0.55)
+      TEXT: モデルの事後的適応補正
+  <TEXT_BOX (17)> name='TextBox 19' pos=(18.60,6.86) size=(5.66,0.97)
+      TEXT: 軌道上で熱ひずみ予測モデルの | パラメータをadaptiveに更新する
+  <TEXT_BOX (17)> name='TextBox 20' pos=(1.25,10.85) size=(6.00,0.55)
+      TEXT: 今日特に議論したいこと
+  <TEXT_BOX (17)> name='TextBox 21' pos=(1.25,11.55) size=(23.80,2.14)
+      TEXT: • 現在の解析で用いている、捕捉スキャンモデル・誤差条件の妥当性 | • 熱と軌道誤差が同帯域にある場合の分離可能性 | • どのパラメータを軌道上で更新するか
+  <TEXT_BOX (17)> name='TextBox 20' pos=(1.25,3.62) size=(1.83,0.48)
+      TEXT: 研究の内容
+  NOTES: 本日は完成報告ではなく設計レビュー。モデル、PAT、Adaptiveの3点についてフィードバックをもらいたい。
+
+=== Slide 4 | layout=タイトルとコンテンツ | shapes=19
+  <PLACEHOLDER (14)> name='タイトル 1' pos=(1.68,1.49) size=(24.39,1.70)
+      TEXT: やりたいこと：熱ひずみによる粗捕捉開始時の scan-center error を運用側で改善
+  <PLACEHOLDER (14)> name='スライド番号プレースホルダー 3' pos=(20.28,13.90) size=(6.00,0.80)
+      TEXT: 4
+  <PLACEHOLDER (14)> name='テキスト プレースホルダー 4' pos=(0.60,0.26) size=(17.41,0.81)
+      TEXT: Background
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 5' pos=(1.20,3.70) size=(7.10,3.50)
+  <TEXT_BOX (17)> name='TextBox 6' pos=(1.50,4.25) size=(6.50,0.65)
+      TEXT: 光フィードバック前
+  <TEXT_BOX (17)> name='TextBox 7' pos=(1.60,5.55) size=(6.30,1.65)
+      TEXT: 姿勢・軌道・熱LOSを含む | 不確定領域を探索
+  <LINE (9)> name='Connector 8' pos=(8.55,6.40) size=(0.70,0.00)
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 9' pos=(9.55,3.70) size=(7.10,3.50)
+  <TEXT_BOX (17)> name='TextBox 10' pos=(9.85,4.25) size=(6.50,0.65)
+      TEXT: 日照・蝕／機器発熱
+  <TEXT_BOX (17)> name='TextBox 11' pos=(11.26,5.07) size=(3.73,0.94)
+      TEXT: 温度場 → 差動膨張 → | 衛星筐体のねじれ
+  <TEXT_BOX (17)> name='TextBox 12' pos=(10.83,6.31) size=(4.59,0.55)
+      TEXT: 10²–10³ µradのLOS誤差
+  <LINE (9)> name='Connector 13' pos=(16.90,6.40) size=(0.70,0.00)
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 14' pos=(17.90,3.70) size=(7.10,3.50)
+  <TEXT_BOX (17)> name='TextBox 15' pos=(19.43,4.25) size=(4.05,0.51)
+      TEXT: 予測FeedForward補正
+  <TEXT_BOX (17)> name='TextBox 16' pos=(18.30,5.55) size=(6.30,1.65)
+      TEXT: 熱LOSをscan centerから引き | 探索域・捕捉時間を低減
+  <TEXT_BOX (17)> name='TextBox 17' pos=(3.17,13.47) size=(20.32,0.58)
+      TEXT: 衛星/LCTの構造を変更せず、粗捕捉開始時のLOS誤差の中で予測可能な熱成分だけを運用側で除去する
+  <PICTURE (13)> name='図 19' pos=(18.50,7.73) size=(6.00,5.05)
+  <PICTURE (13)> name='図 21' pos=(1.35,7.54) size=(6.55,5.70)
+  <PICTURE (13)> name='図 23' pos=(9.75,7.84) size=(6.62,3.71)
+  NOTES: 光RG向けの復習。熱変形自体ではなくSTT基準とLCT光軸の差が粗捕捉開始時のscan-center errorになる。
+
+=== Slide 5 | layout=タイトルとコンテンツ | shapes=11
+  <PLACEHOLDER (14)> name='タイトル 1' pos=(1.68,1.49) size=(24.39,1.70)
+      TEXT: 進捗：2か月で熱LOS真値生成・軽量モデル構築・PAT統合評価まで進んだ
+  <PLACEHOLDER (14)> name='テキスト プレースホルダー 3' pos=(0.60,0.26) size=(17.41,0.81)
+      TEXT: Progress since 7/6
+  <PLACEHOLDER (14)> name='スライド番号プレースホルダー 4' pos=(20.28,13.90) size=(6.00,0.80)
+      TEXT: 5
+  <TEXT_BOX (17)> name='TextBox 5' pos=(5.58,3.35) size=(2.63,0.53)
+      TEXT: 5/26 輪講発表
+  <TEXT_BOX (17)> name='TextBox 6' pos=(18.78,3.35) size=(1.85,0.53)
+      TEXT: 7/21 本日
+  <AUTO_SHAPE (1)> name='Rectangle 7' pos=(1.30,4.20) size=(11.20,6.80)
+  <AUTO_SHAPE (1)> name='Rectangle 8' pos=(14.10,4.20) size=(11.20,6.80)
+  <TEXT_BOX (17)> name='TextBox 9' pos=(2.00,4.85) size=(9.90,3.46)
+      TEXT: 研究構想•評価枠組みの提案 | •熱ひずみを時間変動LOSバイアスとして定式 | • TD/Femapを高精度参照とする解析フローを提案  | • 軽量補正モデルの候補を整理 | • FF補正＋Adaptive補正の二層構造を構想  | • mock熱LOSモデルによる予備PAT評価
+  <TEXT_BOX (17)> name='TextBox 10' pos=(14.80,4.85) size=(9.90,4.04)
+      TEXT: 実データ生成•モデル構築・統合評価 | • TD/Femapにより21ケースの熱LOS真値を生成  | • 温度差に基づく階層型熱ひずみ予測モデルを構築  | •太陽面・発熱・被覆・軌道を横断して評価  | • Sentinel-1実軌道誤差を導入  | • 熱誤差と非熱誤差を統合したPAT性能評価  | • 軌道上更新対象をケースDC成分として再定義
+  <LINE (9)> name='Connector 11' pos=(12.75,7.50) size=(0.90,0.00)
+  <TEXT_BOX (17)> name='TextBox 12' pos=(4.56,11.75) size=(17.58,0.60)
+      TEXT: 現在の問い：同帯域の非熱誤差と共存しても、軽量熱モデルで捕捉性能を改善できるか
+  NOTES: 7月6日との違いを一枚で示す。当時の25.8秒は条件が異なる予備結果なので今回とは直接比較しない。
+
+=== Slide 6 | layout=タイトルとコンテンツ | shapes=31
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Overview
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.98) size=(12.20,0.60)
+      TEXT: 中身：熱ひずみ予測モデルの構築から軌道上補正までの流れ
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 6
+  <AUTO_SHAPE (1)> name='Rectangle 4' pos=(1.00,3.35) size=(3.77,1.35)
+  <TEXT_BOX (17)> name='TextBox 5' pos=(1.08,3.47) size=(3.61,1.11)
+      TEXT: Orbit / attitude | heat & coating
+  <LINE (9)> name='Connector 6' pos=(4.83,4.03) size=(0.30,0.00)
+  <AUTO_SHAPE (1)> name='Rectangle 7' pos=(5.19,3.35) size=(3.77,1.35)
+  <TEXT_BOX (17)> name='TextBox 8' pos=(5.27,3.47) size=(3.61,1.11)
+      TEXT: Thermal Desktop | temperature
+  <LINE (9)> name='Connector 9' pos=(9.01,4.03) size=(0.30,0.00)
+  <AUTO_SHAPE (1)> name='Rectangle 10' pos=(9.37,3.35) size=(3.77,1.35)
+  <TEXT_BOX (17)> name='TextBox 11' pos=(9.45,3.47) size=(3.61,1.11)
+      TEXT: Femap / Nastran | rotation
+  <LINE (9)> name='Connector 12' pos=(13.20,4.03) size=(0.30,0.00)
+  <AUTO_SHAPE (1)> name='Rectangle 13' pos=(13.56,3.35) size=(3.77,1.35)
+  <TEXT_BOX (17)> name='TextBox 14' pos=(13.64,3.47) size=(3.61,1.11)
+      TEXT: STT–LCT | thermal LOS
+  <LINE (9)> name='Connector 15' pos=(17.39,4.03) size=(0.30,0.00)
+  <AUTO_SHAPE (1)> name='Rectangle 16' pos=(17.75,3.35) size=(3.77,1.35)
+  <TEXT_BOX (17)> name='TextBox 17' pos=(17.83,3.47) size=(3.61,1.11)
+      TEXT: Lightweight | model
+  <LINE (9)> name='Connector 18' pos=(21.57,4.03) size=(0.30,0.00)
+  <AUTO_SHAPE (1)> name='Rectangle 19' pos=(21.93,3.35) size=(3.77,1.35)
+  <TEXT_BOX (17)> name='TextBox 20' pos=(22.01,3.47) size=(3.61,1.11)
+      TEXT: PAT | scan center
+  <AUTO_SHAPE (1)> name='Rectangle 21' pos=(1.00,7.86) size=(17.17,4.33)
+  <TEXT_BOX (17)> name='TextBox 22' pos=(1.54,8.31) size=(3.61,0.53)
+      TEXT: 地上でのモデル構築
+  <TEXT_BOX (17)> name='TextBox 23' pos=(1.74,9.36) size=(9.90,2.32)
+      TEXT: • 軌道・姿勢・熱環境を入力  | • TD/Femapで温度場・熱変形を計算 | • STT–LCT相対LOSの参照時系列を生成 | • 軽量モデルの学習・評価に使用
+  <AUTO_SHAPE (1)> name='Rectangle 24' pos=(18.43,7.86) size=(7.27,4.33)
+  <TEXT_BOX (17)> name='TextBox 25' pos=(18.76,8.31) size=(6.66,0.52)
+      TEXT: 軌道上でのモデル運用および補正
+  <TEXT_BOX (17)> name='TextBox 26' pos=(18.84,9.36) size=(6.35,2.19)
+      TEXT: • 温度センサ・運用情報を入力 | • 軽量モデルで熱LOSを予測 | • Scan centerを補正 | • 捕捉後残差でモデルを更新
+  <TEXT_BOX (17)> name='TextBox 27' pos=(3.34,12.94) size=(21.80,1.14)
+      TEXT: • TD/Femapは地上での教師データ生成・妥当性評価にのみ使用し、軌道上では軽量モデルのみを使用する | • モデル性能は、LOS予測誤差だけでなく、捕捉成功率・捕捉時間でも評価する
+  <PICTURE (13)> name='図 31' pos=(5.11,4.84) size=(3.60,2.97)
+  <PICTURE (13)> name='図 33' pos=(9.82,5.30) size=(2.84,1.94)
+  <PICTURE (13)> name='図 35' pos=(13.98,4.86) size=(2.93,2.83)
+  <TEXT_BOX (17)> name='テキスト ボックス 39' pos=(1.00,5.04) size=(3.77,2.46)
+      TEXT: ・軌道 | ・姿勢 | ・コンポ構造配置 | ・衛星表面特性 | ・内部発熱位置/量
+  NOTES: 全体フロー。TD/Femapは高忠実度参照で、軌道上では軽量モデルのみを使う。
+
+=== Slide 7 | layout=セクション見出し | shapes=4
+  <TEXT_BOX (17)> name='TextBox 1' pos=(10.60,4.50) size=(5.40,0.65)
+      TEXT: 02
+  <AUTO_SHAPE (1)> name='Rectangle 2' pos=(11.45,5.72) size=(3.70,0.04)
+  <TEXT_BOX (17)> name='TextBox 3' pos=(2.00,6.26) size=(22.70,1.15)
+      TEXT: Thermo-structural analysis
+  <TEXT_BOX (17)> name='TextBox 4' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 8
+  NOTES: Section 02: Thermo-structural analysis
+
+=== Slide 8 | layout=タイトルとコンテンツ | shapes=17
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Thermo-structural analysis
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(8.16,1.14)
+      TEXT: 小型衛星を模した箱型衛星モデルを作成
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 9
+  <TABLE (19)> name='Table 11' pos=(19.04,4.12) size=(6.96,7.87)
+      ROW: Item | Setting
+      ROW: Bus size | 590 × 600 × 990 mm
+      ROW: Panels | 10 mm shell
+      ROW: Material | A5052
+      ROW: LCT | MZ center
+      ROW: STT | PZ center
+  <TEXT_BOX (17)> name='TextBox 12' pos=(19.04,12.53) size=(6.29,1.14)
+      TEXT: Thermal DesktopとFemapで | 同じ衛星モデルを作成する
+  <PICTURE (13)> name='図 16' pos=(1.25,4.12) size=(4.79,7.65)
+  <TEXT_BOX (17)> name='TextBox 6' pos=(2.89,3.57) size=(1.39,0.46)
+      TEXT: PZ: STT
+  <TEXT_BOX (17)> name='TextBox 7' pos=(2.98,11.91) size=(1.61,0.50)
+      TEXT: MZ: LCT
+  <TEXT_BOX (17)> name='TextBox 8' pos=(3.84,5.75) size=(2.20,0.50)
+      TEXT: MY: PCDU
+  <TEXT_BOX (17)> name='TextBox 9' pos=(2.11,9.07) size=(1.57,0.43)
+      TEXT: PY: PROP
+  <TEXT_BOX (17)> name='テキスト ボックス 23' pos=(4.29,12.83) size=(3.31,0.98)
+      TEXT: LOS | boresight ≈ −Z
+  <AUTO_SHAPE (1)> name='矢印: 下 26' pos=(3.16,12.70) size=(0.96,1.23)
+  <PICTURE (13)> name='図 28' pos=(6.28,4.12) size=(5.09,7.59)
+  <PICTURE (13)> name='図 30' pos=(11.78,4.12) size=(5.94,6.99)
+  <TEXT_BOX (17)> name='テキスト ボックス 31' pos=(8.28,3.58) size=(3.50,0.57)
+      TEXT: Thermal Desktop
+  <TEXT_BOX (17)> name='テキスト ボックス 33' pos=(16.32,3.58) size=(1.39,0.57)
+      TEXT: Femap
+  <TEXT_BOX (17)> name='テキスト ボックス 35' pos=(21.37,3.57) size=(2.75,0.57)
+      TEXT: Configuration
+  NOTES: 簡略shell衛星。LCTはMZ、STTはPZ、PROP/PCDUは±Y側。
+
+=== Slide 9 | layout=5_タイトルとコンテンツ | shapes=10
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Thermo-structural analysis
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(20.47,1.14)
+      TEXT: TDでの解析：軌道・姿勢・コンポ電源・表面特性を入力として、各ケースにおける温度場を出力する
+  <TEXT_BOX (17)> name='TextBox 3' pos=(25.64,14.02) size=(0.36,0.36)
+      TEXT: 10
+  <TABLE (19)> name='Table 4' pos=(1.46,3.93) size=(11.80,9.03)
+      ROW: Parameter | Setting
+      ROW: Orbit | SSO LTAN06 / 800 km / COLD
+      ROW: Period | ≈6050 s (101 min)
+      ROW: Duration | ≈18157 s (3 orbits)
+      ROW: Sampling | ≈60.5 s / 301 samples
+      ROW: Eclipse | 蝕あり/全日照
+      ROW: Sun face | MX / MY / PX / PY
+      ROW: Node | 125 Nodes
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 5' pos=(13.80,3.95) size=(11.40,3.55)
+  <TEXT_BOX (17)> name='TextBox 6' pos=(14.25,4.45) size=(10.50,0.60)
+      TEXT: Additional environments
+  <TEXT_BOX (17)> name='TextBox 7' pos=(14.50,5.65) size=(9.90,1.64)
+      TEXT: • 内部のコンポの電源切り替え | • 衛星パネルの表面特性：Black / Alodine / α=ε=0.5 | • 軌道の種類：LTAN18 / 693 km Sentinel-1 proxy
+  <PICTURE (13)> name='図 10' pos=(13.96,7.88) size=(5.58,6.30)
+  <PICTURE (13)> name='図 12' pos=(19.57,7.88) size=(5.30,6.30)
+  <TEXT_BOX (17)> name='テキスト ボックス 14' pos=(5.35,3.36) size=(4.03,0.57)
+      TEXT: TD Configuration
+  NOTES: 基本3軌道。先頭1軌道をモデル同定、残り2軌道をtestに用いる。
+
+=== Slide 10 | layout=2_タイトルとコンテンツ | shapes=8
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Thermo-structural analysis
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(2.77,1.14)
+      TEXT: 内部発熱設定
+  <TEXT_BOX (17)> name='TextBox 3' pos=(25.64,14.02) size=(0.36,0.36)
+      TEXT: 11
+  <TABLE (19)> name='Table 4' pos=(1.31,4.22) size=(10.40,5.70)
+      ROW: Component | Heat | Location
+      ROW: LCT | 10 W | MZ center
+      ROW: STT | 1.5 W | PZ center
+      ROW: PROP | 25 W | PY side
+      ROW: PCDU | 10 W | MY side
+  <TABLE (19)> name='Table 5' pos=(12.71,4.22) size=(12.80,6.60)
+      ROW: Mode | LCT/STT | PROP | PCDU
+      ROW: STTLCT | ON | OFF | OFF
+      ROW: +PROP | ON | 25 W | OFF
+      ROW: +PCDU | ON | OFF | 10 W
+      ROW: ALL | ON | 25 W | 10 W
+      ROW: Half power | ON | 12.5 W | 10 W
+  <TEXT_BOX (17)> name='TextBox 7' pos=(9.02,12.32) size=(8.63,1.04)
+      TEXT: 通信時を想定して、STT/LCTは基本的にON。 | 他はケースごとにON/OFF。
+  <TEXT_BOX (17)> name='テキスト ボックス 9' pos=(4.50,3.65) size=(4.57,0.57)
+      TEXT: 各コンポの発熱量と位置
+  <TEXT_BOX (17)> name='テキスト ボックス 11' pos=(16.83,3.65) size=(4.57,0.57)
+      TEXT: 内部発熱パターン
+  NOTES: 発熱モードはLevel 2の説明変数。半電力case22はON/OFFフラグの限界を確認する。
+
+=== Slide 11 | layout=6_タイトルとコンテンツ | shapes=11
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Thermo-structural analysis
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(19.91,1.14)
+      TEXT: Femapでの解析：温度場・拘束条件を入力として、各点のひずみ（並進・回転 6成分）を算出する
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 12
+  <TABLE (19)> name='Table 4' pos=(1.31,4.20) size=(11.90,8.50)
+      ROW: Structural parameter | Value
+      ROW: Material | Aluminum 5052
+      ROW: Young's modulus | 70.327 GPa
+      ROW: Poisson ratio | 0.33
+      ROW: CTE | 2.376×10⁻⁵ /°C
+      ROW: Density | 2685 kg/m³
+      ROW: Reference temperature | 23.9°C
+      ROW: Constraint | small region near STT
+  <PICTURE (13)> name='図 10' pos=(20.06,4.27) size=(5.94,5.90)
+  <PICTURE (13)> name='図 12' pos=(13.79,4.27) size=(5.31,5.90)
+  <AUTO_SHAPE (1)> name='矢印: 右 13' pos=(19.34,7.01) size=(0.60,0.90)
+  <TEXT_BOX (17)> name='テキスト ボックス 15' pos=(5.24,3.70) size=(4.03,0.57)
+      TEXT: Femap Configuration
+  <PICTURE (13)> name='図 17' pos=(18.26,10.95) size=(2.76,3.28)
+  <LINE (9)> name='直線矢印コネクタ 19' pos=(19.64,8.23) size=(0.00,2.48)
+  <TEXT_BOX (17)> name='テキスト ボックス 20' pos=(21.32,13.43) size=(2.76,0.64)
+      TEXT: TD：温度場
+  NOTES: 実機詳細モデルではない。構造・拘束条件依存性が残る点を明示する。
+
+=== Slide 12 | layout=1_タイトルとコンテンツ | shapes=14
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Thermo-structural analysis
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(12.24,1.68)
+      TEXT: LOS真値はSTT基準で見たLCT光軸の相対回転として定義する
+  <TEXT_BOX (17)> name='TextBox 3' pos=(25.64,14.02) size=(0.36,0.36)
+      TEXT: 13
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 6' pos=(17.00,3.05) size=(8.48,9.00)
+  <TEXT_BOX (17)> name='TextBox 7' pos=(18.07,3.55) size=(6.07,0.53)
+      TEXT: LOS誤差 採用指標：far_field_los
+  <TEXT_BOX (17)> name='TextBox 8' pos=(17.50,4.80) size=(7.70,2.05)
+      TEXT: • LCT光軸回転 − STT姿勢基準回転 | • STTは姿勢系の標準であるとしてそこからの誤差 | • 遠方通信のscan center誤差に直接対応 | • 代表点間並進によるcenterline tiltは含めない
+  <PICTURE (13)> name='図 11' pos=(1.46,4.20) size=(5.42,5.39)
+  <PICTURE (13)> name='図 15' pos=(8.90,3.95) size=(6.71,7.00)
+  <AUTO_SHAPE (1)> name='矢印: 右 17' pos=(7.61,6.60) size=(0.60,0.90)
+  <LINE (9)> name='直線コネクタ 19' pos=(5.65,8.85) size=(0.23,1.80)
+  <LINE (9)> name='直線コネクタ 20' pos=(3.29,3.55) size=(1.23,1.43)
+  <TEXT_BOX (17)> name='テキスト ボックス 22' pos=(4.52,3.12) size=(2.60,0.64)
+      TEXT: STT
+  <TEXT_BOX (17)> name='テキスト ボックス 24' pos=(5.76,10.65) size=(2.60,0.64)
+      TEXT: LCT
+  <TEXT_BOX (17)> name='テキスト ボックス 26' pos=(1.46,11.60) size=(13.33,1.72)
+      TEXT: 並進ではなく、遠方通信に効くSTT/LCTの相対光軸回転をLOS誤差とする
+  NOTES: PAT主入力はfar-field relative rotation。並進成分を含む角度は診断用。
+
+=== Slide 13 | layout=3_タイトルとコンテンツ | shapes=7
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Thermo-structural analysis
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(14.06,1.14)
+      TEXT: 21ケースで太陽指向面・内部発熱・表面特性・軌道を横断評価する
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 14
+  <TABLE (19)> name='Table 4' pos=(1.20,4.01) size=(24.00,7.70)
+      ROW: Varied factor | Cases | Purpose
+      ROW: Sun face  | MX / MY / PX / PY | 太陽入射方向に対する支配軸・符号の変化を確認
+      ROW: Power mode | STTLCT / +PROP / +PCDU / ALL | 内部発熱配置が熱LOSのバイアス成分に与える影響を確認
+      ROW: Coating | 0.5 / Black / Alodine | 表面特性による熱応答振幅・定常レベルの変化を確認
+      ROW: Environment | 蝕あり / 全日照 | 熱環境レベルによるケース間バイアス変動を確認
+      ROW: Power level | PROP 25 / 12.5 W | ON/OFF近似が部分負荷時にも成立するか確認
+      ROW: Orbit | LTAN06 / LTAN18 | 軌道条件・熱履歴に対するモデルの適用性を確認
+  <TEXT_BOX (17)> name='TextBox 6' pos=(5.23,13.16) size=(15.93,0.50)
+      TEXT: ※ Sun faceに関して、PZ/MZ太陽指向はLCT/STTがいる面に太陽が当たることはないので除外
+  <TEXT_BOX (17)> name='テキスト ボックス 8' pos=(11.15,3.43) size=(5.16,0.57)
+      TEXT: ケースで振るパラメータ
+  <TEXT_BOX (17)> name='テキスト ボックス 7' pos=(1.20,11.98) size=(6.09,2.46)
+      TEXT: <case, orbitの記述先> | Case matrix | Orbit matrix
+  NOTES: 21ケースはいずれも同じ基本構造の感度ケースで、別機体への汎化ではない。
+
+=== Slide 14 | layout=7_タイトルとコンテンツ | shapes=29
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Thermo-structural analysis
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(17.95,1.14)
+      TEXT: 解析管理の工夫：全解析条件をmatrixで一元定義し、共通case IDでAPI処理を自動化する
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 15
+  <AUTO_SHAPE (1)> name='Rectangle 4' pos=(1.00,4.03) size=(3.77,1.35)
+  <TEXT_BOX (17)> name='TextBox 5' pos=(1.59,4.32) size=(2.59,0.77)
+      TEXT: case_matrix.xlsx | orbit_catalog.xlsx
+  <LINE (9)> name='Connector 6' pos=(4.83,4.70) size=(0.30,0.00)
+  <AUTO_SHAPE (1)> name='Rectangle 7' pos=(5.19,4.03) size=(3.77,1.35)
+  <TEXT_BOX (17)> name='TextBox 8' pos=(5.61,4.32) size=(2.93,0.77)
+      TEXT: TD temperature | LOGIC_SUN symbol
+  <LINE (9)> name='Connector 9' pos=(9.01,4.70) size=(0.30,0.00)
+  <AUTO_SHAPE (1)> name='Rectangle 10' pos=(9.37,4.03) size=(3.77,1.35)
+  <TEXT_BOX (17)> name='TextBox 11' pos=(9.45,4.15) size=(3.61,1.11)
+      TEXT: mapper | output.dat
+  <LINE (9)> name='Connector 12' pos=(13.20,4.70) size=(0.30,0.00)
+  <AUTO_SHAPE (1)> name='Rectangle 13' pos=(13.56,4.03) size=(3.77,1.35)
+  <TEXT_BOX (17)> name='TextBox 14' pos=(14.52,4.32) size=(1.85,0.77)
+      TEXT: Femap | rotation.xlsx
+  <LINE (9)> name='Connector 15' pos=(17.39,4.70) size=(0.30,0.00)
+  <AUTO_SHAPE (1)> name='Rectangle 16' pos=(17.75,4.03) size=(3.77,1.35)
+  <TEXT_BOX (17)> name='TextBox 17' pos=(18.56,4.32) size=(2.15,0.77)
+      TEXT: LOS Angle | los_angles.csv
+  <LINE (9)> name='Connector 18' pos=(21.57,4.70) size=(0.30,0.00)
+  <AUTO_SHAPE (1)> name='Rectangle 19' pos=(21.93,4.03) size=(3.77,1.35)
+  <TEXT_BOX (17)> name='TextBox 20' pos=(22.96,4.32) size=(1.72,0.77)
+      TEXT: lightweight | dataset.csv
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 21' pos=(1.30,6.61) size=(14.10,5.42)
+  <TEXT_BOX (17)> name='TextBox 22' pos=(1.89,6.85) size=(4.79,0.53)
+      TEXT: 条件管理・自動化・再現性
+  <TEXT_BOX (17)> name='TextBox 23' pos=(1.89,7.67) size=(13.37,4.66)
+      TEXT: • 最上流のcase matrixに姿勢・発熱・表面特性などを集約 | • 同じく最上流のorbit catalogに軌道条件を集約 | • 両matrixから各解析ケースとケース名（case ID）を定義 | • 各ソフトの生成ファイル群は、case IDでフォルダ分けして一括管理 | • 共通のcase IDでTD・Femap・LOS・PATを接続 | • OpenTD / Femap APIで解析・出力を自動化 | • 入力条件から中間生成物・最終成果物まで追跡・再実行可能
+  <TEXT_BOX (17)> name='TextBox 24' pos=(1.00,13.26) size=(14.70,0.53)
+      TEXT: 全条件をmatrixで先に固定し、同じcase ID・同じAPI手順で再現可能な比較を行う
+  <PICTURE (13)> name='図 26' pos=(16.29,10.69) size=(7.67,3.45)
+  <TEXT_BOX (17)> name='テキスト ボックス 28' pos=(10.02,5.58) size=(6.62,0.57)
+      TEXT: 各ソフトにおける解析出力ファイル
+  <TEXT_BOX (17)> name='テキスト ボックス 30' pos=(18.00,14.19) size=(5.16,0.57)
+      TEXT: Femap解析フォルダ内
+  <PICTURE (13)> name='図 36' pos=(15.89,6.63) size=(8.46,3.48)
+  <TEXT_BOX (17)> name='テキスト ボックス 38' pos=(17.75,10.08) size=(5.16,0.57)
+      TEXT: Case matrix.xlsxの中身
+  NOTES: 光学特性未反映やmapper混線を経験し、ケースID管理を強化した。
+
+=== Slide 15 | layout=タイトルとコンテンツ | shapes=8
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Thermo-structural results
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(10.77,1.14)
+      TEXT: 解析結果：温度場と熱LOSは同じ軌道周期で変動する
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 16
+  <PICTURE (13)> name='Picture 7' pos=(1.17,3.27) size=(12.88,9.37)
+  <TEXT_BOX (17)> name='TextBox 8' pos=(17.74,12.73) size=(4.70,0.45)
+      TEXT: 各衛星パネル上のTemperature
+  <TEXT_BOX (17)> name='TextBox 9' pos=(4.84,12.88) size=(6.33,0.45)
+      TEXT: Case 04 (MY太陽)における Far-field LOS
+  <PICTURE (13)> name='図 24' pos=(14.05,3.38) size=(12.08,8.42)
+  <TEXT_BOX (17)> name='テキスト ボックス 25' pos=(1.91,13.43) size=(16.09,1.18)
+      TEXT: • 大きく熱LOSが出るのは太陽方向（Y軸） | • さらに、LOS誤差のY方向の変化とMY面の温度変化が似ていることがわかる
+  NOTES: Fourierよりも物理入力で軌道条件の変化を扱いたい。
+
+=== Slide 16 | layout=1_セクション見出し | shapes=5
+  <TEXT_BOX (17)> name='TextBox 1' pos=(10.60,4.50) size=(5.40,0.65)
+      TEXT: 03
+  <AUTO_SHAPE (1)> name='Rectangle 2' pos=(11.45,5.72) size=(3.70,0.04)
+  <TEXT_BOX (17)> name='TextBox 3' pos=(2.00,6.35) size=(22.70,1.15)
+      TEXT: Lightweight LOS model
+  <TEXT_BOX (17)> name='TextBox 4' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 18
+  <AUTO_SHAPE (1)> name='Rectangle 2' pos=(12.14,7.50) size=(2.42,0.05)
+  NOTES: Section 03: Lightweight LOS model
+
+=== Slide 17 | layout=タイトルとコンテンツ | shapes=8
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Lightweight LOS model
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(13.47,1.14)
+      TEXT: 軌道上実装には、少数入力で熱LOSを直接予測できるモデルが必要
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 19
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 4' pos=(1.20,3.10) size=(8.00,7.80)
+  <TEXT_BOX (17)> name='TextBox 5' pos=(4.33,3.55) size=(1.75,0.51)
+      TEXT: Required
+  <TEXT_BOX (17)> name='TextBox 6' pos=(1.80,4.65) size=(6.80,3.19)
+      TEXT: • TD/Femapをオンボードで回さない軽さ | • 少数温度センサと運用情報だけで計算 | • ケース変更に対応 | • 固定少数係数 | • scan-center補正を直接出力 | • 係数の物理的解釈が可能
+  <TABLE (19)> name='Table 7' pos=(10.00,3.10) size=(15.20,9.10)
+      ROW: Candidate | Pros / cons
+      ROW: Static bias | lightweight / no dynamics
+      ROW: Fourier | periodic / orbit dependent
+      ROW: Multi-point temperature | flexible / collinear
+      ROW: Sunface T | physical / not follow perfectly
+      ROW: Sunface ΔT  | physical / not explain DC offset
+      ROW: Hierarchical ΔT | Physical dynamics + case DC
+  <TEXT_BOX (17)> name='TextBox 8' pos=(4.33,12.97) size=(20.19,0.60)
+      TEXT: → 試行錯誤の結果、太陽面–反対面温度差 ΔT とケース間差分の寄与を分離する階層型モデルを採用
+  NOTES: Fourierよりも物理入力で軌道条件の変化を扱いたい。
+
+=== Slide 18 | layout=タイトルとコンテンツ | shapes=8
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Hierarchical ΔT model
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(16.79,1.14)
+      TEXT: 採用の過程：観察結果から、熱LOSを「軌道内時変」と「ケース間DC」に分ける
+  <TEXT_BOX (17)> name='TextBox 3' pos=(25.64,14.02) size=(0.36,0.36)
+      TEXT: 20
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 7' pos=(1.75,4.00) size=(10.64,5.89)
+  <TEXT_BOX (17)> name='TextBox 8' pos=(2.05,4.45) size=(9.12,0.60)
+      TEXT: 各ケースの軌道内で変わる成分
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 10' pos=(13.78,4.00) size=(10.64,5.89)
+  <TEXT_BOX (17)> name='TextBox 11' pos=(14.52,4.35) size=(8.66,1.14)
+      TEXT: ケースごとに変わる成分
+  <TEXT_BOX (17)> name='TextBox 12' pos=(14.39,5.27) size=(3.09,1.68)
+      TEXT: • 内部発熱 | • 表面特性 | • 軌道・熱履歴
+  NOTES: Level 1は支配軸のみ。非支配軸は現状モデル外。
+
+=== Slide 19 | layout=タイトルとコンテンツ | shapes=12
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Hierarchical ΔT model
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(7.65,1.14)
+      TEXT: 階層型 熱ひずみ予測モデル（階層1）
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 21
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 4' pos=(1.40,3.15) size=(23.80,2.70)
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 7' pos=(9.33,8.00) size=(7.20,3.50)
+  <TEXT_BOX (17)> name='TextBox 9' pos=(9.94,9.45) size=(5.97,1.00)
+      TEXT: 太陽指向面ごとの熱感度同じ太陽指向面のケース間で共有
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 10' pos=(16.92,8.00) size=(8.05,3.50)
+  <TEXT_BOX (17)> name='TextBox 12' pos=(17.26,9.45) size=(7.54,1.47)
+      TEXT: ケース依存のDCオフセット発熱・被覆・軌道条件による平均差を吸収 | 階層2でさらに分解
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 13' pos=(1.73,7.96) size=(7.20,3.50)
+  <TEXT_BOX (17)> name='TextBox 14' pos=(3.57,8.41) size=(3.53,0.67)
+      TEXT: dominant axis
+  <TEXT_BOX (17)> name='TextBox 15' pos=(2.74,9.41) size=(5.19,1.47)
+      TEXT: 太陽指向面から予測軸を選択MX/PX → X軸，MY/PY → Y軸非支配軸はstatic biasで扱う
+  <TEXT_BOX (17)> name='テキスト ボックス 21' pos=(6.73,12.63) size=(13.33,0.64)
+      TEXT: 時間変動は面間温度差で、ケースごとの差はDCオフセットで表す
+  NOTES: Level 1は支配軸のみ。非支配軸は現状モデル外。
+
+=== Slide 20 | layout=タイトルとコンテンツ | shapes=10
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Hierarchical ΔT model
+  <TEXT_BOX (17)> name='TextBox 2' pos=(3.38,12.46) size=(19.90,0.60)
+      TEXT: 階層 2では、ケースごとのDCを個別に持たず、太陽指向面と発熱モードからパラメータを推定する
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 22
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 4' pos=(1.40,3.15) size=(23.80,2.70)
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(7.65,1.14)
+      TEXT: 階層型 熱ひずみ予測モデル（階層2）
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 7' pos=(9.33,8.00) size=(7.20,3.50)
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 10' pos=(16.92,8.00) size=(8.05,3.50)
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 13' pos=(1.73,7.96) size=(7.20,3.50)
+  <TEXT_BOX (17)> name='TextBox 15' pos=(2.31,9.41) size=(6.05,1.47)
+      TEXT: 太陽指向面ごとの基準DCMX / MY / PX / PYごとに設定 |  同じ太陽指向面のケース間で共有
+  <TEXT_BOX (17)> name='TextBox 6' pos=(9.28,5.98) size=(6.96,0.53)
+      TEXT: ※ コンポが増えたらc*Iの項は増加する
+  NOTES: 現在は発熱フラグをMY/PYで有効化し、MX/PXでは差が小さいため無効。
+
+=== Slide 21 | layout=タイトルとコンテンツ | shapes=16
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Hierarchical ΔT model
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(17.79,1.14)
+      TEXT: パラメータの決め方：Level 1で軌道内感度を推定し、Level 2でケース間DCを学習する
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 23
+  <TEXT_BOX (17)> name='TextBox 5' pos=(2.23,3.97) size=(2.31,0.41)
+      TEXT: Pre-case fitting
+  <TEXT_BOX (17)> name='TextBox 11' pos=(11.15,3.32) size=(4.40,1.11)
+      TEXT: Median aemp | per face
+  <TEXT_BOX (17)> name='TextBox 14' pos=(11.36,3.97) size=(2.68,0.41)
+      TEXT: Shared Sensitivity
+  <TEXT_BOX (17)> name='TextBox 17' pos=(22.15,3.97) size=(2.33,0.41)
+      TEXT: Case-DC model
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 19' pos=(2.23,12.90) size=(22.20,1.35)
+  <TEXT_BOX (17)> name='TextBox 20' pos=(5.87,13.31) size=(14.22,0.53)
+      TEXT: 本評価は同一衛星構造内の条件横断性を対象とし、別衛星構造への汎化は未評価
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 7' pos=(9.25,3.80) size=(7.28,8.57)
+  <TEXT_BOX (17)> name='TextBox 8' pos=(10.94,3.88) size=(3.97,0.60)
+      TEXT: Shared Sensitivity
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 10' pos=(17.26,3.80) size=(7.67,8.57)
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 13' pos=(1.73,3.80) size=(6.77,8.57)
+  <TEXT_BOX (17)> name='TextBox 14' pos=(2.58,3.99) size=(5.17,0.60)
+      TEXT: Level1: Pre-case fitting
+  <AUTO_SHAPE (1)> name='矢印: 右 41' pos=(8.71,8.31) size=(0.37,0.70)
+  <AUTO_SHAPE (1)> name='矢印: 右 43' pos=(16.77,8.36) size=(0.37,0.70)
+  NOTES: bはLOOだがa_sharedは対象ケースを含む中央値で完全LOOではない。
+
+=== Slide 22 | layout=タイトルとコンテンツ | shapes=6
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Hierarchical ΔT model
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 24
+  <AUTO_SHAPE (1)> name='Rectangle 4' pos=(1.10,3.55) size=(16.20,8.80)
+  <PICTURE (13)> name='Picture 5' pos=(1.66,3.46) size=(15.09,8.80)
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 7' pos=(17.68,9.00) size=(7.79,5.02)
+  <TEXT_BOX (17)> name='TextBox 8' pos=(17.96,9.43) size=(7.28,4.30)
+      TEXT: 同一太陽指向面ではケース別感度が狭く分布し、感度の大きさは約28–31 µrad/℃ で安定した。 | 太陽指向面に応じて符号・支配軸は系統的に変化する。 | → 同一基本構造では、事前解析・事前試験等で共有感度を事前固定できる可能性
+  NOTES: aの安定性がモデルの核心。Adaptiveで毎回aを学ぶ必要性は低そう。
+
+=== Slide 23 | layout=タイトルとコンテンツ | shapes=8
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Hierarchical ΔT model
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 25
+  <AUTO_SHAPE (1)> name='Rectangle 4' pos=(1.00,3.50) size=(16.00,8.70)
+  <PICTURE (13)> name='Picture 5' pos=(1.42,3.50) size=(15.15,8.70)
+  <TABLE (19)> name='Table 6' pos=(17.60,3.15) size=(8.40,5.38)
+      ROW: Feature | Estimated DC contribution [µrad]
+      ROW: b0_MX | +15.7
+      ROW: b0_MY | +2.8
+      ROW: b0_PX | −12.0
+      ROW: b0_PY | −24.0
+      ROW: c_PROP | −22.9
+      ROW: c_PCDU | −10.2
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 7' pos=(17.60,8.89) size=(7.90,5.72)
+  <TEXT_BOX (17)> name='テキスト ボックス 12' pos=(6.84,5.20) size=(2.77,0.40)
+      TEXT: (自身も学習に含める)
+  <TEXT_BOX (17)> name='テキスト ボックス 14' pos=(15.19,4.91) size=(1.81,0.71)
+      TEXT: (自身は学習に含めない)
+  NOTES: 最大LOO残差は半電力case22で13.2 µrad。
+
+=== Slide 24 | layout=タイトルとコンテンツ | shapes=9
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Hierarchical ΔT model
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(16.54,1.14)
+      TEXT: 結果<統合>：標準ケースでは数µrad、半電力ケースでも約15 µradの残差に抑えた
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 26
+  <AUTO_SHAPE (1)> name='Rectangle 4' pos=(1.00,3.63) size=(12.10,8.50)
+  <AUTO_SHAPE (1)> name='Rectangle 6' pos=(13.55,3.63) size=(12.10,8.50)
+  <PICTURE (13)> name='Picture 7' pos=(14.02,3.63) size=(11.16,8.50)
+  <TEXT_BOX (17)> name='TextBox 8' pos=(2.85,12.38) size=(8.49,0.43)
+      TEXT: Case 05: standard / large swing（残差RMSE 5.3urad）
+  <TEXT_BOX (17)> name='TextBox 9' pos=(15.74,12.38) size=(7.62,0.43)
+      TEXT: Case 22: PROP 25W→12.5 W（残差RMSE 15urad）
+  <PICTURE (13)> name='図 11' pos=(1.92,3.59) size=(11.16,8.50)
+  NOTES: 半電力ではaは合うが、ON/OFF Level 2では中間bを表せない。
+
+=== Slide 25 | layout=タイトルとコンテンツ | shapes=15
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Hierarchical ΔT model
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(15.78,1.14)
+      TEXT: 結果<統合>：生LOS数百µradに対し、LOO test残差は平均約5.5 µradとなる
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 27
+  <AUTO_SHAPE (1)> name='Rectangle 4' pos=(1.00,3.79) size=(18.30,8.80)
+  <PICTURE (13)> name='Picture 5' pos=(1.65,3.79) size=(17.00,8.80)
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 6' pos=(19.80,3.83) size=(5.30,1.55)
+  <TEXT_BOX (17)> name='TextBox 7' pos=(19.90,3.97) size=(5.10,0.62)
+      TEXT: 615 µrad
+  <TEXT_BOX (17)> name='TextBox 8' pos=(19.90,4.71) size=(5.10,0.40)
+      TEXT: median raw RMS
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 9' pos=(19.80,6.23) size=(5.30,1.55)
+  <TEXT_BOX (17)> name='TextBox 10' pos=(19.90,6.37) size=(5.10,0.62)
+      TEXT: 5.5 µrad
+  <TEXT_BOX (17)> name='TextBox 11' pos=(19.90,7.11) size=(5.10,0.40)
+      TEXT: mean LOO test RMSE
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 12' pos=(19.80,8.63) size=(5.30,1.55)
+  <TEXT_BOX (17)> name='TextBox 13' pos=(19.90,8.77) size=(5.10,0.62)
+      TEXT: 1–2 orders
+  <TEXT_BOX (17)> name='TextBox 14' pos=(19.90,9.51) size=(5.10,0.40)
+      TEXT: thermal reduction
+  <TEXT_BOX (17)> name='TextBox 15' pos=(4.00,12.94) size=(18.70,0.50)
+      TEXT: raw RMSとprediction RMSEは異なる統計量：オーダー比較として表示
+  NOTES: モデル精度の主数字。統計量の違いを明示する。
+
+=== Slide 26 | layout=タイトルとコンテンツ | shapes=17
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Positioning & limitations
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(15.23,1.14)
+      TEXT: 先行研究の存在：温度差とLOSの一次関係は光学機器内でも報告されている
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 28
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 4' pos=(1.20,3.10) size=(11.70,8.20)
+  <TEXT_BOX (17)> name='TextBox 5' pos=(1.70,3.55) size=(10.70,0.60)
+      TEXT: JANUS / prior art
+  <TEXT_BOX (17)> name='TextBox 7' pos=(7.21,12.33) size=(12.25,1.47)
+      TEXT: 本研究の貢献は、 | 温度差–LOSの一次関係を衛星バス上のSTT–LCT相対LOS予測へ拡張し、粗捕捉性能改善まで接続した点にある
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 8' pos=(13.65,3.10) size=(11.70,8.20)
+  <TEXT_BOX (17)> name='TextBox 9' pos=(14.15,3.55) size=(10.70,0.60)
+      TEXT: This work
+  <TEXT_BOX (17)> name='TextBox 10' pos=(14.22,4.62) size=(7.31,4.05)
+      TEXT: • 衛星バス上のSTT–LCT相対LOSを対象  | • 太陽指向面–反対面温度差から軌道内変動を予測  | • 発熱・被覆・軌道条件によるケースDCを階層化  | • 予測LOSをscan center補正へ入力 捕捉成功率・捕捉時間まで評価 | • ※非支配軸・別構造・飛行実証は未評価
+  <PICTURE (13)> name='図 13' pos=(7.99,4.62) size=(4.70,3.03)
+  <PICTURE (13)> name='図 15' pos=(21.85,4.44) size=(3.19,4.86)
+  <LINE (9)> name='直線矢印コネクタ 17' pos=(10.82,7.75) size=(1.08,0.00)
+  <TEXT_BOX (17)> name='テキスト ボックス 19' pos=(10.76,7.91) size=(1.45,0.40)
+      TEXT: 25 cm程度
+  <LINE (9)> name='直線矢印コネクタ 25' pos=(10.74,4.48) size=(0.00,0.64)
+  <LINE (9)> name='直線矢印コネクタ 26' pos=(11.90,4.48) size=(0.00,0.60)
+  <TEXT_BOX (17)> name='テキスト ボックス 30' pos=(11.30,4.07) size=(1.54,0.40)
+      TEXT: Optical Wall
+  <TEXT_BOX (17)> name='テキスト ボックス 32' pos=(9.92,4.08) size=(1.54,0.40)
+      TEXT: Buffle Wall
+  NOTES: ΔT一次関係はJANUSにある。差分はバス相対LOS、階層DC、粗捕捉性能への接続。
+
+=== Slide 27 | layout=タイトルとコンテンツ | shapes=4
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Operational interpretation
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(8.58,1.14)
+      TEXT: 軌道上運用時のパラメータ設定・更新方針
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 29
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 5' pos=(2.30,12.09) size=(22.00,1.40)
+  NOTES: モデル結果からAdaptiveの対象を再整理する。
+
+=== Slide 28 | layout=セクション見出し | shapes=4
+  <TEXT_BOX (17)> name='TextBox 1' pos=(10.60,4.50) size=(5.40,0.65)
+      TEXT: 04
+  <AUTO_SHAPE (1)> name='Rectangle 2' pos=(11.45,5.72) size=(3.70,0.04)
+  <TEXT_BOX (17)> name='TextBox 3' pos=(2.00,6.35) size=(22.70,1.15)
+      TEXT: PAT evaluation and orbit error
+  <TEXT_BOX (17)> name='TextBox 4' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 30
+  NOTES: Section 04: PAT evaluation and orbit error
+
+=== Slide 29 | layout=タイトルとコンテンツ | shapes=34
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: PAT evaluation
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(21.83,1.14)
+      TEXT: PAT評価：真の指向誤差から予測熱LOSを差し引き、その残差をスキャン中心誤差として捕捉時間を評価する
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 31
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 4' pos=(1.40,3.44) size=(23.80,2.35)
+  <AUTO_SHAPE (1)> name='Rectangle 6' pos=(1.63,6.09) size=(4.42,1.23)
+  <TEXT_BOX (17)> name='TextBox 7' pos=(1.71,6.21) size=(4.26,1.11)
+      TEXT: Thermal LOS | truth
+  <LINE (9)> name='Connector 8' pos=(6.07,6.75) size=(0.87,0.00)
+  <AUTO_SHAPE (1)> name='Rectangle 9' pos=(1.65,7.63) size=(4.42,1.19)
+  <TEXT_BOX (17)> name='TextBox 10' pos=(2.63,7.87) size=(2.46,0.77)
+      TEXT: Model-predicted | Thermal LOS
+  <LINE (9)> name='Connector 11' pos=(6.08,8.23) size=(0.86,0.00)
+  <AUTO_SHAPE (1)> name='Rectangle 12' pos=(8.69,7.48) size=(4.42,1.35)
+  <TEXT_BOX (17)> name='TextBox 13' pos=(8.77,7.60) size=(4.26,1.11)
+      TEXT: Scan-center | residual
+  <LINE (9)> name='Connector 14' pos=(13.12,8.16) size=(1.18,0.00)
+  <AUTO_SHAPE (1)> name='Rectangle 15' pos=(14.30,7.48) size=(4.42,1.35)
+  <TEXT_BOX (17)> name='TextBox 16' pos=(15.60,7.77) size=(1.81,0.77)
+      TEXT: Rectangular | spiral scan
+  <LINE (9)> name='Connector 17' pos=(18.72,8.16) size=(1.12,0.00)
+  <AUTO_SHAPE (1)> name='Rectangle 18' pos=(19.84,7.48) size=(4.42,1.35)
+  <TEXT_BOX (17)> name='TextBox 19' pos=(20.96,7.77) size=(2.19,0.77)
+      TEXT: Acquisition | success / time
+  <TABLE (19)> name='Table 20' pos=(1.60,10.86) size=(18.46,3.43)
+      ROW: 条件 | 意味
+      ROW: 補正なし | 熱LOSをそのまま受ける基準
+      ROW: static bias補正 | DC成分のみ補正
+      ROW: 階層型ΔTモデル + 熱誤差のみ | 提案手法
+      ROW: 階層型ΔTモデル + 非熱誤差込み | 熱ひずみ以外の誤差を入れた場合にどれほどモデルの効果が出るか
+      ROW: 追加比較：thermal truth, 理想上限 | 
+  <TEXT_BOX (17)> name='テキスト ボックス 22' pos=(9.00,4.95) size=(3.33,0.71)
+      TEXT: 軌道予測・姿勢決定などの | 非熱誤差
+  <TEXT_BOX (17)> name='テキスト ボックス 26' pos=(12.74,4.94) size=(3.33,0.40)
+      TEXT: 熱LOS真値
+  <TEXT_BOX (17)> name='テキスト ボックス 28' pos=(16.42,4.92) size=(3.94,0.40)
+      TEXT: 軽量モデルによる予測熱LOS
+  <TEXT_BOX (17)> name='テキスト ボックス 30' pos=(6.54,5.01) size=(2.69,0.40)
+      TEXT: スキャン中心誤差
+  <LINE (9)> name='Connector 8' pos=(6.94,8.23) size=(1.75,0.00)
+  <LINE (9)> name='Connector 8' pos=(6.94,6.74) size=(0.00,3.10)
+  <TEXT_BOX (17)> name='テキスト ボックス 44' pos=(11.38,9.48) size=(3.32,0.57)
+      TEXT: PAT評価の流れ
+  <TEXT_BOX (17)> name='テキスト ボックス 46' pos=(11.70,5.94) size=(2.47,0.57)
+      TEXT: 残差計算式
+  <AUTO_SHAPE (1)> name='楕円 47' pos=(6.73,7.98) size=(0.46,0.46)
+  <LINE (9)> name='直線矢印コネクタ 49' pos=(7.19,5.79) size=(0.90,2.02)
+  <TEXT_BOX (17)> name='テキスト ボックス 51' pos=(8.74,10.30) size=(4.69,0.57)
+      TEXT: 比較する評価条件 一覧
+  <AUTO_SHAPE (1)> name='Rectangle 9' pos=(1.65,9.17) size=(4.42,1.19)
+  <TEXT_BOX (17)> name='TextBox 10' pos=(2.63,9.41) size=(2.46,0.77)
+      TEXT: Model-predicted | Thermal LOS
+  <LINE (9)> name='Connector 11' pos=(6.07,9.83) size=(0.86,0.00)
+  <TEXT_BOX (17)> name='テキスト ボックス 64' pos=(20.57,10.77) size=(4.88,1.31)
+      TEXT: → LOS予測精度ではなく、残差が粗捕捉時間・成功率に与える影響を評価
+  NOTES: 非熱誤差は補正対象外で残る。熱モデル能力とシステム性能を分けて読む。
+
+=== Slide 30 | layout=タイトルとコンテンツ | shapes=31
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: PAT simulation conditions
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(10.85,1.14)
+      TEXT: 粗捕捉は矩形スパイラルの離散走査として簡略化する
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 32
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 4' pos=(1.20,3.10) size=(10.20,8.50)
+  <LINE (9)> name='Connector 5' pos=(6.20,7.10) size=(0.72,0.00)
+  <LINE (9)> name='Connector 6' pos=(6.92,6.38) size=(0.00,0.72)
+  <LINE (9)> name='Connector 7' pos=(5.48,6.38) size=(1.44,0.00)
+  <LINE (9)> name='Connector 8' pos=(5.48,6.38) size=(0.00,1.44)
+  <LINE (9)> name='Connector 9' pos=(5.48,7.82) size=(2.16,0.00)
+  <LINE (9)> name='Connector 10' pos=(7.64,5.66) size=(0.00,2.16)
+  <LINE (9)> name='Connector 11' pos=(4.76,5.66) size=(2.88,0.00)
+  <LINE (9)> name='Connector 12' pos=(4.76,5.66) size=(0.00,2.88)
+  <LINE (9)> name='Connector 13' pos=(4.76,8.54) size=(3.60,0.00)
+  <LINE (9)> name='Connector 14' pos=(8.36,4.94) size=(0.00,3.60)
+  <AUTO_SHAPE (1)> name='Oval 15' pos=(6.12,7.02) size=(0.16,0.16)
+  <AUTO_SHAPE (1)> name='Oval 16' pos=(6.84,7.02) size=(0.16,0.16)
+  <AUTO_SHAPE (1)> name='Oval 17' pos=(6.84,6.30) size=(0.16,0.16)
+  <AUTO_SHAPE (1)> name='Oval 18' pos=(5.40,6.30) size=(0.16,0.16)
+  <AUTO_SHAPE (1)> name='Oval 19' pos=(5.40,7.74) size=(0.16,0.16)
+  <AUTO_SHAPE (1)> name='Oval 20' pos=(7.56,7.74) size=(0.16,0.16)
+  <AUTO_SHAPE (1)> name='Oval 21' pos=(7.56,5.58) size=(0.16,0.16)
+  <AUTO_SHAPE (1)> name='Oval 22' pos=(4.68,5.58) size=(0.16,0.16)
+  <AUTO_SHAPE (1)> name='Oval 23' pos=(4.68,8.46) size=(0.16,0.16)
+  <AUTO_SHAPE (1)> name='Oval 24' pos=(8.28,8.46) size=(0.16,0.16)
+  <AUTO_SHAPE (1)> name='Oval 25' pos=(8.28,4.86) size=(0.16,0.16)
+  <AUTO_SHAPE (1)> name='Oval 26' pos=(7.75,5.35) size=(0.50,0.50)
+  <TABLE (19)> name='Table 27' pos=(13.63,3.01) size=(9.70,6.90)
+      ROW: パラメータ | 設定値
+      ROW: 走査範囲 | ±1600 µrad
+      ROW: 点間隔 | 40 µrad
+      ROW: 検出半径 | 25 µrad
+      ROW: 滞在時間 | 0.1 s / 点
+      ROW: 総走査点数 | 6561点
+      ROW: 最大走査時間 | 656.1 s
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 28' pos=(13.40,11.13) size=(10.12,2.00)
+  <TEXT_BOX (17)> name='TextBox 29' pos=(13.68,11.71) size=(9.84,0.87)
+      TEXT: 簡略化：点間移動・整定時間・受光強度の確率変動は考慮しない各走査点を独立な捕捉機会として評価する
+  <TEXT_BOX (17)> name='テキスト ボックス 31' pos=(1.95,11.90) size=(9.23,1.04)
+      TEXT: 真の指向誤差が検出半径内に入った最初の走査点を捕捉時刻とする
+  <TEXT_BOX (17)> name='テキスト ボックス 33' pos=(13.63,9.96) size=(5.75,0.40)
+      TEXT: ※妥当な検出半径またはstepは後で再検討する
+  NOTES: 平均捕捉時間は成功試行のみの条件付き平均。成功率を併記する。
+
+=== Slide 31 | layout=タイトルとコンテンツ | shapes=6
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: PAT simulation conditions
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(12.20,1.14)
+      TEXT: 非熱誤差：軌道・アライメント・姿勢・ドリフトを合成する
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 33
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 4' pos=(1.40,3.10) size=(23.80,2.10)
+  <TABLE (19)> name='Table 6' pos=(1.20,6.00) size=(24.20,5.00)
+      ROW: 成分 | Model | 時間特性 | Size
+      ROW: Orbit prediction | Sentinel-1 TLE vs POEORB | orbit-period family | mean 280–700 µrad
+      ROW: Alignment | Gaussian constant / case | DC | 50 µrad/axis, 1σ
+      ROW: Attitude | Gaussian / sample | simplified broadband | 50 µrad/axis, 1σ
+      ROW: Drift | Sinusoid（sin curve） | 900 s | 30 µrad amplitude
+  <TEXT_BOX (17)> name='TextBox 7' pos=(3.08,12.19) size=(20.50,0.65)
+      TEXT: 特定衛星の誤差バジェット再現ではなく、GNSS非搭載LEO小型衛星の共存シナリオ
+  NOTES: 軌道のみ実データ根拠が強く、他は代表値の簡易モデル。
+
+=== Slide 32 | layout=タイトルとコンテンツ | shapes=20
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Orbit prediction error
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(18.11,1.14)
+      TEXT: 軌道予測誤差：最新TLEを伝播し、高精度軌道暦POEORBを真値として位置誤差を算出する
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 34
+  <AUTO_SHAPE (1)> name='Rectangle 4' pos=(1.20,3.54) size=(4.50,1.35)
+  <TEXT_BOX (17)> name='TextBox 5' pos=(1.28,3.66) size=(4.34,1.11)
+      TEXT: Sentinel-1 | NORAD 39634
+  <LINE (9)> name='Connector 6' pos=(5.76,4.21) size=(0.30,0.00)
+  <AUTO_SHAPE (1)> name='Rectangle 7' pos=(6.12,3.54) size=(4.50,1.35)
+  <TEXT_BOX (17)> name='TextBox 8' pos=(6.20,3.66) size=(4.34,1.11)
+      TEXT: Latest TLE | epoch≤t
+  <LINE (9)> name='Connector 9' pos=(10.69,4.21) size=(0.30,0.00)
+  <AUTO_SHAPE (1)> name='Rectangle 10' pos=(11.05,3.54) size=(4.50,1.35)
+  <TEXT_BOX (17)> name='TextBox 11' pos=(11.13,3.66) size=(4.34,1.11)
+      TEXT: SGP4 forward | rpred(t)
+  <LINE (9)> name='Connector 12' pos=(15.61,4.21) size=(0.30,0.00)
+  <AUTO_SHAPE (1)> name='Rectangle 13' pos=(15.97,3.54) size=(4.50,1.35)
+  <TEXT_BOX (17)> name='TextBox 14' pos=(16.05,3.66) size=(4.34,1.11)
+      TEXT: AUX_POEORB | rtruth(t)
+  <LINE (9)> name='Connector 15' pos=(20.54,4.21) size=(0.30,0.00)
+  <AUTO_SHAPE (1)> name='Rectangle 16' pos=(20.90,3.54) size=(4.50,1.35)
+  <TEXT_BOX (17)> name='TextBox 17' pos=(20.98,3.66) size=(4.34,1.11)
+      TEXT: δr(t)
+  <AUTO_SHAPE (1)> name='Rectangle 18' pos=(1.20,5.69) size=(15.40,6.80)
+  <PICTURE (13)> name='Picture 19' pos=(5.50,5.69) size=(6.80,6.80)
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 20' pos=(17.32,5.77) size=(8.00,6.80)
+  NOTES: 予測時刻より未来のTLEを使わない。現状は代表外乱としてcyclicに載せる。
+
+=== Slide 33 | layout=タイトルとコンテンツ | shapes=7
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Orbit prediction error
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(20.74,1.14)
+      TEXT: 軌道予測誤差：自身の位置誤差をリンクLOS横断面へ投影し、衛星の座標系 STT/body x–yへ変換する
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 35
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 4' pos=(1.20,3.10) size=(10.60,8.30)
+  <TEXT_BOX (17)> name='TextBox 7' pos=(1.90,7.40) size=(9.20,2.70)
+      TEXT: • orbit catalogから姿勢を構成 | • STT/body x–yへ射影 | • 熱LOSと同じ2成分で加算
+  <TABLE (19)> name='Table 8' pos=(12.50,3.10) size=(12.80,6.90)
+      ROW: Sun | Partner / link | Status
+      ROW: MY | along-track ISL 800 km | ready
+      ROW: PY | anti-along ISL 800 km | ready
+      ROW: PX | nadir ground ~695 km | ready
+      ROW: MX | zenith proxy 800 km | unrealistic
+  <TEXT_BOX (17)> name='TextBox 10' pos=(12.50,10.29) size=(11.44,0.87)
+      TEXT: ※ LCTの指向面ごとに、通信相手は地上局/衛星をそれぞれ設定 | ※ MXは角度計算可能だが、LCTが天頂方向のため、現実的リンクではない
+  NOTES: 以前の任意ECEF-Z基底からSTT/bodyへ接続。MX proxyに注意。
+
+=== Slide 34 | layout=タイトルとコンテンツ | shapes=9
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Orbit prediction error
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(11.51,1.14)
+      TEXT: 熱と軌道予測誤差はともに10⁻⁴ Hz台の軌道周期族となる
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 36
+  <AUTO_SHAPE (1)> name='Rectangle 4' pos=(1.00,3.00) size=(16.20,8.80)
+  <PICTURE (13)> name='Picture 5' pos=(4.70,3.00) size=(8.80,8.80)
+  <TABLE (19)> name='Table 6' pos=(17.90,3.20) size=(7.20,5.20)
+      ROW: Case | mean norm
+      ROW: MY ISL | ≈285 µrad
+      ROW: PY ISL | ≈285 µrad
+      ROW: PX ground | ≈694 µrad
+      ROW: MX proxy | ≈612 µrad
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 7' pos=(17.90,9.00) size=(7.20,2.40)
+  <TEXT_BOX (17)> name='TextBox 8' pos=(18.30,9.45) size=(6.40,1.20)
+      TEXT: Thermal: ~101 min | Orbit norm: ~101 / 50 min
+  <TEXT_BOX (17)> name='TextBox 9' pos=(7.44,12.39) size=(9.84,1.04)
+      TEXT: 熱ひずみと軌道予測誤差はサイズも周波数帯も同程度 | 単純な『低周波＝熱』分離は難しい
+  NOTES: 熱も軌道も軌道位相依存。低周波残差を熱として取り込む説明は修正する。
+
+=== Slide 35 | layout=タイトルとコンテンツ | shapes=24
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: PAT results
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(13.61,1.14)
+      TEXT: 結果1：熱のみでは階層モデルがthermal-truth上界にほぼ到達する
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 37
+  <TEXT_BOX (17)> name='TextBox 4' pos=(1.30,3.54) size=(4.80,1.54)
+      TEXT: No correction
+  <AUTO_SHAPE (1)> name='Rectangle 5' pos=(6.20,3.65) size=(9.75,1.32)
+  <AUTO_SHAPE (1)> name='Rectangle 6' pos=(6.20,3.65) size=(9.72,1.32)
+  <TEXT_BOX (17)> name='TextBox 7' pos=(16.07,3.50) size=(1.00,1.62)
+      TEXT: 124.6 s
+  <TEXT_BOX (17)> name='TextBox 8' pos=(1.30,5.17) size=(4.80,1.54)
+      TEXT: Static bias
+  <AUTO_SHAPE (1)> name='Rectangle 9' pos=(6.20,5.28) size=(9.75,1.32)
+  <AUTO_SHAPE (1)> name='Rectangle 10' pos=(6.20,5.28) size=(0.37,1.32)
+  <TEXT_BOX (17)> name='TextBox 11' pos=(16.07,5.12) size=(1.00,1.62)
+      TEXT: 4.78 s
+  <TEXT_BOX (17)> name='TextBox 12' pos=(1.30,6.79) size=(4.80,1.54)
+      TEXT: Hierarchical bcase
+  <AUTO_SHAPE (1)> name='Rectangle 13' pos=(6.20,6.90) size=(9.75,1.32)
+  <AUTO_SHAPE (1)> name='Rectangle 14' pos=(6.20,6.90) size=(0.08,1.32)
+  <TEXT_BOX (17)> name='TextBox 15' pos=(16.07,6.75) size=(1.00,1.62)
+      TEXT: 0.116 s
+  <TEXT_BOX (17)> name='TextBox 16' pos=(1.30,8.41) size=(4.80,1.54)
+      TEXT: Thermal truth
+  <AUTO_SHAPE (1)> name='Rectangle 17' pos=(6.20,8.53) size=(9.75,1.32)
+  <AUTO_SHAPE (1)> name='Rectangle 18' pos=(6.20,8.53) size=(0.08,1.32)
+  <TEXT_BOX (17)> name='TextBox 19' pos=(16.07,8.38) size=(1.00,1.62)
+      TEXT: 0.1 s
+  <TABLE (19)> name='Table 20' pos=(17.80,3.30) size=(7.40,5.40)
+      ROW: Model | Success | Mean tacq
+      ROW: No correction | 95.9% | 124.6 s
+      ROW: Static bias | 99.3% | 4.78 s
+      ROW: bcase | 100% | 0.116 s
+      ROW: truth | 100% | 0.100 s
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 21' pos=(17.90,9.20) size=(7.20,1.55)
+  <TEXT_BOX (17)> name='TextBox 22' pos=(18.00,9.34) size=(7.00,0.62)
+      TEXT: 8.8 µrad
+  <TEXT_BOX (17)> name='TextBox 23' pos=(18.00,10.08) size=(7.00,0.40)
+      TEXT: mean thermal residual
+  <TEXT_BOX (17)> name='TextBox 24' pos=(4.20,11.90) size=(18.20,0.60)
+      TEXT: 熱モデル自体の能力を見る理想条件。主結果は非熱込み。
+  NOTES: Staticが良いのはDC支配ケースが多いから。平均時間は成功試行条件付き。
+
+=== Slide 36 | layout=タイトルとコンテンツ | shapes=19
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: PAT results
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(15.90,1.14)
+      TEXT: 結果2：非熱込みでも平均捕捉時間156.9→59.6 s、成功率94.0→97.1%となる
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 38
+  <TEXT_BOX (17)> name='TextBox 4' pos=(1.50,3.54) size=(4.61,1.92)
+      TEXT: No thermal correction
+  <AUTO_SHAPE (1)> name='Rectangle 5' pos=(6.21,3.65) size=(9.34,1.70)
+  <AUTO_SHAPE (1)> name='Rectangle 6' pos=(6.21,3.65) size=(9.16,1.70)
+  <TEXT_BOX (17)> name='TextBox 7' pos=(15.67,3.50) size=(1.00,2.00)
+      TEXT: 156.9 s
+  <TEXT_BOX (17)> name='TextBox 8' pos=(1.50,5.54) size=(4.61,1.92)
+      TEXT: Hierarchical bcase FF
+  <AUTO_SHAPE (1)> name='Rectangle 9' pos=(6.21,5.65) size=(9.34,1.70)
+  <AUTO_SHAPE (1)> name='Rectangle 10' pos=(6.21,5.65) size=(3.48,1.70)
+  <TEXT_BOX (17)> name='TextBox 11' pos=(15.67,5.50) size=(1.00,2.00)
+      TEXT: 59.6 s
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 12' pos=(17.60,3.40) size=(7.30,1.55)
+  <TEXT_BOX (17)> name='TextBox 13' pos=(17.70,3.54) size=(7.10,0.62)
+      TEXT: −62%
+  <TEXT_BOX (17)> name='TextBox 14' pos=(17.70,4.28) size=(7.10,0.40)
+      TEXT: mean acquisition time
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 15' pos=(17.60,5.75) size=(7.30,1.55)
+  <TEXT_BOX (17)> name='TextBox 16' pos=(17.70,5.89) size=(7.10,0.62)
+      TEXT: +3.1 pt
+  <TEXT_BOX (17)> name='TextBox 17' pos=(17.70,6.63) size=(7.10,0.40)
+      TEXT: success rate
+  <TABLE (19)> name='Table 18' pos=(3.00,8.35) size=(20.70,3.55)
+      ROW: Metric | No correction | bcase FF
+      ROW: Success | 94.0% | 97.1%
+      ROW: Mean tacq | 156.9 s | 59.6 s
+      ROW: Median tacq | 150.3 s | 36.2 s
+      ROW: Thermal residual | 667 µrad | 8.8 µrad
+  <TEXT_BOX (17)> name='TextBox 19' pos=(5.00,12.25) size=(16.70,0.60)
+      TEXT: 補正後は非熱、特に軌道予測誤差が性能を支配する
+  NOTES: 21ケース単純平均。MY/PYで大幅改善、PX/MXは軌道誤差支配。
+
+=== Slide 37 | layout=タイトルとコンテンツ | shapes=8
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: PAT results
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(8.61,1.14)
+      TEXT: 改善幅はバイアス成分のサイズに依存する
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 39
+  <PICTURE (13)> name='図 6' pos=(2.93,2.49) size=(9.74,9.74)
+  <TEXT_BOX (17)> name='テキスト ボックス 12' pos=(4.38,12.40) size=(6.75,0.40)
+      TEXT: 04_LTAN06_800km_1213COLD_MY_ALL_HEAT_MY_0p5
+  <TEXT_BOX (17)> name='テキスト ボックス 14' pos=(15.15,12.40) size=(13.33,0.40)
+      TEXT: 16_LTAN06_800km_1213COLD_PY_STTLCT_HEAT_PY_0p5
+  <PICTURE (13)> name='図 16' pos=(14.00,2.47) size=(9.74,9.76)
+  <TEXT_BOX (17)> name='テキスト ボックス 17' pos=(15.15,13.33) size=(7.79,1.31)
+      TEXT: DCバイアスが大きいと、改善幅も大きくなる
+  NOTES: 全平均だけでなくケース依存性を見せる。MXをどう扱うか議論したい。
+
+=== Slide 38 | layout=タイトルとコンテンツ | shapes=4
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: PAT results
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(9.98,1.14)
+      TEXT: 改善幅はリンク幾何と熱LOSの大きさに依存する
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 39
+  <TABLE (19)> name='Table 4' pos=(1.28,3.81) size=(24.10,7.00)
+      ROW: Case family | Thermal LOS | Orbit error | PAT interpretation
+      ROW: PY | large (~1.2 mrad) | ~285 µrad | large improvement
+      ROW: MY | 150–250 µrad | ~285 µrad | moderate improvement
+      ROW: PX | ~0.9 mrad | ~694 µrad | orbit remains large
+      ROW: MX | ~0.9 mrad | ~612 µrad proxy | interpret cautiously
+      ROW: LTAN18 MY | nearly DC ~150 µrad | ~290 µrad | small thermal benefit
+  NOTES: 全平均だけでなくケース依存性を見せる。MXをどう扱うか議論したい。
+
+=== Slide 39 | layout=セクション見出し | shapes=4
+  <TEXT_BOX (17)> name='TextBox 1' pos=(10.60,4.50) size=(5.40,0.65)
+      TEXT: 05
+  <AUTO_SHAPE (1)> name='Rectangle 2' pos=(11.45,5.72) size=(3.70,0.04)
+  <TEXT_BOX (17)> name='TextBox 3' pos=(2.00,6.35) size=(22.70,1.15)
+      TEXT: Discussion
+  <TEXT_BOX (17)> name='TextBox 4' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 40
+  NOTES: Section 05: Discussion
+
+=== Slide 40 | layout=タイトルとコンテンツ | shapes=9
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Discussion
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(13.89,1.14)
+      TEXT: Adaptiveは低周波熱抽出ではなく、主にモデルDC更新として考える
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 41
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 4' pos=(1.20,3.10) size=(11.80,8.20)
+  <TEXT_BOX (17)> name='TextBox 5' pos=(1.70,3.55) size=(10.80,0.60)
+      TEXT: Proposed role
+  <TEXT_BOX (17)> name='TextBox 7' pos=(1.90,6.20) size=(10.30,4.00)
+      TEXT: • a：事前解析／熱真空試験で固定 | • b_case：捕捉後残差で更新 | • 同一モード・複数パスで平均 | • orbit/alignmentの吸収を制約
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 8' pos=(13.70,3.10) size=(11.60,8.20)
+  <TEXT_BOX (17)> name='TextBox 9' pos=(14.20,3.55) size=(10.60,0.60)
+      TEXT: Discussion points
+  <TEXT_BOX (17)> name='TextBox 10' pos=(14.40,4.75) size=(10.20,5.20)
+      TEXT: • a固定・b更新の分担 | • 同帯域の熱／軌道誤差の識別 | • 軌道誤差を別状態で同時推定 | • 現在のscan modelの妥当性 | • ICSOまでのAdaptive実装範囲
+  NOTES: ここから議論。周波数分離ではなく事前情報を使う状態推定が必要。
+
+=== Slide 41 | layout=タイトルとコンテンツ | shapes=6
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Summary
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(15.11,1.14)
+      TEXT: 予測可能な熱成分は除去できたため、次はDC校正と非熱共存が課題となる
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 42
+  <TABLE (19)> name='Table 4' pos=(1.30,3.20) size=(24.00,7.30)
+      ROW: What is established | What remains
+      ROW: TD/Femap → STT–LCT LOS → PAT | real spacecraft validation
+      ROW: shared |a|≈28–31 µrad/°C | MZ / non-dominant axis
+      ROW: LOO thermal residual ≈5.5 µrad | power-continuous Level 2
+      ROW: nonthermal tacq 156.9→59.6 s | realistic-link subset / dynamics
+      ROW: orbit and thermal share low-frequency ba | adaptive observability
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 5' pos=(2.00,11.00) size=(22.50,1.50)
+  <TEXT_BOX (17)> name='TextBox 6' pos=(2.60,11.42) size=(21.30,0.60)
+      TEXT: ICSOへ：モデル主張を固定し、PAT条件とAdaptiveの必要最小限を詰める
+  NOTES: 本編まとめ。ここで議論へ移る。
+
+=== Slide 42 | layout=セクション見出し | shapes=4
+  <TEXT_BOX (17)> name='TextBox 1' pos=(10.60,4.50) size=(5.40,0.65)
+      TEXT: A
+  <AUTO_SHAPE (1)> name='Rectangle 2' pos=(11.45,5.72) size=(3.70,0.04)
+  <TEXT_BOX (17)> name='TextBox 3' pos=(2.00,6.35) size=(22.70,1.15)
+      TEXT: Appendix
+  <TEXT_BOX (17)> name='TextBox 4' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 43
+  NOTES: Section A: Appendix
+
+=== Slide 43 | layout=タイトルとコンテンツ | shapes=13
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Lightweight LOS model
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(11.36,1.14)
+      TEXT: コンポ温度の時系列追加は共線と低SNRで係数が壊れる
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: 20
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 4' pos=(1.30,3.10) size=(11.30,7.80)
+  <TEXT_BOX (17)> name='TextBox 5' pos=(1.80,3.60) size=(10.30,0.60)
+      TEXT: Attempt
+  <TEXT_BOX (17)> name='TextBox 6' pos=(2.00,4.85) size=(9.90,1.30)
+      TEXT: LOS = b + a·ΔT | + c·(Tattach−Tref)
+  <TEXT_BOX (17)> name='TextBox 7' pos=(2.00,6.80) size=(9.90,3.00)
+      TEXT: • corr(ΔT,TPCDU)≈0.995 | • local std≈0.1°C | • 係数が巨大化 | • ケース間で不安定
+  <LINE (9)> name='Connector 8' pos=(13.00,6.80) size=(1.40,0.00)
+  <AUTO_SHAPE (1)> name='Rounded Rectangle 9' pos=(14.80,3.10) size=(10.40,7.80)
+  <TEXT_BOX (17)> name='TextBox 10' pos=(15.30,3.60) size=(9.40,0.60)
+      TEXT: Interpretation
+  <TEXT_BOX (17)> name='TextBox 11' pos=(15.70,5.00) size=(8.60,2.20)
+      TEXT: 効いていたのは | 軌道内変動ではなく | ケース平均DC
+  <TEXT_BOX (17)> name='TextBox 12' pos=(16.10,8.25) size=(7.80,0.65)
+      TEXT: → b_case側へ分離
+  <TEXT_BOX (17)> name='TextBox 13' pos=(4.20,11.65) size=(18.20,0.70)
+      TEXT: RMSEだけでなく、係数の安定性と運用解釈でモデルを選ぶ
+  NOTES: 見かけのRMSE改善より、共線で係数解釈が壊れることを問題視した。
+
+=== Slide 44 | layout=タイトルとコンテンツ | shapes=4
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Appendix
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(24.10,1.05)
+      TEXT: 関連研究の位置づけ
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: A1
+  <TABLE (19)> name='Table 4' pos=(2.00,3.20) size=(22.60,8.05)
+      ROW: Item | Detail
+      ROW: Badás et al. 2024 | FSOC opto-thermo-mechanical review
+      ROW: Shi et al. 2023 | bus optimization → acquisition time
+      ROW: Hu et al. 2022 | GEO Fourier compensation
+      ROW: Li et al. 2025 | LEO geometry → NN LOS correction
+      ROW: JANUS | optical-head LOS≈KΔT
+      ROW: Rüddenklau et al. | body-pointing FF, not thermal
+  NOTES: Appendix: 関連研究の位置づけ
+
+=== Slide 45 | layout=タイトルとコンテンツ | shapes=4
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Appendix
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(24.10,1.05)
+      TEXT: 全解析ケースの設計
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: A2
+  <TABLE (19)> name='Table 4' pos=(1.40,3.10) size=(23.80,8.00)
+      ROW: Cases | Sun | Power / condition
+      ROW: 04,13–15 | MY | ALL / +PROP / +PCDU / STTLCT
+      ROW: 08,16,18,19 | PY | ALL / STTLCT / +PROP / +PCDU
+      ROW: 05,06,20,21 | PX | ALL / STTLCT / +PROP / +PCDU
+      ROW: 09,17,23,24 | MX | ALL / STTLCT / +PROP / +PCDU
+      ROW: 10–12 | MY | HOT / Black / Alodine
+      ROW: 22 | MY | PROP 12.5 W
+      ROW: 25 | MY | LTAN18 / 693 km
+  NOTES: Appendix: 全解析ケースの設計
+
+=== Slide 46 | layout=タイトルとコンテンツ | shapes=4
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Appendix
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(24.10,1.05)
+      TEXT: 熱光学特性
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: A3
+  <TABLE (19)> name='Table 4' pos=(2.00,3.20) size=(22.60,4.60)
+      ROW: Item | Detail
+      ROW: Alodine 1000 | α=0.150, ε=0.038, α/ε=3.947
+      ROW: Black | α=0.974, ε=0.920, α/ε=1.059
+      ROW: 0.5 synthetic | α=0.500, ε=0.500
+  NOTES: Appendix: 熱光学特性
+
+=== Slide 47 | layout=タイトルとコンテンツ | shapes=5
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Appendix
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(24.10,1.05)
+      TEXT: LOS定義の比較
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: A4
+  <AUTO_SHAPE (1)> name='Rectangle 4' pos=(1.20,3.00) size=(24.00,9.20)
+  <PICTURE (13)> name='Picture 5' pos=(8.14,3.00) size=(10.12,9.20)
+  NOTES: Appendix: LOS定義の比較
+
+=== Slide 48 | layout=タイトルとコンテンツ | shapes=4
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Appendix
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(24.10,1.05)
+      TEXT: Level-2係数と解釈
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: A5
+  <TABLE (19)> name='Table 4' pos=(2.00,3.20) size=(22.60,8.05)
+      ROW: Item | Detail
+      ROW: b0_MX | +15.7 µrad
+      ROW: b0_MY | +2.8 µrad
+      ROW: b0_PX | −12.0 µrad
+      ROW: b0_PY | −24.0 µrad
+      ROW: c_PROP | −22.9 µrad
+      ROW: c_PCDU | −10.2 µrad
+  NOTES: Appendix: Level-2係数と解釈
+
+=== Slide 49 | layout=タイトルとコンテンツ | shapes=10
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Appendix
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(24.10,1.05)
+      TEXT: モデルの難しいケース
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: A6
+  <AUTO_SHAPE (1)> name='Rectangle 4' pos=(0.80,3.10) size=(7.90,7.30)
+  <PICTURE (13)> name='Picture 5' pos=(0.80,3.74) size=(7.90,6.02)
+  <AUTO_SHAPE (1)> name='Rectangle 6' pos=(9.25,3.10) size=(7.90,7.30)
+  <PICTURE (13)> name='Picture 7' pos=(9.25,3.74) size=(7.90,6.02)
+  <AUTO_SHAPE (1)> name='Rectangle 8' pos=(17.70,3.10) size=(7.90,7.30)
+  <PICTURE (13)> name='Picture 9' pos=(17.70,3.74) size=(7.90,6.02)
+  <TABLE (19)> name='Table 10' pos=(3.00,10.75) size=(20.70,2.00)
+      ROW: Case | Issue
+      ROW: 11 Black | oracle floor ≈13 µrad
+      ROW: 22 half power | ON/OFF b mismatch
+      ROW: 25 all-sun | thermal LOS nearly DC
+  NOTES: Appendix: モデルの難しいケース
+
+=== Slide 50 | layout=タイトルとコンテンツ | shapes=4
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Appendix
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(24.10,1.05)
+      TEXT: 軌道予測誤差の仮定
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: A7
+  <TABLE (19)> name='Table 4' pos=(2.00,3.20) size=(22.60,6.90)
+      ROW: Item | Detail
+      ROW: Truth | Sentinel-1 AUX_POEORB
+      ROW: Prediction | latest TLE + SGP4 forward
+      ROW: Partner | truth-known, one-sided error
+      ROW: Range | 800 km ISL or nadir altitude
+      ROW: Resampling | cyclic to TD/Femap time
+  NOTES: Appendix: 軌道予測誤差の仮定
+
+=== Slide 51 | layout=タイトルとコンテンツ | shapes=4
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Appendix
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(24.10,1.05)
+      TEXT: STT-frame射影結果
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: A8
+  <TABLE (19)> name='Table 4' pos=(2.00,3.20) size=(22.60,5.75)
+      ROW: Item | Detail
+      ROW: MY | ISL along-track / 285 µrad
+      ROW: PY | ISL anti-along / 285 µrad
+      ROW: PX | ground nadir / 694 µrad
+      ROW: MX | zenith proxy / 612 µrad
+  NOTES: Appendix: STT-frame射影結果
+
+=== Slide 52 | layout=タイトルとコンテンツ | shapes=4
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Appendix
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(24.10,1.05)
+      TEXT: PATスキャンの注意
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: A9
+  <TABLE (19)> name='Table 4' pos=(2.00,3.20) size=(22.60,6.90)
+      ROW: Item | Detail
+      ROW: Coverage | 40 µrad grid, 25 µrad radius
+      ROW: Dynamics | no slew / settling
+      ROW: Target | constant during one scan
+      ROW: Statistics | mean tacq conditional on success
+      ROW: Opportunities | each sample independent
+  NOTES: Appendix: PATスキャンの注意
+
+=== Slide 53 | layout=タイトルとコンテンツ | shapes=4
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Appendix
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(24.10,1.05)
+      TEXT: Adaptive候補
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: A10
+  <TABLE (19)> name='Table 4' pos=(2.00,3.20) size=(22.60,5.75)
+      ROW: Item | Detail
+      ROW: Scalar EWMA | b only; simplest
+      ROW: Kalman filter | b + orbit/alignment states
+      ROW: Mode-conditioned table | sun face × power mode
+      ROW: Batch pass update | avoid single-acquisition contamination
+  NOTES: Appendix: Adaptive候補
+
+=== Slide 54 | layout=タイトルとコンテンツ | shapes=4
+  <TEXT_BOX (17)> name='TextBox 1' pos=(0.60,0.24) size=(17.40,0.55)
+      TEXT: Appendix
+  <TEXT_BOX (17)> name='TextBox 2' pos=(1.68,1.42) size=(24.10,1.05)
+      TEXT: 主要参考文献
+  <TEXT_BOX (17)> name='TextBox 3' pos=(23.80,14.02) size=(2.20,0.42)
+      TEXT: A11
+  <TEXT_BOX (17)> name='TextBox 4' pos=(1.40,3.10) size=(23.70,3.72)
+      TEXT: • Riesing et al., TBIRD PAT on-orbit results, SPIE 2023 | • Shi et al., Thermal Deformation Stability Optimization, 2023 | • Badás et al., Opto-thermo-mechanical phenomena in satellite FSOC, 2024 | • Hu et al., On-Board Thermal Motion Compensation, 2022 | • Li et al., Thermal Deformation LOS Correct
+  NOTES: Appendix: 主要参考文献
