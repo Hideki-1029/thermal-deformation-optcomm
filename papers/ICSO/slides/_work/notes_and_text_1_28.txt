@@ -1,0 +1,901 @@
+===== SLIDE 1 =====
+--- ON SLIDE ---
+Hierarchical Prediction and Feedforward Correction of Time-Varying Thermal Line-of-Sight Bias for Coarse Acquisition in Satellite Optical Communications
+
+Hideki Takamoto (Univ. of Tokyo)
+
+1
+
+ICSO 2026 paper submitted
+2026/10/15
+
+--- NOTES ---
+Good afternoon.
+My name is Hideki Takamoto from the University of Tokyo.
+Today, I will present our work on hierarchical prediction and feedforward correction of time-varying thermal line-of-sight bias for coarse acquisition in satellite optical communications.
+
+===== SLIDE 2 =====
+--- ON SLIDE ---
+01
+
+Background
+
+--- NOTES ---
+First, I will briefly explain the background and motivation of this study.
+
+===== SLIDE 3 =====
+--- ON SLIDE ---
+Before optical feedback is available, scan-center offset determines coarse-acquisition search time
+
+3
+
+Background
+
+Before optical feedback
+
+Search an uncertainty region including thermal LOS, attitude, and orbit errors
+
+Illumination / eclipse / dissipation
+
+Temperature field → thermal expansion
+→ spacecraft-bus distortion
+
+Thermal LOS: 100 µrad to 1 mrad
+
+Pre-acquisition predictive correction
+
+Subtract thermal LOS 
+from the scan center
+to reduce search time
+
+Without modifying the spacecraft or LCT,
+ operationally remove only predictable thermal deformation from the initial LOS error.
+
+Our approach
+
+--- NOTES ---
+Before acquisition, optical feedback from the other terminal is not yet available.
+Therefore, the terminal has to search an uncertainty region that includes thermal LOS error, attitude error, and orbit-prediction error.
+In particular, illumination, eclipse, and internal dissipation generate temperature gradients in the spacecraft.
+These gradients cause thermal expansion and spacecraft-bus distortion, which can result in thermal LOS errors on the order of hundreds of microradians or even more than one milliradian.
+Our approach is to predict this thermal component before acquisition and subtract it from the scan center.
+The important point is that this is an operational correction.
+It does not require modification of the spacecraft structure or the laser communication terminal.
+
+===== SLIDE 4 =====
+--- ON SLIDE ---
+Background
+
+Thermal LOS error can match or exceed orbit-prediction error—and cannot be optically separated before acquisition
+
+4
+
+[TABLE]
+Error source | Approximate magnitude | Time variation
+Thermal LOS | 150 µrad–1000 µrad (this analysis) | Orbital period (~100 min in LEO)
+Orbit prediction | Several hundred µrad (TLE propagation vs. precise GPS ephemeris) | Orbital period (~100 min in LEO)
+Attitude and calibrated alignment | Tens of µrad | DC to broadband
+Mechanical vibration | Several to tens of µrad | High frequency (post-acquisition fine tracking)
+
+* Thermal LOS and orbit-prediction error are from this analysis; other values are literature-based order-of-magnitude estimates.
+
+Thermal LOS and orbit prediction share similar orbital periods
+Frequency separation of post-acquisition residuals cannot isolate the thermal component
+
+Do not separate thermal effects retrospectively from observations
+Use temperature and operating state to subtract them before acquisition
+
+Main contributors to scan-center LOS error during coarse acquisition
+
+--- NOTES ---
+This table summarizes the main error sources contributing to the scan-center LOS error during coarse acquisition.
+Among these components, thermal LOS error can be comparable to, or even larger than, orbit-prediction error.
+Another important point is that thermal LOS error and orbit-prediction error vary on similar orbital time scales.
+Therefore, after acquisition, we cannot simply identify the thermal component from the pointing residual based on frequency.
+Instead, in this study, we use temperature and operating-state information as independent inputs to predict and remove the thermal component before acquisition.
+
+===== SLIDE 5 =====
+--- ON SLIDE ---
+Background
+
+Prior work on thermal-deformation LOS error prediction and this study
+
+5
+
+[TABLE]
+Field | Optical communications | Earth observation / optics | This study
+Approach to thermal deformation | Reduce thermal deformation through structure, materials, and equipment placementAssess thermal pointing error by FEM | Predict and correct LOS variation from temperature, orbital phase, and observation geometry | Predict spacecraft-bus relative LOS from temperature and operating state
+Main target | Optical terminals / spacecraft structures | Cameras / remote-sensing optical systems | STT–LCT relative LOS across the spacecraft bus
+Evaluation metric | Thermal stability, pointing error, link establishment | LOS prediction error, image-pointing accuracy | Coarse-acquisition time and success rate
+Remaining gap | Limited frameworks for predicting residual thermal LOS error during operations | Not linked to spacecraft-bus LOS error or coarse-acquisition performance | —
+
+References:
+Optical comm.: Shi et al. 2023; Zhang et al. 2025
+EO/optics: Li et al. 2025; Hu et al. 2022; Turella et al. 2019/2021
+
+From structural mitigation to instrument-specific LOS correction, this study develops a physics-based bus-level LOS model for coarse optical acquisition.
+
+--- NOTES ---
+Previous work can be roughly divided into two approaches.
+
+In optical communications, thermal deformation is mainly mitigated through structural design, material selection, and equipment placement.
+
+In Earth observation and optical instruments, thermal LOS variation is predicted and corrected using temperature, orbital phase, or observation geometry, but these models are typically tied to a specific optical instrument or observation system.  
+
+In this study, we instead predict the relative LOS between the STT and LCT across the spacecraft bus using a physics-based model, and then use that prediction directly for coarse optical acquisition.
+
+===== SLIDE 6 =====
+--- ON SLIDE ---
+Research overview: from thermoelastic truth generation and model construction to evaluation
+
+6
+
+Orbit / attitude
+heat & coating
+
+Thermal Desktop
+temperature
+
+Femap / Nastran
+rotation
+
+STT–LCT
+thermal LOS
+
+Reduced-order
+model
+
+PAT
+scan center
+
+Ground model development
+
+• Input orbit, attitude, and thermal environment
+• Compute temperature fields and thermoelastic deformation with TD/Femap
+• Generate reference STT–LCT relative-LOS time series
+• Train and evaluate the reduced-order model
+
+On-orbit correction
+
+• Temperature / operating state
+• Predict thermal LOS
+• Correct the scan center
+• Include nonthermal errors
+• Residual update
+
+• TD/Femap runs only on the ground; only the reduced-order model runs onboard
+• Evaluate LOS error, acquisition success, and acquisition time
+
+• Orbit
+• Attitude
+• Equipment layout
+• Surface properties
+• Dissipation
+
+Background
+
+--- NOTES ---
+This slide shows the overall workflow of this study.
+On the ground, we first define the orbit, attitude, thermal environment, equipment layout, and surface properties.
+Thermal Desktop is then used to calculate the spacecraft temperature field.
+The temperature field is transferred to Femap and Nastran to calculate thermoelastic deformation and the relative rotation between the star tracker and the laser communication terminal.
+From these high-fidelity simulation results, we generate reference thermal-LOS time series and construct a reduced-order prediction model.
+On orbit, Thermal Desktop and Femap are not used.
+Only temperature measurements and operating-state information are input to the reduced-order model, and the predicted thermal LOS is used to correct the scan center.
+Finally, we evaluate not only the LOS prediction error, but also acquisition success rate and acquisition time.
+
+===== SLIDE 7 =====
+--- ON SLIDE ---
+02
+
+Thermoelastic analysis
+
+--- NOTES ---
+Next, I will explain the thermoelastic analysis used to generate the reference thermal-LOS data.
+
+===== SLIDE 8 =====
+--- ON SLIDE ---
+Thermoelastic analysis
+
+We evaluate a box-structure LEO spacecraft with the STT and LCT on different panels
+
+7
+
+[TABLE]
+Item | Setting
+Bus dimensions | 590 × 600 × 990 mm
+Panels | 10-mm-thick shell elements
+Material | A5052
+LCT | Center of MZ panel
+STT | Center of PZ panel
+
+Not a specific-spacecraft design review.
+Fixed structure; sun face and dissipation vary.
+
+PZ: STT
+
+MZ: LCT
+
+MY: PCDU
+
+PY: PROP
+
+LOS
+Boresight ≈ −Z
+
+Thermal Desktop
+
+Femap
+
+Main analysis-model settings
+
+--- NOTES ---
+We evaluate a simple box-structure LEO spacecraft, with the star tracker and the laser communication terminal mounted on different panels.
+The spacecraft bus is approximately 0.6 by 0.6 by 1 meter and is modeled using A5052 aluminum shell elements.
+The star tracker is located on the positive-Z panel, and the laser communication terminal is located on the negative-Z panel.
+This model is not intended to reproduce a specific flight spacecraft.
+Instead, we keep the structure fixed and vary the thermal and operating conditions in order to investigate the thermal LOS behavior.
+
+===== SLIDE 9 =====
+--- ON SLIDE ---
+Thermoelastic analysis
+
+Thermal Desktop generates temperature-field time series from orbit, attitude, surface, and dissipation inputs
+
+8
+
+[TABLE]
+Input | Setting
+Orbit | Sun-synchronous, LTAN06 / 800 km / COLD
+Period | ≈6050 s (≈101 min)
+Analysis duration | ≈18,157 s (3 orbits)
+Sampling | Every ≈60.5 s, 301 points
+Illumination | Eclipse / continuous illumination
+Sun face | MX / MY / PX / PY
+Number of nodes | 125
+
+Environmental conditions varied by case
+
+• Internal-unit power: ON/OFF
+• Surface: α = ε = 0.5 / Black / Alodine
+• Orbit: LTAN18 / 693 km
+
+Main thermal-analysis inputs
+
+Output: panel temperature field T(t), computed on the ground.
+
+--- NOTES ---
+First, Thermal Desktop is used to calculate the time history of the spacecraft temperature field.
+The baseline orbit is a sun-synchronous orbit at an altitude of 800 kilometers.
+We simulate approximately three orbital periods with about one-minute sampling.
+Across the analysis cases, we vary the sun-facing panel, eclipse condition, surface optical properties, internal equipment dissipation, and orbital conditions.
+The output of this analysis is the panel temperature field as a function of time.
+Again, this analysis is performed only on the ground.
+
+===== SLIDE 10 =====
+--- ON SLIDE ---
+Thermoelastic analysis
+
+The temperature field is mapped into Femap to obtain STT and LCT translations and rotations
+
+9
+
+[TABLE]
+Structural-analysis setting | Value
+Material | Aluminum A5052
+Young's modulus | 70.327 GPa
+Poisson's ratio | 0.33
+Coefficient of thermal expansion | 2.376×10⁻⁵ /K
+Density | 2685 kg/m³
+Reference temperature | 23.9 ℃
+Constraint | Small region near the STT
+
+Main structural-analysis settings
+
+Input T(t)
+
+Thermal Desktop and Femap generate training data on the ground.
+
+--- NOTES ---
+The resulting temperature field is then transferred to Femap for thermoelastic structural analysis.
+The spacecraft structure is modeled using A5052 aluminum with the material properties shown here.
+From this analysis, we obtain the translations and rotations of the star-tracker and laser-terminal mounting locations.
+Thermal Desktop and Femap are therefore used only to generate the high-fidelity reference dataset for model development.
+
+===== SLIDE 11 =====
+--- ON SLIDE ---
+Thermoelastic analysis
+
+For a far-field link, the relevant quantity is rotation of the LCT optical axis relative to the STT
+
+10
+
+LOS-error definition
+
+• LCT optical-axis rotation − STT reference rotation
+• STT thermal rotation is absorbed into attitude
+• Directly gives far-field scan-center error
+• Excludes translation-induced tilt
+
+STT
+
+LCT
+
+Far-field LOS error = STT-relative LCT optical-axis rotation, not translation
+
+--- NOTES ---
+For a far-field optical link, the relevant quantity is not simply the translation of the mounting points.
+What matters is the relative rotation of the laser communication terminal optical axis with respect to the star-tracker attitude reference.
+Therefore, we define the thermal LOS error as the LCT optical-axis rotation minus the STT reference rotation.
+The thermal rotation of the star tracker itself is absorbed into the attitude reference.
+In this study, translation-induced tilt and the internal thermal deformation of the optical terminals are not included.
+
+===== SLIDE 12 =====
+--- ON SLIDE ---
+Thermoelastic analysis
+
+The structure and LOS definition are fixed; only sun face, dissipation, surface, and orbit vary
+
+11
+
+[TABLE]
+Varied factor | Cases | Purpose
+Sun face | MX / MY / PX / PY | Dominant axis, sign, and magnitude
+Internal dissipation | STT/LCT only / +PROP / +PCDU / all units (one half-power case) | Variation in mean bias across cases
+Surface properties | Baseline (α = ε = 0.5) / Black / Alodine | Variation amplitude and residual floor
+Orbit / thermal environment | Eclipse / continuous illumination; LTAN06 / LTAN18 | Applicability across thermal and orbit conditions
+
+PZ/MZ sun-face cases are not included;
+they host the STT/LCT and are outside this model's scope.
+
+Case parameters
+
+Fixed parameters: structure and dimensions, STT/LCT placement, material, and LOS definition
+Current analysis: 21 cases.
+Across-condition evaluation is limited to the same spacecraft bus; coefficients are not transferred unchanged to another structure.
+
+--- NOTES ---
+With the spacecraft structure and LOS definition fixed, we vary four groups of conditions.
+These are the sun-facing panel, internal equipment dissipation, surface properties, and orbital thermal environment.
+In total, we analyze 21 cases.
+The important point is that these are different thermal and operating conditions within the same spacecraft configuration.
+We are not assuming that the numerical coefficients identified here can be transferred unchanged to a completely different spacecraft.
+
+===== SLIDE 13 =====
+--- ON SLIDE ---
+Results: thermal LOS varies at the orbital period; the dominant axis and mean offset follow the sun face
+
+12
+
+Panel temperatures
+
+Case 04 (MY sun face): far-field LOS
+
+• Orbital-period thermal LOS; dominant axis: MY/PY → y, MX/PX → x
+• Dominant-axis variation follows sun-facing–opposite-panel center ΔT
+• Raw RMS: 150–1280 µrad; surface sets amplitude/floor, dissipation shifts the case mean
+
+Thermoelastic analysis
+
+Y
+
+Y
+
+--- NOTES ---
+This slide shows one representative result.
+Both the spacecraft temperature and the thermal LOS vary approximately with the orbital period.
+We also found that the dominant LOS axis depends strongly on the sun-facing panel.
+For MY and PY sun-facing cases, the dominant variation appears mainly in the y direction, while MX and PX mainly affect the x direction.
+Most importantly, the time-varying thermal LOS closely follows the temperature difference between the sun-facing panel and the opposite panel.
+Across all cases, the raw thermal LOS ranges from approximately 150 to 1280 microradians.
+We also observed that the surface thermal condition mainly affects the time-varying amplitude, while internal dissipation mainly shifts the mean bias.
+This observation motivates the reduced-order model shown next.
+
+===== SLIDE 14 =====
+--- ON SLIDE ---
+03
+
+Reduced-order model
+
+--- NOTES ---
+Next, I will introduce the reduced-order thermal-LOS prediction model.
+
+===== SLIDE 15 =====
+--- ON SLIDE ---
+Reduced-order model
+
+13
+
+Model requirements
+
+• No onboard TD/Femap
+• Few temperatures and operating flags
+• Small, fixed coefficient set
+• Output: scan-center correction angle
+
+[TABLE]
+Candidate model | Strengths / limitations
+Constant bias | Lightweight / cannot represent within-orbit variation
+Fourier series in orbital phase | Represents periodicity / must be rebuilt when orbit or conditions change
+Multiple mounting-point temperatures | Flexible / collinearity with ΔT destabilizes coefficients
+Sun-face temperature T | Physically interpretable / does not fully track variation
+Sun-face temperature difference ΔT | Physically interpretable / cannot explain mean offsets across cases
+Hierarchical ΔT | Separates within-orbit variation from means across cases
+
+→ Adopt a hierarchical model that separately predicts thermal-LOS variation from sun-face–opposite-panel ΔT
+and thermal-LOS bias from the mean offset across cases
+
+Reduced-order model selection
+
+--- NOTES ---
+For onboard use, the model has to be much simpler than the full Thermal Desktop and Femap analysis.
+It should use only a small number of temperature measurements and operating-state flags, with a small fixed set of coefficients.
+We examined several candidate models.
+A constant bias cannot represent the within-orbit variation.
+A Fourier model can represent periodicity, but it becomes dependent on the particular orbit and operating condition.
+Using many local temperature measurements gives more flexibility, but we found strong collinearity between those temperatures and the panel temperature difference.
+Based on these observations, we selected a hierarchical temperature-difference model.
+The basic idea is to separate the time-varying thermal component within an orbit from the mean bias that changes across operating conditions.
+
+===== SLIDE 16 =====
+--- ON SLIDE ---
+Reduced-order model
+
+Onboard prediction separates time-varying and bias terms using ΔT and operating flags
+
+14
+
+Sensitivity a(sun)
+Shared by sun face
++30.6, +28.6, −28.1, −28.7 µrad/K
+
+Case-dependent DC offset
+From sun face and ON/OFF flags
+Decomposed by the equation above
+
+Dominant-axis selection
+
+Prediction axis from sun face
+MX/PX → x; MY/PY → y
+Non-dominant axis: bias only
+MX/PX bias ≈ −600 µrad;
+zeroing it degrades acquisition
+
+Panel ΔT: time variation · DC offset: cross-case differences
+
+16 coefficients; specific to this structure, placement, and LOS definition
+
+--- NOTES ---
+This is the core prediction model.
+The coefficients of this model are identified on the ground from the thermo-structural simulation database.
+For the dominant LOS axis, the time-varying component is modeled as a linear function of the temperature difference between the sun-facing panel and the opposite panel.
+The thermal sensitivity, a, is shared among cases with the same sun-facing panel.
+The remaining DC offset, b, is modeled using the sun-facing panel and equipment ON/OFF states.
+So, in simple terms, the panel temperature difference explains the variation within an orbit, while the operating state explains the offset between different cases.
+For the non-dominant axis, only the bias component is predicted.
+The complete model uses only 16 coefficients for this spacecraft structure, STT–LCT placement, and LOS definition.
+
+===== SLIDE 17 =====
+--- ON SLIDE ---
+Reduced-order model
+
+The test case is excluded from all coefficient estimates to evaluate prediction under unseen conditions
+
+15
+
+① Fit each case
+
+Use the first orbit of each case
+to estimate its sensitivity a
+and mean b
+
+② Share within each sun face
+
+Median a within each sun face
+becomes the shared sensitivity
+
+Fit mean b across cases from
+sun face and dissipation flags
+
+③ Test an unseen case
+
+nested leave-one-case-out
+
+Exclude the test case from shared sensitivity
+and both-axis mean models
+
+Evaluate its next two orbits
+
+Evaluate how well fixed shared coefficients predict unseen operating conditions
+
+Across-condition evaluation within the same structure and LOS definition
+
+--- NOTES ---
+Let me briefly explain how the coefficients a and b are determined.
+First, for each analysis case, we use the first orbit to fit the relationship between the panel temperature difference and the thermal LOS.
+This gives a case-specific thermal sensitivity, a, and a mean offset, b.
+Next, the thermal sensitivity a is shared across cases with the same sun-facing panel.
+We use the median sensitivity of those cases as the shared coefficient.
+The mean offset b is treated differently.
+Instead of assigning an independent offset to every case, we model it using the sun-facing panel and equipment ON/OFF states.
+Therefore, the final onboard model does not require independent coefficients for every operating condition.
+To evaluate prediction under unseen conditions, we use a nested leave-one-case-out procedure.
+The test case is completely excluded from both the shared thermal-sensitivity estimation and the DC-bias model.
+Then, using only the fixed coefficients obtained from the remaining cases, we predict the excluded case and evaluate its next two orbits.
+So, this evaluates generalization to an unseen operating condition within the same spacecraft configuration.
+
+===== SLIDE 18 =====
+--- ON SLIDE ---
+Reduced-order model
+
+For unseen cases, median dominant-axis error is 4.9 µrad—one to two orders below the raw 615 µrad
+
+16
+
+Sun-face sensitivities a (case-specific and shared)
+
+Case bias b: empirical versus predicted
+
+615 µrad
+
+Median raw dominant-axis LOS RMS
+
+4.9 µrad
+
+Median test RMSE on unseen cases (mean 5.5)
+
+3.8 µrad
+
+LOO RMSE of case-mean DC bias
+
+Shared sensitivity: MX +30.6 / MY +28.6 / PX −28.1 / PY −28.7 µrad/K
+
+--- NOTES ---
+The prediction results are shown here.
+Before correction, the median RMS thermal LOS on the dominant axis is about 615 microradians.
+For unseen operating conditions, the median test RMSE decreases to only 4.9 microradians, with a mean value of 5.5 microradians.
+The case-dependent DC bias is also predicted with a leave-one-out RMSE of 3.8 microradians.
+Therefore, within the evaluated conditions, this relatively simple reduced-order model reduces the dominant thermal LOS error by approximately one to two orders of magnitude.
+
+===== SLIDE 19 =====
+--- ON SLIDE ---
+Reduced-order model
+
+Even for Case 08, with one of the largest thermal LOS errors, 1250 µrad falls to 3.9 µrad
+
+17
+
+Case 08 (PY sun face, all units dissipating)
+
+1250 µrad
+
+Raw dominant-axis RMS
+
+3.9 µrad
+
+Test RMSE for an unseen case
+
+First scan point is sufficient
+
+Corrected residual is well below
+the 150 µrad detection radius
+
+ΔT follows the within-orbit variation
+
+--- NOTES ---
+This slide shows Case 08, which is one of the cases with the largest thermal LOS error.
+The raw dominant-axis thermal LOS RMS is about 1250 microradians.
+Even though this case is excluded from coefficient estimation, the prediction RMSE is only 3.9 microradians.
+As shown in the time series, the panel temperature difference successfully follows the large within-orbit variation of the thermal LOS.
+This remaining error is already much smaller than the 150-microradian detection radius used in the coarse-acquisition simulation.
+
+===== SLIDE 20 =====
+--- ON SLIDE ---
+04
+
+Coarse-acquisition evaluation
+
+--- NOTES ---
+Finally, I will evaluate how this thermal-LOS prediction affects coarse-acquisition performance.
+
+===== SLIDE 21 =====
+--- ON SLIDE ---
+Acquisition conditions
+
+Acquire when the scan-corrected target enters the detection circle
+
+18
+
+Thermal LOS truth
+
+Predicted thermal LOS
+
+Scan-center residual
+
+Rectangular spiral scan
+
+Acquisition success and time
+
+Orbit, attitude, and other
+nonthermal errors
+
+Thermal LOS truth
+
+Predicted thermal LOS
+
+Scan-center error
+
+PAT flow
+
+Residual
+
+Nonthermal errors
+(orbit, attitude, etc.)
+
+±1600 µrad
+
+Scan range
+
+120 µrad
+
+Scan step
+
+150 µrad
+
+Detection radius (beacon scale)
+
+0.1 s / point
+
+Dwell time
+
+27 × 27 = 729 points
+
+Maximum number of scan points
+
+No coverage holes: half the grid diagonal ≈ 85 µrad < 150 µrad detection radius
+
+Neglects inter-point slew, settling, and stochastic detection. Times are comparative under these scan conditions.
+
+--- NOTES ---
+The predicted thermal LOS is used directly to shift the center of the coarse-acquisition scan.
+The scan-center error consists of nonthermal pointing errors plus the difference between the true thermal LOS and the predicted thermal LOS.
+We use a simplified rectangular spiral scan.
+The scan range is plus or minus 1600 microradians, the scan step is 120 microradians, the detection radius is 150 microradians, and the dwell time is 0.1 seconds per point.
+Because half of the grid diagonal is smaller than the detection radius, the scan geometry has no coverage holes.
+In this numerical evaluation, inter-point motion, settling time, and probabilistic detection are neglected.
+Therefore, the absolute acquisition times should be interpreted as comparative values under the same scan conditions.
+
+===== SLIDE 22 =====
+--- ON SLIDE ---
+Acquisition conditions
+
+Orbit prediction, alignment, attitude, and drift are added to the thermal error
+
+19
+
+[TABLE]
+Component | Construction | Time behavior | Magnitude
+Orbit prediction | Propagate the latest Sentinel-1 TLE; project error from precise POEORB onto the link transverse plane | Orbital period | Mean 280–700 µrad
+Alignment | Constant two-axis residual per case | DC | 50 µrad/axis, 1σ
+Attitude | Gaussian random draw at each sample | Simplified broadband | 50 µrad/axis, 1σ
+Drift | Sinusoid | 900 s period | 30 µrad amplitude
+
+This is not a spacecraft-specific error budget; it represents a generic GNSS-denied small-LEO scenario.
+
+One random seed per case; statistical spread is not evaluated.
+
+--- NOTES ---
+In addition to thermal LOS error, we include several nonthermal pointing-error components.
+The largest one is orbit-prediction error.
+We generate this error by propagating Sentinel-1 TLE data and comparing the predicted position with precise POEORB ephemeris data, and then projecting the resulting position error onto the link transverse plane.
+We also include a constant alignment error, random attitude error, and a low-frequency drift term.
+This is not intended to reproduce the exact pointing-error budget of a specific spacecraft.
+Instead, it represents a generic small-LEO scenario without high-accuracy GNSS-based onboard orbit knowledge.
+
+===== SLIDE 23 =====
+--- ON SLIDE ---
+Acquisition results
+
+With thermal LOS error only, mean acquisition time drops from 14.6 to 0.10 s, matching thermal-truth correction
+
+20
+
+No correction
+
+14.6 s
+
+Hierarchical model
+
+0.10 s
+
+Thermal-truth upper bound
+
+0.10 s
+
+[TABLE]
+Correction | Success rate | Mean acquisition time
+No correction | 100% | 14.6 s
+Hierarchical model | 100% | 0.10 s
+Thermal truth | 100% | 0.10 s
+
+9.3 µrad
+
+Mean thermal residual after correction
+
+The residual is far below the 150 µrad detection radius, so acquisition occurs in one dwell.
+Mean over 14 COLD baseline-surface cases; the main result includes nonthermal error on the next slide.
+
+--- NOTES ---
+First, I show the acquisition result when only thermal LOS error is included.
+Without correction, the mean acquisition time is 14.6 seconds.
+With the hierarchical reduced-order model, the mean acquisition time decreases to 0.10 seconds.
+This is the same acquisition time obtained when the true thermal LOS is directly removed.
+However, this does not mean that the predicted waveform is perfectly identical to the thermal truth.
+It simply means that the remaining thermal residual, about 9 microradians on average, is already well inside the 150-microradian detection radius.
+
+===== SLIDE 24 =====
+--- ON SLIDE ---
+Acquisition results
+
+With nonthermal LOS error, the mean drops from 19.2 to 5.45 s; the residual is governed by nonthermal error
+
+21
+
+No correction
+
+19.2 s
+
+Hierarchical model
+
+5.45 s
+
+−72%
+
+Mean acquisition time
+
+98 → 100%
+
+Success rate
+
+[TABLE]
+Metric | No correction | Hierarchical model (feedforward)
+Success rate | 98% | 100%
+Mean acquisition time | 19.2 s | 5.45 s
+Mean initial error after correction | — | 448 µrad (almost entirely nonthermal)
+PY sun face (thermal ≈1.2 mrad) | 37.3–39.5 s / 88–97% | 1.3–1.8 s / 100%
+
+Predicting and removing thermal error shifts the coarse-acquisition limit from thermal to nonthermal error
+
+--- NOTES ---
+The more important result is obtained when the nonthermal errors are also included.
+Without thermal correction, the mean acquisition time is 19.2 seconds, with a success rate of 98 percent.
+With the feedforward thermal correction, the mean acquisition time decreases to 5.45 seconds.
+This corresponds to a 72 percent reduction, and the success rate increases to 100 percent.
+For the PY sun-facing cases, where the thermal LOS reaches approximately 1.2 milliradians, the acquisition time decreases from around 40 seconds to approximately 1 to 2 seconds.
+After correction, the remaining initial pointing error is about 448 microradians and is almost entirely determined by the nonthermal components.
+Therefore, the role of this method is not to eliminate every pointing error.
+Instead, it removes the predictable thermal component before optical feedback becomes available, shifting the dominant acquisition limitation from thermal error to nonthermal error.
+
+===== SLIDE 25 =====
+--- ON SLIDE ---
+Acquisition results
+
+Temperature prediction helps the first acquisition; residual updates lower the later-orbit floor
+
+21
+
+[TABLE]
+Case 16 (PY) | First orbit | Orbit 1 onward
+Direct Fourier fit to total error | 39.5 s | 0.38 s
+Hierarchical model + residual Fourier | 1.47 s | 0.40 s
+
+A constant residual update is insufficient
+
+Case 13, orbit 1 onward: 1.66 → 1.35 s;
+above the 0.38 s Fourier result.
+
+Scope of this section
+
+Thermal-model coefficients are fixed.
+Preliminary update of total pointing residual
+after acquisition (two cases, dense sampling).
+
+Primary result: temperature/operating-state feedforward.
+Repeated links may reduce the floor further.
+
+--- NOTES ---
+Finally, as a preliminary extension, we also examined the use of post-acquisition pointing residuals for repeated links.
+For the first acquisition, temperature-based prediction is important because previous optical residuals may not be available.
+After successful acquisition, however, periodic information contained in the residual can be used to reduce the remaining error in later orbits.
+In the two numerical cases shown here, combining the feedforward thermal model with a Fourier model of the residual reduces later-orbit acquisition time further.
+However, this is only a preliminary study.
+The thermal-model coefficients themselves are not updated, and the analysis currently uses only two cases with densely sampled residual data.
+Therefore, the primary result of this work remains the pre-acquisition feedforward correction based on temperature and operating-state information.
+
+===== SLIDE 26 =====
+--- ON SLIDE ---
+05
+
+Summary
+
+--- NOTES ---
+Finally, I will summarize the results and discuss the current limitations.
+
+===== SLIDE 27 =====
+--- ON SLIDE ---
+Summary
+
+Limitations of this study
+
+22
+
+Validation scope
+
+Numerical evaluation: same structure and LOS definition
+
+Model applicability
+
+No ground test; flight relevance of the analysis model and sensitivities remains unvalidated
+
+LOS extraction
+
+Representative-node rotations; no interface rigid-body fit or internal STT/LCT deformation
+
+Acquisition evaluation
+
+One nonthermal seed; simplified scan dynamics
+
+--- NOTES ---
+There are several limitations to the current study.
+First, the validation is entirely numerical and is limited to the same spacecraft structure and LOS definition.
+Second, ground-test validation has not yet been performed, so the flight relevance of the thermo-structural model and the identified thermal sensitivities remains to be demonstrated.
+Third, the LOS is calculated using representative-node rotations.
+A rigid-body fit of the mounting interface and internal thermal deformation of the STT and LCT are not included.
+Finally, the acquisition simulation uses one nonthermal-error realization and simplified scan dynamics.
+The thermal sensitivity of approximately 30 microradians per Kelvin is therefore specific to this spacecraft configuration.
+There are three main directions for future work.
+First, we plan to validate the thermo-structural sensitivities through ground thermal testing.
+Second, for application to an actual spacecraft, the coefficients must be re-identified for the real structure and mounting configuration, while we investigate whether the same model structure can be retained.
+Third, after successful acquisition, optical pointing residuals could be used to adapt or update the prediction for repeated links.
+
+===== SLIDE 28 =====
+--- ON SLIDE ---
+Summary
+
+Removing predictable thermal error before acquisition leaves a search governed by nonthermal error
+
+23
+
+4.9 µrad
+
+Median corrected dominant-axis RMSE
+(raw median: 615 µrad)
+
+14.6 → 0.10 s
+
+Mean acquisition time, thermal only
+
+19.2 → 5.45 s
+
+Mean acquisition time with nonthermal error
+Success rate: 98% → 100%
+
+Results: For the evaluated box bus, the method can shorten pre-feedback link establishment.
+
+Contributions: STT–LCT relative LOS, cross-condition coefficient sharing, and connection to coarse-acquisition performance.
+
+Future Work: ground-test validation, coefficient re-identification for real spacecraft,
+ and onboard adaptation using post-acquisition residuals
+
+Oral presentation at ICSO 2026 on October 15
+
+Thank you for your attention
+
+--- NOTES ---
+To summarize, we treated thermal deformation as a predictable time-varying LOS bias before coarse acquisition.
+First, using panel temperature differences and operating-state information, the median dominant-axis thermal LOS error for unseen operating conditions was reduced from about 615 microradians to 4.9 microradians.
+Second, when only thermal error was considered, the mean acquisition time decreased from 14.6 seconds to 0.10 seconds.
+Finally, even when nonthermal errors were included, the mean acquisition time decreased from 19.2 seconds to 5.45 seconds, while the success rate increased from 98 percent to 100 percent.
+The main contribution of this work is to predict the STT–LCT relative LOS across the spacecraft bus using a model that generalizes across multiple operating conditions, and to directly connect that prediction to coarse-acquisition performance.
+By removing the predictable thermal component before optical feedback becomes available, the remaining acquisition problem becomes dominated by nonthermal errors.
+Thank you very much for your attention.
